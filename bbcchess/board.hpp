@@ -174,9 +174,9 @@ public:
         if ((side == white) && (bitboards[BoardPiece::P] & AttackTables::Pawn::pawn_attacks[black][square])) return true;
         else if ((side == black) && (bitboards[BoardPiece::p] & AttackTables::Pawn::pawn_attacks[white][square])) return true;
         else if ((side == white ? bitboards[BoardPiece::N] : bitboards[BoardPiece::n]) & AttackTables::Knight::knight_attacks[square]) return true;
-        else if ((side == white ? bitboards[BoardPiece::B] : bitboards[BoardPiece::b]) & AttackTables::Bishop::get_bishop_attacks(square, occupancies[both].bitboard)) return true;
-        else if ((side == white ? bitboards[BoardPiece::R] : bitboards[BoardPiece::r]) & AttackTables::Rook::get_rook_attacks(square, occupancies[both].bitboard)) return true;
-        else if ((side == white ? bitboards[BoardPiece::Q] : bitboards[BoardPiece::q]) & AttackTables::Queen::get_queen_attacks(square, occupancies[both].bitboard)) return true;
+        else if ((side == white ? bitboards[BoardPiece::B] : bitboards[BoardPiece::b]) & AttackTables::Bishop::get_bishop_attacks(square, occupancies[both])) return true;
+        else if ((side == white ? bitboards[BoardPiece::R] : bitboards[BoardPiece::r]) & AttackTables::Rook::get_rook_attacks(square, occupancies[both])) return true;
+        else if ((side == white ? bitboards[BoardPiece::Q] : bitboards[BoardPiece::q]) & AttackTables::Queen::get_queen_attacks(square, occupancies[both])) return true;
         else if ((side == white ? bitboards[BoardPiece::K] : bitboards[BoardPiece::k]) & AttackTables::King::king_attacks[square]) return true;
 
         return false;
@@ -292,8 +292,8 @@ public:
             
             side = side == white ? black : white;
             
-            if (is_square_attacked(side == white ? static_cast<BitBoardSquare>(get_ls1b_index(bitboards[BoardPiece::k].bitboard)) :
-                                                   static_cast<BitBoardSquare>(get_ls1b_index(bitboards[BoardPiece::K].bitboard)), side))
+            if (is_square_attacked(side == white ? static_cast<BitBoardSquare>(get_ls1b_index(bitboards[BoardPiece::k])) :
+                                                   static_cast<BitBoardSquare>(get_ls1b_index(bitboards[BoardPiece::K])), side))
                 return 0;
             
             return 1;
@@ -320,8 +320,8 @@ private:
         BitBoard bitboard = side == white ? bitboards[BoardPiece::P] : bitboards[BoardPiece::p];
         BitBoard attacks;
         
-        while (bitboard.bitboard) {
-            source_square = get_ls1b_index(bitboard.bitboard);
+        while (bitboard) {
+            source_square = get_ls1b_index(bitboard);
             
             // get the square above source square
             target_square = side == white ? source_square - 8 : source_square + 8;
@@ -365,8 +365,8 @@ private:
             
             attacks = (side == white ? occupancies[black] : occupancies[white]) & AttackTables::Pawn::pawn_attacks[side][source_square];
             
-            while (attacks.bitboard) {
-                target_square = get_ls1b_index(attacks.bitboard);
+            while (attacks) {
+                target_square = get_ls1b_index(attacks);
                 
                 // promotion?
                 if ((side == white && source_square >= a7 && source_square <= h7) ||
@@ -450,13 +450,13 @@ private:
         int source_square, target_square;
         BitBoard bitboard = side == white ? bitboards[BoardPiece::N] : bitboards[BoardPiece::n];
         BitBoard attacks;
-        while(bitboard.bitboard) {
-            source_square = get_ls1b_index(bitboard.bitboard);
+        while(bitboard) {
+            source_square = get_ls1b_index(bitboard);
             
             attacks = AttackTables::Knight::knight_attacks[source_square] & ~(side == white ? occupancies[white] : occupancies[black]);
             
-            while (attacks.bitboard) {
-                target_square = get_ls1b_index(attacks.bitboard);
+            while (attacks) {
+                target_square = get_ls1b_index(attacks);
                 
                 // quite move
                 if (!(side == white ? occupancies[black] : occupancies[white]).get_bit(target_square))
@@ -479,13 +479,13 @@ private:
         int source_square, target_square;
         BitBoard bitboard = side == white ? bitboards[BoardPiece::B] : bitboards[BoardPiece::b];
         BitBoard attacks;
-        while(bitboard.bitboard) {
-            source_square = get_ls1b_index(bitboard.bitboard);
+        while(bitboard) {
+            source_square = get_ls1b_index(bitboard);
             
-            attacks = AttackTables::Bishop::get_bishop_attacks(static_cast<BitBoardSquare>(source_square), occupancies[both].bitboard) & ~(side == white ? occupancies[white] : occupancies[black]);
+            attacks = AttackTables::Bishop::get_bishop_attacks(static_cast<BitBoardSquare>(source_square), occupancies[both]) & ~(side == white ? occupancies[white] : occupancies[black]);
             
-            while (attacks.bitboard) {
-                target_square = get_ls1b_index(attacks.bitboard);
+            while (attacks) {
+                target_square = get_ls1b_index(attacks);
                 
                 // quite move
                 if (!(side == white ? occupancies[black] : occupancies[white]).get_bit(target_square))
@@ -508,13 +508,13 @@ private:
         int source_square, target_square;
         BitBoard bitboard = side == white ? bitboards[BoardPiece::R] : bitboards[BoardPiece::r];
         BitBoard attacks;
-        while(bitboard.bitboard) {
-            source_square = get_ls1b_index(bitboard.bitboard);
+        while(bitboard) {
+            source_square = get_ls1b_index(bitboard);
             
-            attacks = AttackTables::Rook::get_rook_attacks(static_cast<BitBoardSquare>(source_square), occupancies[both].bitboard) & ~(side == white ? occupancies[white] : occupancies[black]);
+            attacks = AttackTables::Rook::get_rook_attacks(static_cast<BitBoardSquare>(source_square), occupancies[both]) & ~(side == white ? occupancies[white] : occupancies[black]);
             
-            while (attacks.bitboard) {
-                target_square = get_ls1b_index(attacks.bitboard);
+            while (attacks) {
+                target_square = get_ls1b_index(attacks);
                 
                 // quite move
                 if (!(side == white ? occupancies[black] : occupancies[white]).get_bit(target_square))
@@ -537,13 +537,13 @@ private:
         int source_square, target_square;
         BitBoard bitboard = side == white ? bitboards[BoardPiece::Q] : bitboards[BoardPiece::q];
         BitBoard attacks;
-        while(bitboard.bitboard) {
-            source_square = get_ls1b_index(bitboard.bitboard);
+        while(bitboard) {
+            source_square = get_ls1b_index(bitboard);
             
-            attacks = AttackTables::Queen::get_queen_attacks(static_cast<BitBoardSquare>(source_square), occupancies[both].bitboard) & ~(side == white ? occupancies[white] : occupancies[black]);
+            attacks = AttackTables::Queen::get_queen_attacks(static_cast<BitBoardSquare>(source_square), occupancies[both]) & ~(side == white ? occupancies[white] : occupancies[black]);
             
-            while (attacks.bitboard) {
-                target_square = get_ls1b_index(attacks.bitboard);
+            while (attacks) {
+                target_square = get_ls1b_index(attacks);
                 
                 // quite move
                 if (!(side == white ? occupancies[black] : occupancies[white]).get_bit(target_square))
@@ -566,13 +566,13 @@ private:
         int source_square, target_square;
         BitBoard bitboard = side == white ? bitboards[BoardPiece::K] : bitboards[BoardPiece::k];
         BitBoard attacks;
-        while(bitboard.bitboard) {
-            source_square = get_ls1b_index(bitboard.bitboard);
+        while(bitboard) {
+            source_square = get_ls1b_index(bitboard);
             
             attacks = AttackTables::King::king_attacks[source_square] & ~(side == white ? occupancies[white] : occupancies[black]);
             
-            while (attacks.bitboard) {
-                target_square = get_ls1b_index(attacks.bitboard);
+            while (attacks) {
+                target_square = get_ls1b_index(attacks);
                 
                 // quite move
                 if (!(side == white ? occupancies[black] : occupancies[white]).get_bit(target_square))
@@ -590,6 +590,7 @@ private:
             bitboard.pop_bit(source_square);
         }
     }
+    
 public:
     Moves generate_moves() const{
         Moves move_list;
@@ -603,6 +604,11 @@ public:
         generate_king_moves(move_list);
         
         return move_list;
+    }
+    
+    int evalutate() {
+        int score = 0;
+        return score;
     }
 };
 

@@ -2,6 +2,22 @@
 #define pieces_hpp
 
 namespace BoardPiece {
+
+const int material_score[12] = {
+    100,
+    300,
+    350,
+    500,
+    1000,
+    10000,
+    -100,
+    -300,
+    -350,
+    -500,
+    -1000,
+    -10000
+};
+
 enum RorB {rook, bishop};
 
 // encode pieces

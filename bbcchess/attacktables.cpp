@@ -206,7 +206,7 @@ U64 AttackTables::set_occupancy(int index, int bits_in_mask, BitBoard attack_mas
     // loop over the range of bits within attack mask
     for (int count = 0; count < bits_in_mask; count++) {
         // get LS1B index of attacks mask
-        int square = get_ls1b_index(attack_mask.bitboard);
+        int square = get_ls1b_index(attack_mask);
         
         // pop LS1B in attack map
         attack_mask.pop_bit(square);
@@ -233,11 +233,11 @@ U64 AttackTables::Pawn::mask_pawn_attacks(TurnColor side, BitBoardSquare square)
     
     // white pawn
     if (side == white) {
-        if ((bitboard.bitboard >> 7) & not_a_file) attacks |= (bitboard.bitboard >> 7);
-        if ((bitboard.bitboard >> 9) & not_h_file) attacks |= (bitboard.bitboard >> 9);
+        if ((bitboard >> 7) & not_a_file) attacks |= (bitboard >> 7);
+        if ((bitboard >> 9) & not_h_file) attacks |= (bitboard >> 9);
     } else { // black pawns
-        if ((bitboard.bitboard << 7) & not_h_file) attacks |= (bitboard.bitboard << 7);
-        if ((bitboard.bitboard << 9) & not_a_file) attacks |= (bitboard.bitboard << 9);
+        if ((bitboard << 7) & not_h_file) attacks |= (bitboard << 7);
+        if ((bitboard << 9) & not_a_file) attacks |= (bitboard << 9);
     }
     
     return attacks;

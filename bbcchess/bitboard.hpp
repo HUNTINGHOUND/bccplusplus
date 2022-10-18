@@ -81,6 +81,10 @@ public:
     U64 operator&(U64 o) const noexcept {
         return bitboard & o;
     }
+    
+    operator U64() const noexcept {
+        return bitboard;
+    }
 };
 
 // board squares
