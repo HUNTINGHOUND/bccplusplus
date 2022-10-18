@@ -25,6 +25,10 @@ public:
     Move() : move(0) {};
     Move(int move) : move(move) {};
     
+    operator int(){
+        return move;
+    }
+    
     int get_move_source() const {
         return move & SOURCE_SQUARE_CONSTANT;
     }

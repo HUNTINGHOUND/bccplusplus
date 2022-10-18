@@ -12,6 +12,7 @@
 #include "attacktables.hpp"
 #include "util.hpp"
 #include "boardinfo.hpp"
+#include "evaluation.hpp"
 
 using U64 = unsigned long long;
 
@@ -43,7 +44,7 @@ public:
             // loop over board files
             for (int file = 0; file < 8; file++) {
                 // init square
-                 BitBoardSquare square = static_cast<BitBoardSquare>(rank * 8 + file);
+                 BitBoardSquare square = BitBoardSquare(rank * 8 + file);
                 
                 // print ranks
                 if (!file)
@@ -87,7 +88,7 @@ public:
                 if (!file)
                     std::cout << "  " << 8 - rank << " ";
                 
-                std::cout << " " << is_square_attacked(static_cast<BitBoardSquare>(square), side);
+                std::cout << " " << is_square_attacked(BitBoardSquare(square), side);
             }
             
             std::cout << "\n";
@@ -157,7 +158,7 @@ public:
             int file = fen[fen_idx] - 'a';
             int rank = 8 - (fen[fen_idx + 1] - '0');
             
-            enpassant = static_cast<BitBoardSquare>(rank * 8 + file);
+            enpassant = BitBoardSquare(rank * 8 + file);
         } else enpassant = no_sq;
         
         for (int piece = BoardPiece::P; piece <= BoardPiece::K; piece++)
@@ -184,10 +185,10 @@ public:
     
     int make_move(Move const & move, MoveFlag move_flag) {
         if (move_flag == all_moves) {
-            BitBoardSquare source_square = static_cast<BitBoardSquare>(move.get_move_source());
-            BitBoardSquare target_square = static_cast<BitBoardSquare>(move.get_move_target());
-            BoardPiece::Pieces piece = static_cast<BoardPiece::Pieces>(move.get_move_piece());
-            BoardPiece::Pieces promoted = static_cast<BoardPiece::Pieces>(move.get_move_promoted());
+            BitBoardSquare source_square = BitBoardSquare(move.get_move_source());
+            BitBoardSquare target_square = BitBoardSquare(move.get_move_target());
+            BoardPiece::Pieces piece = BoardPiece::Pieces(move.get_move_piece());
+            BoardPiece::Pieces promoted = BoardPiece::Pieces(move.get_move_promoted());
             bool capture = move.get_move_capture();
             bool double_push = move.get_move_double();
             bool enpass = move.get_move_enpassant();
@@ -218,7 +219,7 @@ public:
                     }
                 }
                 
-                occupancies[side == white ? black : white].pop_bit(target_square);
+                occupancies[side ^ 1].pop_bit(target_square);
             }
             
             if (promoted) {
@@ -237,8 +238,8 @@ public:
             enpassant = no_sq;
             
             if (double_push) {
-                side == white ? enpassant = static_cast<BitBoardSquare>(target_square + 8) :
-                                enpassant = static_cast<BitBoardSquare>(target_square - 8);
+                side == white ? enpassant = BitBoardSquare(target_square + 8) :
+                                enpassant = BitBoardSquare(target_square - 8);
             }
             
             if (castling) {
@@ -290,10 +291,10 @@ public:
             
             occupancies[both] = occupancies[white] | occupancies[black];
             
-            side = side == white ? black : white;
+            side = TurnColor(side ^ 1);
             
-            if (is_square_attacked(side == white ? static_cast<BitBoardSquare>(get_ls1b_index(bitboards[BoardPiece::k])) :
-                                                   static_cast<BitBoardSquare>(get_ls1b_index(bitboards[BoardPiece::K])), side))
+            if (is_square_attacked(side == white ? BitBoardSquare(get_ls1b_index(bitboards[BoardPiece::k])) :
+                                                   BitBoardSquare(get_ls1b_index(bitboards[BoardPiece::K])), side))
                 return 0;
             
             return 1;
@@ -482,7 +483,7 @@ private:
         while(bitboard) {
             source_square = get_ls1b_index(bitboard);
             
-            attacks = AttackTables::Bishop::get_bishop_attacks(static_cast<BitBoardSquare>(source_square), occupancies[both]) & ~(side == white ? occupancies[white] : occupancies[black]);
+            attacks = AttackTables::Bishop::get_bishop_attacks(BitBoardSquare(source_square), occupancies[both]) & ~(side == white ? occupancies[white] : occupancies[black]);
             
             while (attacks) {
                 target_square = get_ls1b_index(attacks);
@@ -511,7 +512,7 @@ private:
         while(bitboard) {
             source_square = get_ls1b_index(bitboard);
             
-            attacks = AttackTables::Rook::get_rook_attacks(static_cast<BitBoardSquare>(source_square), occupancies[both]) & ~(side == white ? occupancies[white] : occupancies[black]);
+            attacks = AttackTables::Rook::get_rook_attacks(BitBoardSquare(source_square), occupancies[both]) & ~(side == white ? occupancies[white] : occupancies[black]);
             
             while (attacks) {
                 target_square = get_ls1b_index(attacks);
@@ -540,7 +541,7 @@ private:
         while(bitboard) {
             source_square = get_ls1b_index(bitboard);
             
-            attacks = AttackTables::Queen::get_queen_attacks(static_cast<BitBoardSquare>(source_square), occupancies[both]) & ~(side == white ? occupancies[white] : occupancies[black]);
+            attacks = AttackTables::Queen::get_queen_attacks(BitBoardSquare(source_square), occupancies[both]) & ~(side == white ? occupancies[white] : occupancies[black]);
             
             while (attacks) {
                 target_square = get_ls1b_index(attacks);
@@ -606,9 +607,44 @@ public:
         return move_list;
     }
     
-    int evalutate() {
+    int evalutate() const {
         int score = 0;
-        return score;
+        BitBoard bitboard;
+        
+        BoardPiece::Pieces piece;
+        BitBoardSquare square;
+        
+        for (int bb_piece = BoardPiece::P; bb_piece <= BoardPiece::k; bb_piece++) {
+            bitboard = bitboards[bb_piece];
+            
+            while (bitboard) {
+                piece = BoardPiece::Pieces(bb_piece);
+                
+                square = BitBoardSquare(get_ls1b_index(bitboard));
+                
+                score += Evaluation::material_score[piece];
+                
+                switch (piece) {
+                    // evaluate white pieces
+                    case BoardPiece::P: score += Evaluation::pawn_score[square]; break;
+                    case BoardPiece::N: score += Evaluation::knight_score[square]; break;
+                    case BoardPiece::B: score += Evaluation::bishop_score[square]; break;
+                    case BoardPiece::R: score += Evaluation::rook_score[square]; break;
+                    case BoardPiece::K: score += Evaluation::king_score[square]; break;
+                        
+                    // evaluate place pieces:
+                    case BoardPiece::p: score -= Evaluation::pawn_score[mirror_score[square]]; break;
+                    case BoardPiece::n: score -= Evaluation::knight_score[mirror_score[square]]; break;
+                    case BoardPiece::b: score -= Evaluation::bishop_score[mirror_score[square]]; break;
+                    case BoardPiece::r: score -= Evaluation::rook_score[mirror_score[square]]; break;
+                    case BoardPiece::k: score -= Evaluation::king_score[mirror_score[square]]; break;
+                }
+                
+                bitboard.pop_bit(square);
+            }
+        }
+        
+        return (side == white) ? score : -score; 
     }
 };
 

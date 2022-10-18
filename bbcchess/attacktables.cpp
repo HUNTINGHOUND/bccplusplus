@@ -147,14 +147,14 @@ void AttackTables::init_leapers_attacks() {
     // loop over 64 board squares
     for (int square = a8; square <= h1; square++) {
         // init pawn attacks
-        Pawn::pawn_attacks[white][square] = Pawn::mask_pawn_attacks(white, static_cast<BitBoardSquare>(square));
-        Pawn::pawn_attacks[black][square] = Pawn::mask_pawn_attacks(black, static_cast<BitBoardSquare>(square));
+        Pawn::pawn_attacks[white][square] = Pawn::mask_pawn_attacks(white, BitBoardSquare(square));
+        Pawn::pawn_attacks[black][square] = Pawn::mask_pawn_attacks(black, BitBoardSquare(square));
         
         // init knight attacks
-        Knight::knight_attacks[square] = Knight::mask_knight_attacks(static_cast<BitBoardSquare>(square));
+        Knight::knight_attacks[square] = Knight::mask_knight_attacks(BitBoardSquare(square));
         
         // init king attacks
-        King::king_attacks[square] = King::mask_king_attacks(static_cast<BitBoardSquare>(square));
+        King::king_attacks[square] = King::mask_king_attacks(BitBoardSquare(square));
     }
 }
 
@@ -162,8 +162,8 @@ void AttackTables::init_sliders_attacks(BoardPiece::RorB rorb) {
     // loop over 64 board sqaures
     for (int square = a8; square <= h1; square++) {
         // init bishop & rook masks
-        Bishop::bishop_masks[square] = Bishop::mask_bishop_attacks(static_cast<BitBoardSquare>(square));
-        Rook::rook_masks[square] = Rook::mask_rook_attacks(static_cast<BitBoardSquare>(square));
+        Bishop::bishop_masks[square] = Bishop::mask_bishop_attacks(BitBoardSquare(square));
+        Rook::rook_masks[square] = Rook::mask_rook_attacks(BitBoardSquare(square));
         
         // init current mask
         U64 attack_mask = rorb == BoardPiece::bishop ? Bishop::bishop_masks[square] : Rook::rook_masks[square];
@@ -184,7 +184,7 @@ void AttackTables::init_sliders_attacks(BoardPiece::RorB rorb) {
                 // init magic index
                 int magic_index = (occupancy * Bishop::bishop_magic_numbers[square]) >> (64 - Bishop::bishop_relevant_bits[square]);
                 
-                Bishop::bishop_attacks[square][magic_index] = Bishop::bishop_attacks_on_the_fly(static_cast<BitBoardSquare>(square), occupancy);
+                Bishop::bishop_attacks[square][magic_index] = Bishop::bishop_attacks_on_the_fly(BitBoardSquare(square), occupancy);
             } else { // rook
                 // init current occupancy variation
                 U64 occupancy = set_occupancy(index, relevant_bits_count, attack_mask);
@@ -193,7 +193,7 @@ void AttackTables::init_sliders_attacks(BoardPiece::RorB rorb) {
                 int magic_index = (occupancy * Rook::rook_magic_numbers[square]) >> (64 - Rook::rook_relevant_bits[square]);
                 
                 // init bishop attacks
-                Rook::rook_attacks[square][magic_index] = Rook::rook_attacks_on_the_fly(static_cast<BitBoardSquare>(square), occupancy);
+                Rook::rook_attacks[square][magic_index] = Rook::rook_attacks_on_the_fly(BitBoardSquare(square), occupancy);
             }
         }
     }

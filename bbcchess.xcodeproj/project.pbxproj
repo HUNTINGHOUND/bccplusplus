@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		903CD4D528FBE1670049195A /* uci.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 903CD4D328FBE1670049195A /* uci.cpp */; };
 		903CD4D828FE4BF80049195A /* evaluation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 903CD4D628FE4BF80049195A /* evaluation.cpp */; };
+		903CD4DB28FE7FBE0049195A /* search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 903CD4D928FE7FBE0049195A /* search.cpp */; };
 		90CBA1E028E615D7004FF338 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90CBA1DF28E615D7004FF338 /* main.cpp */; };
 		90CBA1EE28E637FC004FF338 /* attacktables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90CBA1EC28E637FC004FF338 /* attacktables.cpp */; };
 		90CBA1F128E640E6004FF338 /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90CBA1EF28E640E6004FF338 /* util.cpp */; };
@@ -36,6 +37,8 @@
 		903CD4D428FBE1670049195A /* uci.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = uci.hpp; sourceTree = "<group>"; };
 		903CD4D628FE4BF80049195A /* evaluation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = evaluation.cpp; sourceTree = "<group>"; };
 		903CD4D728FE4BF80049195A /* evaluation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = evaluation.hpp; sourceTree = "<group>"; };
+		903CD4D928FE7FBE0049195A /* search.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = search.cpp; sourceTree = "<group>"; };
+		903CD4DA28FE7FBE0049195A /* search.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = search.hpp; sourceTree = "<group>"; };
 		90CBA1DC28E615D7004FF338 /* bbcchess */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbcchess; sourceTree = BUILT_PRODUCTS_DIR; };
 		90CBA1DF28E615D7004FF338 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		90CBA1EA28E61833004FF338 /* board.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = board.hpp; sourceTree = "<group>"; };
@@ -93,6 +96,8 @@
 				903CD4D428FBE1670049195A /* uci.hpp */,
 				903CD4D628FE4BF80049195A /* evaluation.cpp */,
 				903CD4D728FE4BF80049195A /* evaluation.hpp */,
+				903CD4D928FE7FBE0049195A /* search.cpp */,
+				903CD4DA28FE7FBE0049195A /* search.hpp */,
 			);
 			path = bbcchess;
 			sourceTree = "<group>";
@@ -156,6 +161,7 @@
 			files = (
 				90CBA1E028E615D7004FF338 /* main.cpp in Sources */,
 				90CBA1EE28E637FC004FF338 /* attacktables.cpp in Sources */,
+				903CD4DB28FE7FBE0049195A /* search.cpp in Sources */,
 				90CBA1F128E640E6004FF338 /* util.cpp in Sources */,
 				90CBA1F428E66912004FF338 /* magic.cpp in Sources */,
 				903CD4D528FBE1670049195A /* uci.cpp in Sources */,

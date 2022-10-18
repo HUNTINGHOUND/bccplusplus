@@ -9,6 +9,7 @@
 #include "magic.hpp"
 #include "move.hpp"
 #include "uci.hpp"
+#include "search.hpp"
 
 // optimizers
 #define FASTIO std::ios_base::sync_with_stdio(false);
@@ -123,9 +124,13 @@ int main(int argc, char **argv){
     
     BoardRepresentation rep;
     if (options.debug) {
-        rep.parse_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ");
+        auto start = get_time_point();
+        
+        rep.parse_fen("rn1qkb1r/ppp1pppp/4bn2/8/2pPP3/2N2N2/PP3PPP/R1BQKB1R b KQkq - 2 5");
         rep.print_board();
-        std::cout << "score: " << 0 << "\n";
+        search_position(5, rep);
+        
+        std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";
     } else
         uci_loop(rep);
     

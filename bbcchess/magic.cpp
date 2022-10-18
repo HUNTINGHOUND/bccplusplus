@@ -84,10 +84,10 @@ void init_magic_numbers() {
     // loop over 64 board squares
     for (int square = 0; square < 64; square++) {
         // init rook magic numbers
-        AttackTables::Rook::rook_magic_numbers[square] = find_magic_number(static_cast<BitBoardSquare>(square), AttackTables::Rook::rook_relevant_bits[square], BoardPiece::rook);
+        AttackTables::Rook::rook_magic_numbers[square] = find_magic_number(BitBoardSquare(square), AttackTables::Rook::rook_relevant_bits[square], BoardPiece::rook);
         
         // init bishop magic numbers
-        AttackTables::Bishop::bishop_magic_numbers[square] = find_magic_number(static_cast<BitBoardSquare>(square), AttackTables::Bishop::bishop_relevant_bits[square], BoardPiece::bishop);
+        AttackTables::Bishop::bishop_magic_numbers[square] = find_magic_number(BitBoardSquare(square), AttackTables::Bishop::bishop_relevant_bits[square], BoardPiece::bishop);
     }
     
 }
