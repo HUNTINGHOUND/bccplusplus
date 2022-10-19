@@ -1,6 +1,9 @@
 #ifndef attacktables_hpp
 #define attacktables_hpp
 
+// system headers
+#include <array>
+
 // local headers
 #include "boardinfo.hpp"
 #include "bitboard.hpp"
@@ -68,30 +71,30 @@ void init_sliders_attacks(BoardPiece::RorB rorb);
 U64 set_occupancy(int index, int bits_in_mask, BitBoard attack_mask);
 
 namespace Pawn {
-extern U64 pawn_attacks[2][64];
+extern std::array<std::array<U64, 64>, 2> pawn_attacks;
 
 U64 mask_pawn_attacks(TurnColor side, BitBoardSquare square);
 }
 
 namespace Knight {
-extern U64 knight_attacks[64];
+extern std::array<U64, 64> knight_attacks;
 
 U64 mask_knight_attacks(BitBoardSquare square);
 }
 
 namespace King {
-extern U64 king_attacks[64];
+extern std::array<U64, 64> king_attacks;
 
 U64 mask_king_attacks(BitBoardSquare square);
 }
 
 namespace Bishop {
-extern U64 bishop_masks[64];
-extern U64 bishop_attacks[64][512];
-extern U64 bishop_magic_numbers[64];
+extern std::array<U64, 64> bishop_masks;
+extern std::array<std::array<U64, 512>, 64> bishop_attacks;
+extern std::array<U64, 64> bishop_magic_numbers;
 
 // bishop relevant occupancy bit count for every square on board
-const int bishop_relevant_bits[64] = {
+const std::array<int, 64> bishop_relevant_bits = {
     6, 5, 5, 5, 5, 5, 5, 6,
     5, 5, 5, 5, 5, 5, 5, 5,
     5, 5, 7, 7, 7, 7, 5, 5,
@@ -115,12 +118,12 @@ inline U64 get_bishop_attacks(BitBoardSquare square, U64 occupancy) {
 }
 
 namespace Rook {
-extern U64 rook_masks[64];
-extern U64 rook_attacks[64][4096];
-extern U64 rook_magic_numbers[64];
+extern std::array<U64, 64> rook_masks;
+extern std::array<std::array<U64, 4096>, 64> rook_attacks;
+extern std::array<U64, 64> rook_magic_numbers;
 
 // rook relevant occupancy bit count for every square on board
-const int rook_relevant_bits[64] = {
+const std::array<int, 64> rook_relevant_bits = {
     12, 11, 11, 11, 11, 11, 11, 12,
     11, 10, 10, 10, 10, 10, 10, 11,
     11, 10, 10, 10, 10, 10, 10, 11,

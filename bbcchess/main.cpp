@@ -126,10 +126,9 @@ int main(int argc, char **argv){
     if (options.debug) {
         auto start = get_time_point();
         
-        rep.parse_fen("rn1qkb1r/ppp1pppp/4bn2/8/2pPP3/2N2N2/PP3PPP/R1BQKB1R b KQkq - 2 5");
+        rep.parse_fen(KILLER_POSITION);
         rep.print_board();
         search_position(5, rep);
-        
         std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";
     } else
         uci_loop(rep);

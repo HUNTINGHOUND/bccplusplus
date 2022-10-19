@@ -14,8 +14,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "113"
-            endingLineNumber = "113"
+            startingLineNumber = "227"
+            endingLineNumber = "227"
             landmarkName = "negamax(alpha, beta, depth, rep)"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "93"
-            endingLineNumber = "93"
+            startingLineNumber = "206"
+            endingLineNumber = "206"
             landmarkName = "negamax(alpha, beta, depth, rep)"
             landmarkType = "7">
          </BreakpointContent>
@@ -46,8 +46,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "97"
-            endingLineNumber = "97"
+            startingLineNumber = "210"
+            endingLineNumber = "210"
             landmarkName = "negamax(alpha, beta, depth, rep)"
             landmarkType = "7">
          </BreakpointContent>
@@ -62,8 +62,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "55"
-            endingLineNumber = "55"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
             landmarkName = "negamax(alpha, beta, depth, rep)"
             landmarkType = "7">
          </BreakpointContent>
@@ -78,8 +78,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
+            startingLineNumber = "207"
+            endingLineNumber = "207"
             landmarkName = "negamax(alpha, beta, depth, rep)"
             landmarkType = "7">
          </BreakpointContent>
@@ -94,10 +94,74 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "56"
-            endingLineNumber = "56"
+            startingLineNumber = "157"
+            endingLineNumber = "157"
             landmarkName = "negamax(alpha, beta, depth, rep)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "060A2F08-FD22-4859-BBB9-5792DB22B83A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "bbcchess/main.cpp"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "129"
+            endingLineNumber = "129"
+            landmarkName = "main(argc, argv)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "34A87378-1B2B-4957-A734-E3DBE55F0B3A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "bbcchess/search.hpp"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
+            landmarkName = "score_move(move, rep)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "34A87378-1B2B-4957-A734-E3DBE55F0B3A - 1bdee937e30ebc1c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Search::print_move_scores(Moves const&amp;, BoardRepresentation const&amp;)"
+                  moduleName = "bbcchess"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/morgan/Desktop/bbcchess/bbcchess/search.hpp"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "50"
+                  endingLineNumber = "50"
+                  offsetFromSymbolStart = "414">
+               </Location>
+               <Location
+                  uuid = "34A87378-1B2B-4957-A734-E3DBE55F0B3A - 44e37f8836c2b810"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Search::sort_moves(Moves&amp;, BoardRepresentation const&amp;)"
+                  moduleName = "bbcchess"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/morgan/Desktop/bbcchess/bbcchess/search.hpp"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "50"
+                  endingLineNumber = "50"
+                  offsetFromSymbolStart = "165">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

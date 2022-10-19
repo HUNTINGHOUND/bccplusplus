@@ -40,4 +40,19 @@ const char promoted_pieces[] = {
     [BoardPiece::n] = 'n',
 };
 
+const int piece_to_index[] = {
+    [BoardPiece::P] = 0,
+    [BoardPiece::N] = 1,
+    [BoardPiece::B] = 2,
+    [BoardPiece::R] = 3,
+    [BoardPiece::Q] = 4,
+    [BoardPiece::K] = 5,
+    [BoardPiece::p] = 0,
+    [BoardPiece::n] = 1,
+    [BoardPiece::b] = 2,
+    [BoardPiece::r] = 3,
+    [BoardPiece::q] = 4,
+    [BoardPiece::k] = 5,
+};
+
 #endif /* pieces_hpp */

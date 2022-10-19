@@ -1,8 +1,12 @@
 #ifndef evaluation_hpp
 #define evaluation_hpp
 
+// system headers
+#include <array>
+
 namespace Evaluation {
-const int material_score[12] = {
+
+const std::array<int, 12> material_score = {
     100,        // white pawn
     300,        // white knight
     350,        // white bishop
@@ -18,7 +22,7 @@ const int material_score[12] = {
 };
 
 // pawn positional score
-const int pawn_score[64] = {
+const std::array<int, 64> pawn_score = {
     90,  90,  90,  90,  90,  90,  90,  90,
     30,  30,  30,  40,  40,  30,  30,  30,
     20,  20,  20,  30,  30,  30,  20,  20,
@@ -30,7 +34,7 @@ const int pawn_score[64] = {
 };
 
 // knight positional score
-const int knight_score[64] =
+const std::array<int, 64> knight_score =
 {
     -5,   0,   0,   0,   0,   0,   0,  -5,
     -5,   0,   0,  10,  10,   0,   0,  -5,
@@ -43,7 +47,7 @@ const int knight_score[64] =
 };
 
 // bishop positional score
-const int bishop_score[64] =
+const std::array<int, 64> bishop_score =
 {
      0,   0,   0,   0,   0,   0,   0,   0,
      0,   0,   0,   0,   0,   0,   0,   0,
@@ -58,7 +62,7 @@ const int bishop_score[64] =
 
 
 // rook positional score
-const int rook_score[64] =
+const std::array<int, 64> rook_score =
 {
     50,  50,  50,  50,  50,  50,  50,  50,
     50,  50,  50,  50,  50,  50,  50,  50,
@@ -72,7 +76,7 @@ const int rook_score[64] =
 };
 
 // king positional score
-const int king_score[64] =
+const std::array<int, 64> king_score =
 {
     0,   0,   0,   0,   0,   0,   0,   0,
     0,   0,   5,   5,   5,   5,   0,   0,
@@ -82,6 +86,16 @@ const int king_score[64] =
     0,   0,   5,  10,  10,   5,   0,   0,
     0,   5,   5,  -5,  -5,   0,   5,   0,
     0,   0,   5,   0, -15,   0,  10,   0
+};
+
+// Most Valuable Victim, Least Valuable Attack
+const std::array<std::array<int, 6>, 6> mvv_lva = {
+    105, 205, 305, 405, 505, 605,
+    104, 204, 304, 404, 504, 604,
+    103, 203, 303, 403, 503, 603,
+    102, 202, 302, 402, 502, 602,
+    101, 201, 301, 401, 501, 601,
+    100, 200, 300, 400, 500, 600
 };
 }
 

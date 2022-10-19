@@ -25,7 +25,7 @@ public:
     Move() : move(0) {};
     Move(int move) : move(move) {};
     
-    operator int(){
+    operator int() const{
         return move;
     }
     
@@ -100,19 +100,19 @@ public:
                                        square_to_coordinates[move.get_move_target()]   <<
                                        promoted_pieces[move.get_move_promoted()]       <<  "   " <<
                                        BoardPiece::ascii_pieces[move.get_move_piece()] << "       " <<
-                                       (move.get_move_capture() ? 1 : 0)               << "         " <<
-                                       (move.get_move_double() ? 1 : 0)                << "         " <<
-                                       (move.get_move_enpassant() ? 1 : 0)             << "         " <<
-                                       (move.get_move_castling() ? 1 : 0)              << "\n";
+                                       move.get_move_capture()                         << "         " <<
+                                       move.get_move_double()                          << "         " <<
+                                       move.get_move_enpassant()                       << "         " <<
+                                       move.get_move_castling()                        << "\n";
             #else
-                std::cout << "    " << square_to_coordinates[move.get_move_source()]     <<
-                                       square_to_coordinates[move.get_move_target()]     <<
-                                       promoted_pieces[move.get_move_promoted()]         <<  "   " <<
-                                       BoardPiece::unicode_pieces[move.get_move_piece()] << "       " <<
-                                       (move.get_move_capture() ? 1 : 0)                 << "         " <<
-                                       (move.get_move_double() ? 1 : 0)                  << "         " <<
-                                       (move.get_move_enpassant() ? 1 : 0)               << "         " <<
-                                       (move.get_move_castling() ? 1 : 0)                << "\n";
+                std::cout << "    " << square_to_coordinates[move.get_move_source()]        <<
+                                       square_to_coordinates[move.get_move_target()]        <<
+                                       promoted_pieces[move.get_move_promoted()]            <<  "   " <<
+                                       BoardPiece::unicode_pieces[move.get_move_piece()]    << "       " <<
+                                       move.get_move_capture()                              << "         " <<
+                                       move.get_move_double()                               << "         " <<
+                                       move.get_move_enpassant()                            << "         " <<
+                                       move.get_move_castling()                             << "\n";
             #endif
             
         }

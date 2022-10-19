@@ -1,8 +1,12 @@
 #ifndef util_hpp
 #define util_hpp
 
+// system headers
 #include <stdexcept>
 #include <chrono>
+
+// local header
+#include "move.hpp"
 
 using U64 = unsigned long long;
 
@@ -26,5 +30,4 @@ inline std::chrono::time_point<std::chrono::system_clock> get_time_point() {
 inline long long get_time_diff(std::chrono::time_point<std::chrono::system_clock> const & a, std::chrono::time_point<std::chrono::system_clock> const & b) {
     return std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count();
 }
-
 #endif /* util_hpp */

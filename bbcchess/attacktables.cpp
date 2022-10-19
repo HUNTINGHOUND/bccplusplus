@@ -3,10 +3,10 @@
 #include "util.hpp"
 
 // extern definition
-U64 AttackTables::Pawn::pawn_attacks[2][64];
-U64 AttackTables::Knight::knight_attacks[64];
-U64 AttackTables::King::king_attacks[64];
-U64 AttackTables::Rook::rook_magic_numbers[64] = {
+std::array<std::array<U64, 64>, 2> AttackTables::Pawn::pawn_attacks;
+std::array<U64, 64> AttackTables::Knight::knight_attacks;
+std::array<U64, 64> AttackTables::King::king_attacks;
+std::array<U64, 64> AttackTables::Rook::rook_magic_numbers = {
     0x200108021020040ULL,
     0x1100110080400020ULL,
     0x80200080100008ULL,
@@ -72,7 +72,7 @@ U64 AttackTables::Rook::rook_magic_numbers[64] = {
     0x8a8009001080204ULL,
     0x1201000124520081ULL
 };
-U64 AttackTables::Bishop::bishop_magic_numbers[64] = {
+std::array<U64, 64> AttackTables::Bishop::bishop_magic_numbers = {
     0x20024204440281ULL,
     0x21a404008c110203ULL,
     0x2010040040440058ULL,
@@ -138,10 +138,10 @@ U64 AttackTables::Bishop::bishop_magic_numbers[64] = {
     0x408a0200210812cULL,
     0x4542200840810440ULL
 };
-U64 AttackTables::Bishop::bishop_masks[64];
-U64 AttackTables::Rook::rook_masks[64];
-U64 AttackTables::Bishop::bishop_attacks[64][512];
-U64 AttackTables::Rook::rook_attacks[64][4096];
+std::array<U64, 64> AttackTables::Bishop::bishop_masks;
+std::array<U64, 64> AttackTables::Rook::rook_masks;
+std::array<std::array<U64, 512>, 64> AttackTables::Bishop::bishop_attacks;
+std::array<std::array<U64, 4096>, 64> AttackTables::Rook::rook_attacks;
 
 void AttackTables::init_leapers_attacks() {
     // loop over 64 board squares

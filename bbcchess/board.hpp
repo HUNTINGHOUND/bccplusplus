@@ -21,10 +21,10 @@ class BoardRepresentation {
 public:
     
     // piece bitboard
-    BitBoard bitboards[12];
+    std::array<BitBoard, 12> bitboards;
     
     // occupancy bitboards
-    BitBoard occupancies[3];
+    std::array<BitBoard, 3> occupancies;
     
     // side to move
     TurnColor side = white;
@@ -98,8 +98,8 @@ public:
     }
     
     void parse_fen(std::string const & fen, size_t fen_idx = 0) {
-        std::fill(bitboards, bitboards + 12, 0ULL);
-        std::fill(occupancies, occupancies + 3, 0ULL);
+        std::fill(bitboards.begin(), bitboards.end(), 0ULL);
+        std::fill(occupancies.begin(), occupancies.end(), 0ULL);
         
         side = white;
         enpassant = no_sq;
