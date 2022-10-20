@@ -8,6 +8,8 @@
 #include "board.hpp"
 #include "move.hpp"
 
+#define MAX_PLY 64
+
 class Search {
 public:
     
@@ -15,13 +17,57 @@ public:
     int ply = 0;
     Move best_move;
     
+    bool follow_pv = false;
+    
     // killer moves [id][ply]
-    std::array<std::array<int, 64>, 2> killer_moves = {};
+    std::array<std::array<int, MAX_PLY>, 2> killer_moves = {};
     
     // history moves [piece][square]
     std::array<std::array<int, 64>, 12> history_moves = {};
     
+    /*
+          ================================
+                Triangular PV table
+          --------------------------------
+            PV line: e2e4 e7e5 g1f3 b8c6
+          ================================
+               0    1    2    3    4    5
+          
+          0    m1   m2   m3   m4   m5   m6
+          
+          1    0    m2   m3   m4   m5   m6
+          
+          2    0    0    m3   m4   m5   m6
+          
+          3    0    0    0    m4   m5   m6
+           
+          4    0    0    0    0    m5   m6
+          
+          5    0    0    0    0    0    m6
+    */
+    std::array<int, MAX_PLY> pv_length = {};
+    std::array<std::array<Move, MAX_PLY>, MAX_PLY> pv_table = {};
+    
+    void enable_pv_sorting(Moves const & move_list) {
+        follow_pv = false;
+        
+        for (int count = 0; count < move_list.count; count++) {
+            if (pv_table[0][ply] == move_list.moves[count]) {
+                follow_pv = true;
+                break;
+            }
+        }
+    }
+    
     int score_move(Move const & move, BoardRepresentation const & rep) {
+        if (follow_pv && pv_table[0][ply] == move) {
+            std::cout << "current PV move: ";
+            move.print_move_nonewline();
+            std::cout << " ply: " << ply << "\n";
+            
+            return 20000;
+        }
+        
         if (move.get_move_capture()) { // score capture move
             BoardPiece::Pieces target_piece = BoardPiece::P;
             BoardPiece::Pieces start_piece, end_piece;
@@ -114,7 +160,7 @@ public:
         nodes++;
         
         // evaluate position
-        int evaluation = rep.evalutate();
+        int evaluation = rep.evaluate();
         
         // beta cut off
         if (evaluation >= beta)
@@ -153,8 +199,15 @@ public:
     }
     
     int negamax(int alpha, int beta, int depth, BoardRepresentation const & rep) {
+        pv_length[ply] = ply;
+        
         if (depth == 0)
             return quiescence(alpha, beta, rep);
+        
+        // we are too deep, hence there's an overflow of arrays relying on max ply constant
+        if (ply > MAX_PLY - 1)
+            // evaluate position
+            return rep.evaluate();
         
         nodes++;
         
@@ -165,10 +218,8 @@ public:
         
         int legal_moves = 0;
         
-        Move best_sofar;
-        int old_alpha = alpha;
-        
         Moves move_list = rep.generate_moves();
+        if (follow_pv) enable_pv_sorting(move_list);
         sort_moves(move_list, rep);
         
         for (int count = 0; count < move_list.count; count++) {
@@ -192,8 +243,10 @@ public:
             // beta cutoff
             if (score >= beta) {
                 // store killer moves
-                killer_moves[1][ply] = killer_moves[0][ply];
-                killer_moves[0][ply] = move_list.moves[count];
+                if (!move_list.moves[count].get_move_capture()) {
+                    killer_moves[1][ply] = killer_moves[0][ply];
+                    killer_moves[0][ply] = move_list.moves[count];
+                }
                 
                 return beta;
             }
@@ -201,13 +254,20 @@ public:
             // better alpha
             if (score > alpha) {
                 // story history moves
-                history_moves[move_list.moves[count].get_move_piece()][move_list.moves[count].get_move_target()] += depth;
+                if (!move_list.moves[count].get_move_capture()) {
+                    history_moves[move_list.moves[count].get_move_piece()][move_list.moves[count].get_move_target()] += depth;
+                }
                 
                 alpha = score;
                 
-                // record best move for root node
-                if (ply == 0)
-                    best_sofar = move_list.moves[count];
+                // write PV move
+                pv_table[ply][ply] = move_list.moves[count];
+                
+                // loop over the next ply
+                for (int next_ply = ply + 1; next_ply < pv_length[ply + 1]; next_ply++)
+                    pv_table[ply][next_ply] = pv_table[ply + 1][next_ply];
+                
+                pv_length[ply] = pv_length[ply + 1];
             }
         }
         
@@ -220,9 +280,6 @@ public:
                 return 0;
         }
         
-        if (old_alpha != alpha)
-            best_move = best_sofar;
-        
         // node (move) fails low
         return alpha;
     }
@@ -231,15 +288,30 @@ public:
 
 inline void search_position(int depth, BoardRepresentation const & rep) {
     Search search;
-    int score = search.negamax(-50000, 50000, depth, rep);
     
-    if (search.best_move) {
-        std::cout << "info score cp " << score << " depth " << depth << " node " << search.nodes << "\n";
+    int score = 0;
+    
+    // iterative deepening
+    for (int current_depth = 1; current_depth <= depth; current_depth++) {
+        search.nodes = 0;
+        search.follow_pv = true;
         
-        std::cout << "bestmove ";
-        search.best_move.print_move();
+        score = search.negamax(-50000, 50000, current_depth, rep);
+        
+        std::cout << "info score cp " << score << " depth " << current_depth << " nodes " << search.nodes << " pv ";
+        // loop over the moves within a PV line
+        for (int count = 0; count < search.pv_length[0]; count++) {
+            search.pv_table[0][count].print_move_nonewline();
+            std::cout << " ";
+        }
+        
         std::cout << "\n";
     }
+    
+    
+    std::cout << "bestmove ";
+    search.pv_table[0][0].print_move_nonewline();
+    std::cout << "\n";
 }
 
 

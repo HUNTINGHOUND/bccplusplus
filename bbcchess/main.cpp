@@ -126,9 +126,9 @@ int main(int argc, char **argv){
     if (options.debug) {
         auto start = get_time_point();
         
-        rep.parse_fen(KILLER_POSITION);
+        rep.parse_fen(TRICKY_POSITION);
         rep.print_board();
-        search_position(5, rep);
+        search_position(6, rep);
         std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";
     } else
         uci_loop(rep);
@@ -136,12 +136,3 @@ int main(int argc, char **argv){
     
     return 0;
 }
-
-
-
-
-
-
-
-
-

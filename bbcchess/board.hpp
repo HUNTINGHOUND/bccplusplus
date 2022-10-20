@@ -607,7 +607,7 @@ public:
         return move_list;
     }
     
-    int evalutate() const {
+    int evaluate() const {
         int score = 0;
         BitBoard bitboard;
         
