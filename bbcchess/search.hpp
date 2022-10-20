@@ -238,7 +238,7 @@ public:
         // null move pruning
         if (allow_null && depth >= 1 + R && !in_check) {
             // make null move
-            /
+            
             rep.side = TurnColor(rep.side ^ 1);
             BitBoardSquare og_square = rep.enpassant;
             rep.enpassant = no_sq;
@@ -348,16 +348,38 @@ public:
     
 };
 
+#define WINDOW_VAL 50
+
 inline void search_position(int depth, BoardRepresentation & rep) {
     Search search;
     
     int score = 0;
     
+    // define initial alpha beta bounds
+    int alpha = -50000;
+    int beta = 50000;
+     
+    
     // iterative deepening
     for (int current_depth = 1; current_depth <= depth; current_depth++) {
         search.follow_pv = true;
         
-        score = search.negascout(-50000, 50000, current_depth, rep, false);
+        score = search.negascout(alpha, beta, current_depth, rep, false);
+        
+        // fails high or low, reset window
+        if (score <= alpha) {
+            alpha = -50000;
+            current_depth--;
+            continue;
+        }
+        if (score >= beta) {
+            beta = 50000;
+            current_depth--;
+            continue;
+        }
+        
+        alpha = score - WINDOW_VAL;
+        beta = score + WINDOW_VAL;
         
         std::cout << "info score cp " << score << " depth " << current_depth << " nodes " << search.nodes << " pv ";
         // loop over the moves within a PV line
