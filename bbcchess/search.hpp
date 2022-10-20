@@ -15,6 +15,7 @@ public:
     
     const int full_depth_move = 4;
     const int reduction_limit = 3;
+    const int R = 2;
     
     int nodes = 0;
     int ply = 0;
@@ -213,7 +214,8 @@ public:
         return !in_check && !move.get_move_capture() && !move.get_move_promoted();
     }
     
-    int negascout(int alpha, int beta, int depth, BoardRepresentation const & rep) {
+    // PVS search, rep should not be changed, if rep is change, it should be restored to original form. 
+    int negascout(int alpha, int beta, int depth, BoardRepresentation & rep, bool allow_null) {
         pv_length[ply] = ply;
         
         if (depth == 0)
@@ -232,6 +234,25 @@ public:
         if (in_check) depth++;
         
         int legal_moves = 0, moves_searched = 0;
+        
+        // null move pruning
+        if (allow_null && depth >= 1 + R && !in_check) {
+            // make null move
+            /
+            rep.side = TurnColor(rep.side ^ 1);
+            BitBoardSquare og_square = rep.enpassant;
+            rep.enpassant = no_sq;
+
+            
+            int score = -negascout(-beta, -beta + 1, depth - 1 - R, rep, false); // do not allow consequtive null moves
+            
+            // restore null move
+            rep.side = TurnColor(rep.side ^ 1);
+            rep.enpassant = og_square;
+            
+            if (score >= beta)
+                return beta;
+        }
         
         Moves move_list = rep.generate_moves();
         if (follow_pv) enable_pv_sorting(move_list);
@@ -258,20 +279,20 @@ public:
                 if (moves_searched >= full_depth_move && depth >= reduction_limit &&
                     ok_to_reduce(move_list.moves[count], in_check)) {
                     // search in reduced depth
-                    score = -negascout(-alpha - 1, -alpha, depth - 2, new_rep);
+                    score = -negascout(-alpha - 1, -alpha, depth - 2, new_rep, true);
                 } else score = alpha + 1; // reduction requirement not met do full depth search
                 
                 if (score > alpha) { // redcution failed
                     // get the score to see if move is potentially better
-                    score = -negascout(-alpha - 1, -alpha, depth - 1, new_rep);
+                    score = -negascout(-alpha - 1, -alpha, depth - 1, new_rep, true);
                     
                     // if fail high, we do a re-search to get the exact score
                     if (score > alpha && score < beta)
-                        score = -negascout(-beta, -alpha, depth - 1, new_rep);
+                        score = -negascout(-beta, -alpha, depth - 1, new_rep, true);
                 }
             } else {
                 // normal search
-                score = -negascout(-beta, -alpha, depth - 1, new_rep);
+                score = -negascout(-beta, -alpha, depth - 1, new_rep, true);
             }
             
             ply--;
@@ -327,7 +348,7 @@ public:
     
 };
 
-inline void search_position(int depth, BoardRepresentation const & rep) {
+inline void search_position(int depth, BoardRepresentation & rep) {
     Search search;
     
     int score = 0;
@@ -336,7 +357,7 @@ inline void search_position(int depth, BoardRepresentation const & rep) {
     for (int current_depth = 1; current_depth <= depth; current_depth++) {
         search.follow_pv = true;
         
-        score = search.negascout(-50000, 50000, current_depth, rep);
+        score = search.negascout(-50000, 50000, current_depth, rep, false);
         
         std::cout << "info score cp " << score << " depth " << current_depth << " nodes " << search.nodes << " pv ";
         // loop over the moves within a PV line
