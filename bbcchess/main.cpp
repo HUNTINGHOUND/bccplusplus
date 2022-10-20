@@ -126,9 +126,9 @@ int main(int argc, char **argv){
     if (options.debug) {
         auto start = get_time_point();
         
-        rep.parse_fen(TRICKY_POSITION);
+        rep.parse_fen("rn3R2/1b5p/pqk1Q1p1/1p4B1/3p4/2P5/P1P3PP/7K b - - 3 30");
         rep.print_board();
-        search_position(6, rep);
+        search_position(9, rep);
         std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";
     } else
         uci_loop(rep);

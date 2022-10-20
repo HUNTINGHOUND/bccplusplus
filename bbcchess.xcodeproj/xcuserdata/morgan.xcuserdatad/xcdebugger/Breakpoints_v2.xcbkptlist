@@ -14,9 +14,9 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "284"
-            endingLineNumber = "284"
-            landmarkName = "negamax(alpha, beta, depth, rep)"
+            startingLineNumber = "325"
+            endingLineNumber = "325"
+            landmarkName = "negascout(alpha, beta, depth, rep)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -30,9 +30,9 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "261"
-            endingLineNumber = "261"
-            landmarkName = "negamax(alpha, beta, depth, rep)"
+            startingLineNumber = "298"
+            endingLineNumber = "298"
+            landmarkName = "negascout(alpha, beta, depth, rep)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -46,9 +46,9 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "204"
-            endingLineNumber = "204"
-            landmarkName = "negamax(alpha, beta, depth, rep)"
+            startingLineNumber = "219"
+            endingLineNumber = "219"
+            landmarkName = "negascout(alpha, beta, depth, rep)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -62,9 +62,9 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "269"
-            endingLineNumber = "269"
-            landmarkName = "negamax(alpha, beta, depth, rep)"
+            startingLineNumber = "308"
+            endingLineNumber = "308"
+            landmarkName = "negascout(alpha, beta, depth, rep)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -78,9 +78,9 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "205"
-            endingLineNumber = "205"
-            landmarkName = "negamax(alpha, beta, depth, rep)"
+            startingLineNumber = "220"
+            endingLineNumber = "220"
+            landmarkName = "negascout(alpha, beta, depth, rep)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -110,8 +110,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
+            startingLineNumber = "103"
+            endingLineNumber = "103"
             landmarkName = "score_move(move, rep)"
             landmarkType = "7">
             <Locations>
@@ -158,10 +158,26 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "292"
-            endingLineNumber = "292"
+            startingLineNumber = "333"
+            endingLineNumber = "333"
             landmarkName = "search_position(depth, rep)"
             landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "93246F7B-788B-44EE-BE24-2C5F5768170D"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "bbcchess/search.hpp"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "258"
+            endingLineNumber = "258"
+            landmarkName = "negascout(alpha, beta, depth, rep)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

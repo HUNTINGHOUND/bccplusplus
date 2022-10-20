@@ -13,6 +13,9 @@
 class Search {
 public:
     
+    const int full_depth_move = 4;
+    const int reduction_limit = 3;
+    
     int nodes = 0;
     int ply = 0;
     Move best_move;
@@ -59,12 +62,20 @@ public:
         }
     }
     
+    /*  =======================
+             Move ordering
+        =======================
+        
+        1. PV move
+        2. Captures in MVV/LVA
+        3. 1st killer move
+        4. 2nd killer move
+        5. History moves
+        6. Unsorted moves
+    */
+    
     int score_move(Move const & move, BoardRepresentation const & rep) {
         if (follow_pv && pv_table[0][ply] == move) {
-            std::cout << "current PV move: ";
-            move.print_move_nonewline();
-            std::cout << " ply: " << ply << "\n";
-            
             return 20000;
         }
         
@@ -198,7 +209,11 @@ public:
         return alpha;
     }
     
-    int negamax(int alpha, int beta, int depth, BoardRepresentation const & rep) {
+    bool ok_to_reduce(Move const & move, bool in_check) {
+        return !in_check && !move.get_move_capture() && !move.get_move_promoted();
+    }
+    
+    int negascout(int alpha, int beta, int depth, BoardRepresentation const & rep) {
         pv_length[ply] = ply;
         
         if (depth == 0)
@@ -216,11 +231,13 @@ public:
                                                TurnColor(rep.side ^ 1));
         if (in_check) depth++;
         
-        int legal_moves = 0;
+        int legal_moves = 0, moves_searched = 0;
         
         Moves move_list = rep.generate_moves();
         if (follow_pv) enable_pv_sorting(move_list);
         sort_moves(move_list, rep);
+        
+        bool found_pv = false;
         
         for (int count = 0; count < move_list.count; count++) {
             ply++;
@@ -235,7 +252,27 @@ public:
             
             legal_moves++;
             
-            int score = -negamax(-beta, -alpha, depth - 1, new_rep);
+            int score;
+            // already found potential principle variation
+            if (found_pv) {
+                if (moves_searched >= full_depth_move && depth >= reduction_limit &&
+                    ok_to_reduce(move_list.moves[count], in_check)) {
+                    // search in reduced depth
+                    score = -negascout(-alpha - 1, -alpha, depth - 2, new_rep);
+                } else score = alpha + 1; // reduction requirement not met do full depth search
+                
+                if (score > alpha) { // redcution failed
+                    // get the score to see if move is potentially better
+                    score = -negascout(-alpha - 1, -alpha, depth - 1, new_rep);
+                    
+                    // if fail high, we do a re-search to get the exact score
+                    if (score > alpha && score < beta)
+                        score = -negascout(-beta, -alpha, depth - 1, new_rep);
+                }
+            } else {
+                // normal search
+                score = -negascout(-beta, -alpha, depth - 1, new_rep);
+            }
             
             ply--;
             
@@ -259,6 +296,8 @@ public:
                 }
                 
                 alpha = score;
+
+                found_pv = true;
                 
                 // write PV move
                 pv_table[ply][ply] = move_list.moves[count];
@@ -269,6 +308,8 @@ public:
                 
                 pv_length[ply] = pv_length[ply + 1];
             }
+            
+            moves_searched++;
         }
         
         if (!legal_moves) {
@@ -293,10 +334,9 @@ inline void search_position(int depth, BoardRepresentation const & rep) {
     
     // iterative deepening
     for (int current_depth = 1; current_depth <= depth; current_depth++) {
-        search.nodes = 0;
         search.follow_pv = true;
         
-        score = search.negamax(-50000, 50000, current_depth, rep);
+        score = search.negascout(-50000, 50000, current_depth, rep);
         
         std::cout << "info score cp " << score << " depth " << current_depth << " nodes " << search.nodes << " pv ";
         // loop over the moves within a PV line

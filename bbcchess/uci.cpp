@@ -90,7 +90,7 @@ void parse_go(std::string const & command, BoardRepresentation & rep) {
     
     if ((current_depth = command.find("depth")) != std::string::npos)
         depth = std::stoi(command.substr(current_depth + 6));
-    else depth = 7;
+    else depth = 9;
     
     search_position(depth, rep);
 }
