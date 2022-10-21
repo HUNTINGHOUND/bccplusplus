@@ -11,8 +11,6 @@
 #include "uci.hpp"
 #include "search.hpp"
 
-// optimizers
-#define FASTIO std::ios_base::sync_with_stdio(false);
 
 long nodes = 0;
 
@@ -118,7 +116,6 @@ void init_all() {
 }
 
 int main(int argc, char **argv){
-    FASTIO
     set_options(argc, argv);
     init_all();
     
@@ -128,7 +125,7 @@ int main(int argc, char **argv){
         
         rep.parse_fen(TRICKY_POSITION);
         rep.print_board();
-        search_position(7, rep);
+        search_position(9, rep);
         std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";
     } else
         uci_loop(rep);

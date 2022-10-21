@@ -7,6 +7,7 @@
 // local headers
 #include "board.hpp"
 #include "move.hpp"
+#include "uci.hpp"
 
 #define MAX_PLY 64
 
@@ -169,6 +170,8 @@ public:
     }
     
     int quiescence(int alpha, int beta, BoardRepresentation const & rep) {
+        if ((nodes & 2047) == 0) communicate();
+        
         nodes++;
         
         // evaluate position
@@ -199,6 +202,8 @@ public:
             
             ply--;
             
+            if (time_control.stopped) return 0;
+            
             // beta cut off
             if (score >= beta)
                 return beta;
@@ -216,6 +221,8 @@ public:
     
     // PVS search, rep should not be changed, if rep is change, it should be restored to original form. 
     int negascout(int alpha, int beta, int depth, BoardRepresentation & rep, bool allow_null) {
+        if ((nodes & 2047) == 0) communicate();
+        
         pv_length[ply] = ply;
         
         if (depth == 0)
@@ -274,15 +281,19 @@ public:
             legal_moves++;
             
             int score;
-            // already found potential principle variation
-            if (found_pv) {
-                if (moves_searched >= full_depth_move && depth >= reduction_limit &&
+            if (moves_searched == 0) { // assume principle variation
+                // normal search
+                score = -negascout(-beta, -alpha, depth - 1, new_rep, true);
+            } else {
+                // try late move reduction
+                if (moves_searched >= full_depth_move &&
+                    depth >= reduction_limit &&
                     ok_to_reduce(move_list.moves[count], in_check)) {
                     // search in reduced depth
                     score = -negascout(-alpha - 1, -alpha, depth - 2, new_rep, true);
                 } else score = alpha + 1; // reduction requirement not met do full depth search
                 
-                if (score > alpha) { // redcution failed
+                if (score > alpha) { // reduction failed
                     // get the score to see if move is potentially better
                     score = -negascout(-alpha - 1, -alpha, depth - 1, new_rep, true);
                     
@@ -290,13 +301,13 @@ public:
                     if (score > alpha && score < beta)
                         score = -negascout(-beta, -alpha, depth - 1, new_rep, true);
                 }
-            } else {
-                // normal search
-                score = -negascout(-beta, -alpha, depth - 1, new_rep, true);
             }
             
             ply--;
             
+            if (time_control.stopped) return 0;
+            
+            moves_searched++;
             
             // beta cutoff
             if (score >= beta) {
@@ -329,8 +340,6 @@ public:
                 
                 pv_length[ply] = pv_length[ply + 1];
             }
-            
-            moves_searched++;
         }
         
         if (!legal_moves) {
@@ -355,16 +364,21 @@ inline void search_position(int depth, BoardRepresentation & rep) {
     
     int score = 0;
     
+    time_control.stopped = false;
+    
     // define initial alpha beta bounds
     int alpha = -50000;
     int beta = 50000;
-     
+    
+    std::array<Move, MAX_PLY> prev_pv;
     
     // iterative deepening
     for (int current_depth = 1; current_depth <= depth; current_depth++) {
         search.follow_pv = true;
         
         score = search.negascout(alpha, beta, current_depth, rep, false);
+        
+        if (time_control.stopped) break;
         
         // fails high or low, reset window
         if (score <= alpha) {
@@ -389,11 +403,18 @@ inline void search_position(int depth, BoardRepresentation & rep) {
         }
         
         std::cout << "\n";
+        
+        prev_pv = search.pv_table[0];
     }
+    
+    if (time_control.stopped) std::cout << "info timeout stopped\n";
     
     
     std::cout << "bestmove ";
-    search.pv_table[0][0].print_move_nonewline();
+    
+    if (!time_control.stopped) search.pv_table[0][0].print_move_nonewline();
+    else prev_pv[0].print_move_nonewline();
+    
     std::cout << "\n";
 }
 

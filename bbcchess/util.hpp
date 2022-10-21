@@ -30,4 +30,8 @@ inline std::chrono::time_point<std::chrono::system_clock> get_time_point() {
 inline long long get_time_diff(std::chrono::time_point<std::chrono::system_clock> const & a, std::chrono::time_point<std::chrono::system_clock> const & b) {
     return std::chrono::duration_cast<std::chrono::milliseconds>(b - a).count();
 }
+
+inline long long get_time_ms() {
+    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+}
 #endif /* util_hpp */
