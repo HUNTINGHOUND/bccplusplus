@@ -13,6 +13,10 @@
 #include "util.hpp"
 #include "boardinfo.hpp"
 #include "evaluation.hpp"
+#include "zorbist.hpp"
+#include "repetition.hpp"
+
+// #define DEBUG_ZORBIST
 
 using U64 = unsigned long long;
 
@@ -31,6 +35,9 @@ public:
     
     // enpanssant square
     BitBoardSquare enpassant = no_sq;
+    
+    // almost unique identifier
+    U64 hash_key;
     
     // castling rights
     int castle;
@@ -76,6 +83,7 @@ public:
         std::cout << "     Side:     " << (side ? "black" : "white") << "\n";
         std::cout << "     Enpassant:   " << (enpassant != no_sq ?   square_to_coordinates[enpassant] : "no") << "\n";
         std::cout << "     Castling:  " << (castle & wk ? 'K' : '-') << (BoardRepresentation::castle & wq ? 'Q' : '-') << (castle & bk ? 'k' : '-') << (castle & bq ? 'q' : '-') << "\n\n";
+        std::cout << "     Hash key:  " << std::hex << hash_key << std::dec << "\n\n";
     }
     
     void print_attacked_square(TurnColor side) const {
@@ -95,6 +103,32 @@ public:
         }
         
         std::cout << "\n     a b c d e f g h\n\n";
+        
+    }
+    
+    U64 generate_hash_key() const {
+        U64 final_key = 0ULL;
+        BitBoard bitboard;
+        
+        for (int piece = BoardPiece::P; piece <= BoardPiece::k; piece++) {
+            bitboard = bitboards[piece];
+            
+            while (bitboard) {
+                int square = get_ls1b_index(bitboard);
+                final_key ^= Zorbist::pieces_keys[piece][square];
+                
+                bitboard.pop_bit(square);
+            }
+        }
+        
+        if (enpassant != no_sq)
+            final_key ^= Zorbist::enpassant_keys[enpassant];
+        
+        final_key ^= Zorbist::castle_keys[castle];
+        
+        if (side == black) final_key ^= Zorbist::side_key;
+        
+        return final_key;
     }
     
     void parse_fen(std::string const & fen, size_t fen_idx = 0) {
@@ -104,6 +138,9 @@ public:
         side = white;
         enpassant = no_sq;
         castle = 0;
+        
+        repetition_index = 0;
+        std::fill(repetition_table.begin(), repetition_table.end(), 0);
         
         for (int rank = 0; rank < 8; rank++) {
             for (int file = 0; file < 8; file++) {
@@ -169,6 +206,9 @@ public:
         
         occupancies[both] |= occupancies[white];
         occupancies[both] |= occupancies[black];
+        
+        // init hash_key
+        hash_key = generate_hash_key();
     }
     
     bool is_square_attacked(BitBoardSquare square, TurnColor side) const {
@@ -201,6 +241,9 @@ public:
             occupancies[side].pop_bit(source_square);
             occupancies[side].set_bit(target_square);
             
+            hash_key ^= Zorbist::pieces_keys[piece][source_square];
+            hash_key ^= Zorbist::pieces_keys[piece][target_square];
+            
             if (capture) {
                 BoardPiece::Pieces start_piece, end_piece;
                 
@@ -214,7 +257,11 @@ public:
                 
                 for (int bb_piece = start_piece; bb_piece <= end_piece; bb_piece++) {
                     if (bitboards[bb_piece].get_bit(target_square)) {
+                        // remove piece from target square
                         bitboards[bb_piece].pop_bit(target_square);
+                        
+                        // remove the piece from hash_key
+                        hash_key ^= Zorbist::pieces_keys[bb_piece][target_square];
                         break;
                     }
                 }
@@ -224,22 +271,31 @@ public:
             
             if (promoted) {
                 bitboards[side == white ? BoardPiece::P : BoardPiece::p].pop_bit(target_square);
+                hash_key ^= Zorbist::pieces_keys[side == white ? BoardPiece::P : BoardPiece::p][target_square];
+                
                 bitboards[promoted].set_bit(target_square);
+                hash_key ^= Zorbist::pieces_keys[promoted][target_square];
             }
             
             if (enpass) {
                 side == white ? bitboards[BoardPiece::p].pop_bit(target_square + 8) :
                                 bitboards[BoardPiece::P].pop_bit(target_square - 8);
                 
+                hash_key ^= side == white ? Zorbist::pieces_keys[BoardPiece::p][target_square + 8] : Zorbist::pieces_keys[BoardPiece::P][target_square - 8];
+                
                 side == white ? occupancies[black].pop_bit(target_square + 8) :
                                 occupancies[white].pop_bit(target_square - 8);
             }
+            
+            if (enpassant != no_sq) hash_key ^= Zorbist::enpassant_keys[enpassant];
             
             enpassant = no_sq;
             
             if (double_push) {
                 side == white ? enpassant = BitBoardSquare(target_square + 8) :
                                 enpassant = BitBoardSquare(target_square - 8);
+                
+                hash_key ^= Zorbist::enpassant_keys[side == white ? target_square + 8 : target_square - 8];
             }
             
             if (castling) {
@@ -248,6 +304,9 @@ public:
                     case g1:
                         bitboards[BoardPiece::R].pop_bit(h1);
                         bitboards[BoardPiece::R].set_bit(f1);
+                        
+                        hash_key ^= Zorbist::pieces_keys[BoardPiece::R][h1];
+                        hash_key ^= Zorbist::pieces_keys[BoardPiece::R][f1];
                         
                         occupancies[white].pop_bit(h1);
                         occupancies[white].set_bit(f1);
@@ -258,6 +317,9 @@ public:
                         bitboards[BoardPiece::R].pop_bit(a1);
                         bitboards[BoardPiece::R].set_bit(d1);
                         
+                        hash_key ^= Zorbist::pieces_keys[BoardPiece::R][a1];
+                        hash_key ^= Zorbist::pieces_keys[BoardPiece::R][d1];
+                        
                         occupancies[white].pop_bit(a1);
                         occupancies[white].set_bit(d1);
                         break;
@@ -266,6 +328,9 @@ public:
                     case g8:
                         bitboards[BoardPiece::r].pop_bit(h8);
                         bitboards[BoardPiece::r].set_bit(f8);
+                        
+                        hash_key ^= Zorbist::pieces_keys[BoardPiece::r][h8];
+                        hash_key ^= Zorbist::pieces_keys[BoardPiece::r][f8];
                         
                         occupancies[black].pop_bit(h8);
                         occupancies[black].set_bit(f8);
@@ -276,6 +341,9 @@ public:
                         bitboards[BoardPiece::r].pop_bit(a8);
                         bitboards[BoardPiece::r].set_bit(d8);
                         
+                        hash_key ^= Zorbist::pieces_keys[BoardPiece::r][a8];
+                        hash_key ^= Zorbist::pieces_keys[BoardPiece::r][d8];
+                        
                         occupancies[black].pop_bit(a8);
                         occupancies[black].set_bit(d8);
                         break;
@@ -285,13 +353,37 @@ public:
                 }
             }
             
+            hash_key ^= Zorbist::castle_keys[castle];
+            
             // update castling right
             castle &= castling_rights[source_square];
             castle &= castling_rights[target_square];
             
+            hash_key ^= Zorbist::castle_keys[castle];
+            
             occupancies[both] = occupancies[white] | occupancies[black];
             
             side = TurnColor(side ^ 1);
+            
+            hash_key ^= Zorbist::side_key;
+            
+            
+#ifdef DEBUG_ZORBIST
+            //
+            // ====== debug hash key incremental update =======
+            //
+            
+            // build hash key for the updated position (after move is made0 from scratch
+            U64 hash_from_scratch = generate_hash_key();
+            
+            if (hash_key != hash_from_scratch) {
+                std::cout << "\n\nMake move\n";
+                std::cout << "move: ";
+                move.print_move_nonewline();
+                std::cout << "hash key should be: " << std::hex << hash_from_scratch << std::dec << "\n";
+                getchar();
+            }
+#endif
             
             if (is_square_attacked(side == white ? BitBoardSquare(get_ls1b_index(bitboards[BoardPiece::k])) :
                                                    BitBoardSquare(get_ls1b_index(bitboards[BoardPiece::K])), side))

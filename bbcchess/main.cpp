@@ -10,6 +10,7 @@
 #include "move.hpp"
 #include "uci.hpp"
 #include "search.hpp"
+#include "zorbist.hpp"
 
 
 long nodes = 0;
@@ -113,6 +114,9 @@ void init_all() {
     AttackTables::init_sliders_attacks(BoardPiece::rook);
     
     if (options.init_magic) init_magic_numbers();
+    init_random_keys();
+    
+    clear_hash_table();
 }
 
 int main(int argc, char **argv){
@@ -123,9 +127,10 @@ int main(int argc, char **argv){
     if (options.debug) {
         auto start = get_time_point();
         
-        rep.parse_fen(TRICKY_POSITION);
+        rep.parse_fen(REPETITIONS);
         rep.print_board();
-        search_position(9, rep);
+        search_position(10, rep);
+
         std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";
     } else
         uci_loop(rep);

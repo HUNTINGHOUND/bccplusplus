@@ -8,8 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		903CD4D528FBE1670049195A /* uci.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 903CD4D328FBE1670049195A /* uci.cpp */; };
-		903CD4D828FE4BF80049195A /* evaluation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 903CD4D628FE4BF80049195A /* evaluation.cpp */; };
-		903CD4DB28FE7FBE0049195A /* search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 903CD4D928FE7FBE0049195A /* search.cpp */; };
+		90AB92AA29022016007557D1 /* zorbist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92A829022016007557D1 /* zorbist.cpp */; };
+		90AB92C52908DC05007557D1 /* tt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92C32908DC05007557D1 /* tt.cpp */; };
+		90AB92C8290913F1007557D1 /* repetition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92C6290913F1007557D1 /* repetition.cpp */; };
 		90CBA1E028E615D7004FF338 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90CBA1DF28E615D7004FF338 /* main.cpp */; };
 		90CBA1EE28E637FC004FF338 /* attacktables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90CBA1EC28E637FC004FF338 /* attacktables.cpp */; };
 		90CBA1F128E640E6004FF338 /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90CBA1EF28E640E6004FF338 /* util.cpp */; };
@@ -35,11 +36,16 @@
 		903CD4D228FBD2160049195A /* boardinfo.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = boardinfo.hpp; sourceTree = "<group>"; };
 		903CD4D328FBE1670049195A /* uci.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = uci.cpp; sourceTree = "<group>"; };
 		903CD4D428FBE1670049195A /* uci.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = uci.hpp; sourceTree = "<group>"; };
-		903CD4D628FE4BF80049195A /* evaluation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = evaluation.cpp; sourceTree = "<group>"; };
 		903CD4D728FE4BF80049195A /* evaluation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = evaluation.hpp; sourceTree = "<group>"; };
-		903CD4D928FE7FBE0049195A /* search.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = search.cpp; sourceTree = "<group>"; };
 		903CD4DA28FE7FBE0049195A /* search.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = search.hpp; sourceTree = "<group>"; };
 		90AB92A729008883007557D1 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
+		90AB92A829022016007557D1 /* zorbist.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = zorbist.cpp; sourceTree = "<group>"; };
+		90AB92A929022016007557D1 /* zorbist.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = zorbist.hpp; sourceTree = "<group>"; };
+		90AB92BE2908DA06007557D1 /* parallel_hashmap */ = {isa = PBXFileReference; lastKnownFileType = folder; path = parallel_hashmap; sourceTree = "<group>"; };
+		90AB92C32908DC05007557D1 /* tt.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tt.cpp; sourceTree = "<group>"; };
+		90AB92C42908DC05007557D1 /* tt.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = tt.hpp; sourceTree = "<group>"; };
+		90AB92C6290913F1007557D1 /* repetition.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = repetition.cpp; sourceTree = "<group>"; };
+		90AB92C7290913F1007557D1 /* repetition.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = repetition.hpp; sourceTree = "<group>"; };
 		90CBA1DC28E615D7004FF338 /* bbcchess */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbcchess; sourceTree = BUILT_PRODUCTS_DIR; };
 		90CBA1DF28E615D7004FF338 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		90CBA1EA28E61833004FF338 /* board.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = board.hpp; sourceTree = "<group>"; };
@@ -84,6 +90,7 @@
 			children = (
 				90CBA1DF28E615D7004FF338 /* main.cpp */,
 				90CBA1EA28E61833004FF338 /* board.hpp */,
+				90AB92BE2908DA06007557D1 /* parallel_hashmap */,
 				90CBA1EC28E637FC004FF338 /* attacktables.cpp */,
 				90CBA1ED28E637FC004FF338 /* attacktables.hpp */,
 				90CBA1EF28E640E6004FF338 /* util.cpp */,
@@ -96,10 +103,14 @@
 				903CD4D228FBD2160049195A /* boardinfo.hpp */,
 				903CD4D328FBE1670049195A /* uci.cpp */,
 				903CD4D428FBE1670049195A /* uci.hpp */,
-				903CD4D628FE4BF80049195A /* evaluation.cpp */,
 				903CD4D728FE4BF80049195A /* evaluation.hpp */,
-				903CD4D928FE7FBE0049195A /* search.cpp */,
 				903CD4DA28FE7FBE0049195A /* search.hpp */,
+				90AB92A829022016007557D1 /* zorbist.cpp */,
+				90AB92A929022016007557D1 /* zorbist.hpp */,
+				90AB92C32908DC05007557D1 /* tt.cpp */,
+				90AB92C42908DC05007557D1 /* tt.hpp */,
+				90AB92C6290913F1007557D1 /* repetition.cpp */,
+				90AB92C7290913F1007557D1 /* repetition.hpp */,
 			);
 			path = bbcchess;
 			sourceTree = "<group>";
@@ -161,13 +172,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90AB92C52908DC05007557D1 /* tt.cpp in Sources */,
 				90CBA1E028E615D7004FF338 /* main.cpp in Sources */,
+				90AB92C8290913F1007557D1 /* repetition.cpp in Sources */,
 				90CBA1EE28E637FC004FF338 /* attacktables.cpp in Sources */,
-				903CD4DB28FE7FBE0049195A /* search.cpp in Sources */,
 				90CBA1F128E640E6004FF338 /* util.cpp in Sources */,
+				90AB92AA29022016007557D1 /* zorbist.cpp in Sources */,
 				90CBA1F428E66912004FF338 /* magic.cpp in Sources */,
 				903CD4D528FBE1670049195A /* uci.cpp in Sources */,
-				903CD4D828FE4BF80049195A /* evaluation.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

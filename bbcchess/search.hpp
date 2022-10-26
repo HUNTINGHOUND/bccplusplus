@@ -8,6 +8,8 @@
 #include "board.hpp"
 #include "move.hpp"
 #include "uci.hpp"
+#include "tt.hpp"
+#include "repetition.hpp"
 
 #define MAX_PLY 64
 
@@ -52,6 +54,15 @@ public:
     */
     std::array<int, MAX_PLY> pv_length = {};
     std::array<std::array<Move, MAX_PLY>, MAX_PLY> pv_table = {};
+    
+    bool is_repetition(BoardRepresentation const & rep) {
+        for (int index = 0; index < repetition_index; index++) {
+            if (repetition_table[index] == rep.hash_key)
+                return true;
+        }
+        
+        return false;
+    }
     
     void enable_pv_sorting(Moves const & move_list) {
         follow_pv = false;
@@ -174,6 +185,9 @@ public:
         
         nodes++;
         
+        if (ply > MAX_PLY - 1)
+            return rep.evaluate();
+        
         // evaluate position
         int evaluation = rep.evaluate();
         
@@ -190,11 +204,17 @@ public:
         for (int count = 0; count < move_list.count; count++) {
             ply++;
             
+            repetition_index++;
+            repetition_table[repetition_index] = rep.hash_key;
+            
             int move_made;
             BoardRepresentation new_rep = rep.copy_and_move(move_list.moves[count], only_captures, &move_made);
             
             if (!move_made) {
                 ply--;
+                
+                repetition_index--;
+                
                 continue;
             }
             
@@ -202,14 +222,17 @@ public:
             
             ply--;
             
+            repetition_index--;
+            
             if (time_control.stopped) return 0;
             
-            // beta cut off
-            if (score >= beta)
-                return beta;
-            
-            if (score > alpha)
+            if (score > alpha) {
                 alpha = score;
+                
+                // beta cut off
+                if (score >= beta)
+                    return beta;
+            }
         }
         
         return alpha;
@@ -221,9 +244,25 @@ public:
     
     // PVS search, rep should not be changed, if rep is change, it should be restored to original form. 
     int negascout(int alpha, int beta, int depth, BoardRepresentation & rep, bool allow_null) {
-        if ((nodes & 2047) == 0) communicate();
+        int score;
+        
+        int hash_flag = hash_flag_alpha;
+        
+        if (ply && is_repetition(rep))
+            return 0; // draw by repetition
         
         pv_length[ply] = ply;
+        
+        bool pv_node = beta - alpha > 1;
+        
+        /*
+         read hash entry if we're not in a root ply and hash entry is available and current node is not a PV node
+         */
+        if (ply && (score = read_hash_entry(alpha, beta, depth, ply, rep)) != no_hash_entry && !pv_node)
+            return score;
+                 
+        
+        if ((nodes & 2047) == 0) communicate();
         
         if (depth == 0)
             return quiescence(alpha, beta, rep);
@@ -246,16 +285,33 @@ public:
         if (allow_null && depth >= 1 + R && !in_check) {
             // make null move
             
+            ply++;
+            
+            repetition_index++;
+            repetition_table[repetition_index] = rep.hash_key;
+            
+            U64 og_hash_key = rep.hash_key;
+            
+            rep.hash_key ^= Zorbist::side_key;
             rep.side = TurnColor(rep.side ^ 1);
+            
+            if (rep.enpassant != no_sq) rep.hash_key ^= Zorbist::enpassant_keys[rep.enpassant];
             BitBoardSquare og_square = rep.enpassant;
             rep.enpassant = no_sq;
 
             
-            int score = -negascout(-beta, -beta + 1, depth - 1 - R, rep, false); // do not allow consequtive null moves
+            score = -negascout(-beta, -beta + 1, depth - 1 - R, rep, false); // do not allow consequtive null moves
             
             // restore null move
             rep.side = TurnColor(rep.side ^ 1);
             rep.enpassant = og_square;
+            rep.hash_key = og_hash_key;
+            
+            ply--;
+            
+            repetition_index--;
+            
+            if (time_control.stopped) return 0;
             
             if (score >= beta)
                 return beta;
@@ -265,22 +321,25 @@ public:
         if (follow_pv) enable_pv_sorting(move_list);
         sort_moves(move_list, rep);
         
-        bool found_pv = false;
-        
         for (int count = 0; count < move_list.count; count++) {
             ply++;
+            
+            repetition_index++;
+            repetition_table[repetition_index] = rep.hash_key;
             
             int move_made;
             BoardRepresentation new_rep = rep.copy_and_move(move_list.moves[count], all_moves, &move_made);
             
             if (!move_made) {
                 ply--;
+                
+                repetition_index--;
+                
                 continue;
             }
             
             legal_moves++;
             
-            int score;
             if (moves_searched == 0) { // assume principle variation
                 // normal search
                 score = -negascout(-beta, -alpha, depth - 1, new_rep, true);
@@ -305,31 +364,22 @@ public:
             
             ply--;
             
+            repetition_index--;
+            
             if (time_control.stopped) return 0;
             
             moves_searched++;
             
-            // beta cutoff
-            if (score >= beta) {
-                // store killer moves
-                if (!move_list.moves[count].get_move_capture()) {
-                    killer_moves[1][ply] = killer_moves[0][ply];
-                    killer_moves[0][ply] = move_list.moves[count];
-                }
-                
-                return beta;
-            }
-            
             // better alpha
             if (score > alpha) {
+                hash_flag = hash_flag_exact;
+                
                 // story history moves
                 if (!move_list.moves[count].get_move_capture()) {
                     history_moves[move_list.moves[count].get_move_piece()][move_list.moves[count].get_move_target()] += depth;
                 }
                 
                 alpha = score;
-
-                found_pv = true;
                 
                 // write PV move
                 pv_table[ply][ply] = move_list.moves[count];
@@ -339,17 +389,32 @@ public:
                     pv_table[ply][next_ply] = pv_table[ply + 1][next_ply];
                 
                 pv_length[ply] = pv_length[ply + 1];
+                
+                // beta cutoff
+                if (score >= beta) {
+                    write_hash_entry(beta, depth, ply, hash_flag_beta, rep);
+                    
+                    // store killer moves on quite moves
+                    if (!move_list.moves[count].get_move_capture()) {
+                        killer_moves[1][ply] = killer_moves[0][ply];
+                        killer_moves[0][ply] = move_list.moves[count];
+                    }
+                    
+                    return beta;
+                }
             }
         }
         
         if (!legal_moves) {
             // checkmate
             if (in_check)
-                return -49000 + ply;
+                return -MATE_VALUE + ply;
             
             else // stalemate
                 return 0;
         }
+        
+        write_hash_entry(alpha, depth, hash_flag, ply, rep);
         
         // node (move) fails low
         return alpha;
@@ -367,8 +432,8 @@ inline void search_position(int depth, BoardRepresentation & rep) {
     time_control.stopped = false;
     
     // define initial alpha beta bounds
-    int alpha = -50000;
-    int beta = 50000;
+    int alpha = -INFINITY;
+    int beta = INFINITY;
     
     std::array<Move, MAX_PLY> prev_pv;
     
@@ -382,12 +447,12 @@ inline void search_position(int depth, BoardRepresentation & rep) {
         
         // fails high or low, reset window
         if (score <= alpha) {
-            alpha = -50000;
+            alpha = -INFINITY;
             current_depth--;
             continue;
         }
         if (score >= beta) {
-            beta = 50000;
+            beta = INFINITY;
             current_depth--;
             continue;
         }
@@ -395,7 +460,13 @@ inline void search_position(int depth, BoardRepresentation & rep) {
         alpha = score - WINDOW_VAL;
         beta = score + WINDOW_VAL;
         
-        std::cout << "info score cp " << score << " depth " << current_depth << " nodes " << search.nodes << " pv ";
+        if (score > -MATE_VALUE && score < -MATE_SCORE)
+            std::cout << "info score mate " << -(score + MATE_VALUE) / 2 - 1 << " depth " << current_depth << " nodes " << search.nodes << " time " << get_time_diff(time_control.start_time, get_time_point()) << " ms pv ";
+        else if (score > MATE_SCORE && score < MATE_VALUE)
+            std::cout << "info score mate " << (MATE_VALUE - score) / 2 + 1 << " depth " << current_depth << " nodes " << search.nodes << " time " << get_time_diff(time_control.start_time, get_time_point()) << " ms pv ";
+        else
+            std::cout << "info score cp " << score << " depth " << current_depth << " nodes " << search.nodes << " time " << get_time_diff(time_control.start_time, get_time_point()) << " ms pv ";
+        
         // loop over the moves within a PV line
         for (int count = 0; count < search.pv_length[0]; count++) {
             search.pv_table[0][count].print_move_nonewline();

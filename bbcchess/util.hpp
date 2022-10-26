@@ -19,7 +19,8 @@ inline int get_ls1b_index(U64 bitboard) {
     return __builtin_ffsll(bitboard) - 1;
 }
 
-unsigned int get_random_number();
+// pseudo random number state
+extern unsigned int random_state;
 
 U64 get_random_U64_number();
 

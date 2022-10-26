@@ -153,6 +153,9 @@ void parse_position(std::string const & command, BoardRepresentation & rep) {
             if (!move.move)
                 break;
             
+            repetition_index++;
+            repetition_table[repetition_index] = rep.hash_key;
+            
             rep.make_move(move, all_moves);
             
             while (current_char < command.size() && command[current_char] != ' ') current_char++;
@@ -237,11 +240,15 @@ void uci_loop(BoardRepresentation & rep) {
         if (input.compare(0, 7, "isready") == 0) {
             std::cout << "readyok\n";
             continue;
-        } else if(input.compare(0, 8, "position") == 0)
+        } else if(input.compare(0, 8, "position") == 0) {
             parse_position(input, rep);
-        else if (input.compare(0, 10, "ucinewgame") == 0)
+            
+            clear_hash_table();
+        } else if (input.compare(0, 10, "ucinewgame") == 0) {
             parse_position("position startpos", rep);
-        else if (input.compare(0, 2, "go") == 0)
+            
+            clear_hash_table();
+        } else if (input.compare(0, 2, "go") == 0)
             parse_go(input, rep);
         else if (input.compare(0, 3, "uci") == 0) {
             std::cout << "id name BBC++\n";
