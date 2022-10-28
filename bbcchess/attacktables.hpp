@@ -68,7 +68,7 @@ constexpr const U64 not_ab_file = 18229723555195321596ULL;
 void init_leapers_attacks();
 void init_sliders_attacks(BoardPiece::RorB rorb);
 
-U64 set_occupancy(int index, int bits_in_mask, BitBoard attack_mask);
+U64 set_occupancy(int index, int bits_in_mask, U64 attack_mask);
 
 namespace Pawn {
 extern std::array<std::array<U64, 64>, 2> pawn_attacks;

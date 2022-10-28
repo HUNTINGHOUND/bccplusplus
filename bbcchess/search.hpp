@@ -105,7 +105,7 @@ public:
             }
             
             for (int bb_piece = start_piece; bb_piece <= end_piece; bb_piece++) {
-                if (rep.bitboards[bb_piece].get_bit(move.get_move_target())) {
+                if (BitBoard::get_bit(rep.bitboards[bb_piece], move.get_move_target())) {
                     target_piece = BoardPiece::Pieces(bb_piece);
                     break;
                 }

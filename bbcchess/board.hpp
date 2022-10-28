@@ -24,10 +24,10 @@ class BoardRepresentation {
 public:
     
     // piece bitboard
-    std::array<BitBoard, 12> bitboards;
+    std::array<U64, 12> bitboards;
     
     // occupancy bitboards
-    std::array<BitBoard, 3> occupancies;
+    std::array<U64, 3> occupancies;
     
     // side to move
     TurnColor side = white;
@@ -61,7 +61,7 @@ public:
                 
                 // loop over all piece bitboards
                 for (int bb_piece = BoardPiece::P; bb_piece <= BoardPiece::k; bb_piece++) {
-                    if (bitboards[bb_piece].get_bit(square)) {
+                    if (BitBoard::get_bit(bitboards[bb_piece], square)) {
                         piece = bb_piece;
                         break;
                     }
@@ -107,7 +107,7 @@ public:
     
     U64 generate_hash_key() const {
         U64 final_key = 0ULL;
-        BitBoard bitboard;
+        U64 bitboard;
         
         for (int piece = BoardPiece::P; piece <= BoardPiece::k; piece++) {
             bitboard = bitboards[piece];
@@ -116,7 +116,7 @@ public:
                 int square = get_ls1b_index(bitboard);
                 final_key ^= Zorbist::pieces_keys[piece][square];
                 
-                bitboard.pop_bit(square);
+                BitBoard::pop_bit(bitboard, square);
             }
         }
         
@@ -147,7 +147,7 @@ public:
                 
                 if (isalpha(fen[fen_idx])) {
                     BoardPiece::Pieces piece = BoardPiece::char_pieces[fen[fen_idx]];
-                    bitboards[piece].set_bit(square);
+                    BitBoard::set_bit(bitboards[piece], square);
                 } else if (isnumber(fen[fen_idx])) {
                     int offset = fen[fen_idx] - '0';
                     file += offset - 1;
@@ -234,11 +234,11 @@ public:
             bool castling = move.get_move_castling();
             
             // move piece
-            bitboards[piece].pop_bit(source_square);
-            bitboards[piece].set_bit(target_square);
+            BitBoard::pop_bit(bitboards[piece], source_square);
+            BitBoard::set_bit(bitboards[piece], target_square);
             
-            occupancies[side].pop_bit(source_square);
-            occupancies[side].set_bit(target_square);
+            BitBoard::pop_bit(occupancies[side], source_square);
+            BitBoard::set_bit(occupancies[side], target_square);
             
             hash_key ^= Zorbist::pieces_keys[piece][source_square];
             hash_key ^= Zorbist::pieces_keys[piece][target_square];
@@ -255,9 +255,9 @@ public:
                 }
                 
                 for (int bb_piece = start_piece; bb_piece <= end_piece; bb_piece++) {
-                    if (bitboards[bb_piece].get_bit(target_square)) {
+                    if (BitBoard::get_bit(bitboards[bb_piece], target_square)) {
                         // remove piece from target square
-                        bitboards[bb_piece].pop_bit(target_square);
+                        BitBoard::pop_bit(bitboards[bb_piece], target_square);
                         
                         // remove the piece from hash_key
                         hash_key ^= Zorbist::pieces_keys[bb_piece][target_square];
@@ -265,25 +265,25 @@ public:
                     }
                 }
                 
-                occupancies[side ^ 1].pop_bit(target_square);
+                BitBoard::pop_bit(occupancies[side ^ 1], target_square);
             }
             
             if (promoted) {
-                bitboards[side == white ? BoardPiece::P : BoardPiece::p].pop_bit(target_square);
+                BitBoard::pop_bit(bitboards[side == white ? BoardPiece::P : BoardPiece::p], target_square);
                 hash_key ^= Zorbist::pieces_keys[side == white ? BoardPiece::P : BoardPiece::p][target_square];
                 
-                bitboards[promoted].set_bit(target_square);
+                BitBoard::set_bit(bitboards[promoted], target_square);
                 hash_key ^= Zorbist::pieces_keys[promoted][target_square];
             }
             
             if (enpass) {
-                side == white ? bitboards[BoardPiece::p].pop_bit(target_square + 8) :
-                                bitboards[BoardPiece::P].pop_bit(target_square - 8);
+                side == white ? BitBoard::pop_bit(bitboards[BoardPiece::p], target_square + 8) :
+                                BitBoard::pop_bit(bitboards[BoardPiece::P], target_square - 8);
                 
                 hash_key ^= side == white ? Zorbist::pieces_keys[BoardPiece::p][target_square + 8] : Zorbist::pieces_keys[BoardPiece::P][target_square - 8];
                 
-                side == white ? occupancies[black].pop_bit(target_square + 8) :
-                                occupancies[white].pop_bit(target_square - 8);
+                side == white ? BitBoard::pop_bit(occupancies[black], target_square + 8) :
+                                BitBoard::pop_bit(occupancies[white], target_square - 8);
             }
             
             if (enpassant != no_sq) hash_key ^= Zorbist::enpassant_keys[enpassant];
@@ -301,50 +301,50 @@ public:
                 switch (target_square) {
                         // white king side
                     case g1:
-                        bitboards[BoardPiece::R].pop_bit(h1);
-                        bitboards[BoardPiece::R].set_bit(f1);
+                        BitBoard::pop_bit(bitboards[BoardPiece::R], h1);
+                        BitBoard::set_bit(bitboards[BoardPiece::R], f1);
                         
                         hash_key ^= Zorbist::pieces_keys[BoardPiece::R][h1];
                         hash_key ^= Zorbist::pieces_keys[BoardPiece::R][f1];
                         
-                        occupancies[white].pop_bit(h1);
-                        occupancies[white].set_bit(f1);
+                        BitBoard::pop_bit(occupancies[white], h1);
+                        BitBoard::set_bit(occupancies[white], f1);
                         break;
                         
                         // white queen side
                     case c1:
-                        bitboards[BoardPiece::R].pop_bit(a1);
-                        bitboards[BoardPiece::R].set_bit(d1);
+                        BitBoard::pop_bit(bitboards[BoardPiece::R], a1);
+                        BitBoard::set_bit(bitboards[BoardPiece::R], d1);
                         
                         hash_key ^= Zorbist::pieces_keys[BoardPiece::R][a1];
                         hash_key ^= Zorbist::pieces_keys[BoardPiece::R][d1];
                         
-                        occupancies[white].pop_bit(a1);
-                        occupancies[white].set_bit(d1);
+                        BitBoard::pop_bit(occupancies[white], a1);
+                        BitBoard::set_bit(occupancies[white], d1);
                         break;
                         
                         // black king side
                     case g8:
-                        bitboards[BoardPiece::r].pop_bit(h8);
-                        bitboards[BoardPiece::r].set_bit(f8);
+                        BitBoard::pop_bit(bitboards[BoardPiece::r], h8);
+                        BitBoard::set_bit(bitboards[BoardPiece::r], f8);
                         
                         hash_key ^= Zorbist::pieces_keys[BoardPiece::r][h8];
                         hash_key ^= Zorbist::pieces_keys[BoardPiece::r][f8];
                         
-                        occupancies[black].pop_bit(h8);
-                        occupancies[black].set_bit(f8);
+                        BitBoard::pop_bit(occupancies[black], h8);
+                        BitBoard::set_bit(occupancies[black], f8);
                         break;
                         
                         // black queen side
                     case c8:
-                        bitboards[BoardPiece::r].pop_bit(a8);
-                        bitboards[BoardPiece::r].set_bit(d8);
+                        BitBoard::pop_bit(bitboards[BoardPiece::r], a8);
+                        BitBoard::set_bit(bitboards[BoardPiece::r], d8);
                         
                         hash_key ^= Zorbist::pieces_keys[BoardPiece::r][a8];
                         hash_key ^= Zorbist::pieces_keys[BoardPiece::r][d8];
                         
-                        occupancies[black].pop_bit(a8);
-                        occupancies[black].set_bit(d8);
+                        BitBoard::pop_bit(occupancies[black], a8);
+                        BitBoard::set_bit(occupancies[black], d8);
                         break;
                         
                     default:
@@ -409,8 +409,8 @@ private:
     void generate_pawn_moves(Moves& move_list) const {
         int source_square, target_square;
         
-        BitBoard bitboard = side == white ? bitboards[BoardPiece::P] : bitboards[BoardPiece::p];
-        BitBoard attacks;
+        U64 bitboard = side == white ? bitboards[BoardPiece::P] : bitboards[BoardPiece::p];
+        U64 attacks;
         
         while (bitboard) {
             source_square = get_ls1b_index(bitboard);
@@ -419,8 +419,8 @@ private:
             target_square = side == white ? source_square - 8 : source_square + 8;
             
             // if target square is not off the board
-            if ((side == white && !(target_square < a8) && !occupancies[both].get_bit(target_square)) ||
-                (side == black && !(target_square > h1) && !occupancies[both].get_bit(target_square))) {
+            if ((side == white && !(target_square < a8) && !BitBoard::get_bit(occupancies[both], target_square)) ||
+                (side == black && !(target_square > h1) && !BitBoard::get_bit(occupancies[both], target_square))) {
                 // promotion?
                 if ((side == white && source_square >= a7 && source_square <= h7) ||
                     (side == black && source_square >= a2 && source_square <= h2)) {
@@ -446,8 +446,8 @@ private:
                                             0, 0, 0, 0, 0));
                     
                     // double pawn push
-                    if ((side == white && (source_square >= a2 && source_square <= h2) && !occupancies[both].get_bit(target_square - 8)) ||
-                        (side == black && (source_square >= a7 && source_square <= h7) && !occupancies[both].get_bit(target_square + 8)))
+                    if ((side == white && (source_square >= a2 && source_square <= h2) && !BitBoard::get_bit(occupancies[both], target_square - 8)) ||
+                        (side == black && (source_square >= a7 && source_square <= h7) && !BitBoard::get_bit(occupancies[both], target_square + 8)))
                         move_list.add_move(Move(source_square,
                                                 side == white ? target_square - 8 : target_square + 8,
                                                 side == white ? BoardPiece::P : BoardPiece::p,
@@ -484,7 +484,7 @@ private:
                                             side == white ? BoardPiece::P : BoardPiece::p,
                                             0, 1, 0, 0, 0));
                 
-                attacks.pop_bit(target_square);
+                BitBoard::pop_bit(attacks, target_square);
             }
             
             if (enpassant != no_sq) {
@@ -498,15 +498,15 @@ private:
                 }
             }
             
-            bitboard.pop_bit(source_square);
+            BitBoard::pop_bit(bitboard, source_square);
         }
     }
     
     void generate_castling_moves(Moves& move_list) const{
         if ((side == white && (castle & wk)) ||
             (side == black && (castle & bk))) {
-            if ((side == white && !occupancies[both].get_bit(f1) && !occupancies[both].get_bit(g1)) ||
-                (side == black && !occupancies[both].get_bit(f8) && !occupancies[both].get_bit(g8))) {
+            if ((side == white && !BitBoard::get_bit(occupancies[both], f1) && !BitBoard::get_bit(occupancies[both], g1)) ||
+                (side == black && !BitBoard::get_bit(occupancies[both], f8) && !BitBoard::get_bit(occupancies[both], g8))) {
                 
                 // if g1 or g8 is attacked, this move will be pruned
                 if ((side == white && !is_square_attacked(e1, black) && !is_square_attacked(f1, black)) ||
@@ -524,8 +524,8 @@ private:
             (side == black && (castle & bq))) {
             
             // if c1 or c8 is attacked, this move will be pruned
-            if ((side == white && !occupancies[both].get_bit(d1) && !occupancies[both].get_bit(c1) && !occupancies[both].get_bit(b1)) ||
-                (side == black && !occupancies[both].get_bit(d8) && !occupancies[both].get_bit(c8) && !occupancies[both].get_bit(b8))) {
+            if ((side == white && !BitBoard::get_bit(occupancies[both], d1) && !BitBoard::get_bit(occupancies[both], c1) && !BitBoard::get_bit(occupancies[both], b1)) ||
+                (side == black && !BitBoard::get_bit(occupancies[both], d8) && !BitBoard::get_bit(occupancies[both], c8) && !BitBoard::get_bit(occupancies[both], b8))) {
                 if ((side == white && !is_square_attacked(e1, black) && !is_square_attacked(d1, black)) ||
                     (side == black && !is_square_attacked(e8, white) && !is_square_attacked(d8, white)))
                     side == white ? move_list.add_move(Move(e1, c1,
@@ -540,8 +540,10 @@ private:
     
     void generate_knight_moves(Moves& move_list) const{
         int source_square, target_square;
-        BitBoard bitboard = side == white ? bitboards[BoardPiece::N] : bitboards[BoardPiece::n];
-        BitBoard attacks;
+        
+        U64 bitboard = side == white ? bitboards[BoardPiece::N] : bitboards[BoardPiece::n];
+        U64 attacks;
+        
         while(bitboard) {
             source_square = get_ls1b_index(bitboard);
             
@@ -551,7 +553,7 @@ private:
                 target_square = get_ls1b_index(attacks);
                 
                 // quite move
-                if (!(side == white ? occupancies[black] : occupancies[white]).get_bit(target_square))
+                if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square))
                     move_list.add_move(Move(source_square, target_square,
                                             side == white ? BoardPiece::N : BoardPiece::n,
                                             0, 0, 0, 0, 0));
@@ -560,17 +562,19 @@ private:
                                             side == white ? BoardPiece::N : BoardPiece::n,
                                             0, 1, 0, 0, 0));
                 
-                attacks.pop_bit(target_square);
+                BitBoard::pop_bit(attacks, target_square);
             }
             
-            bitboard.pop_bit(source_square);
+            BitBoard::pop_bit(bitboard, source_square);
         }
     }
 
     void generate_bishop_moves(Moves& move_list) const{
         int source_square, target_square;
-        BitBoard bitboard = side == white ? bitboards[BoardPiece::B] : bitboards[BoardPiece::b];
-        BitBoard attacks;
+        
+        U64 bitboard = side == white ? bitboards[BoardPiece::B] : bitboards[BoardPiece::b];
+        U64 attacks;
+        
         while(bitboard) {
             source_square = get_ls1b_index(bitboard);
             
@@ -580,7 +584,7 @@ private:
                 target_square = get_ls1b_index(attacks);
                 
                 // quite move
-                if (!(side == white ? occupancies[black] : occupancies[white]).get_bit(target_square))
+                if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square))
                     move_list.add_move(Move(source_square, target_square,
                                             side == white ? BoardPiece::B : BoardPiece::b,
                                             0, 0, 0, 0, 0));
@@ -589,17 +593,19 @@ private:
                                             side == white ? BoardPiece::B : BoardPiece::b,
                                             0, 1, 0, 0, 0));
                 
-                attacks.pop_bit(target_square);
+                BitBoard::pop_bit(attacks, target_square);
             }
             
-            bitboard.pop_bit(source_square);
+            BitBoard::pop_bit(bitboard, source_square);
         }
     }
     
     void generate_rook_moves(Moves& move_list) const{
         int source_square, target_square;
-        BitBoard bitboard = side == white ? bitboards[BoardPiece::R] : bitboards[BoardPiece::r];
-        BitBoard attacks;
+        
+        U64 bitboard = side == white ? bitboards[BoardPiece::R] : bitboards[BoardPiece::r];
+        U64 attacks;
+        
         while(bitboard) {
             source_square = get_ls1b_index(bitboard);
             
@@ -609,7 +615,7 @@ private:
                 target_square = get_ls1b_index(attacks);
                 
                 // quite move
-                if (!(side == white ? occupancies[black] : occupancies[white]).get_bit(target_square))
+                if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square))
                     move_list.add_move(Move(source_square, target_square,
                                             side == white ? BoardPiece::R : BoardPiece::r,
                                             0, 0, 0, 0, 0));
@@ -618,17 +624,19 @@ private:
                                             side == white ? BoardPiece::R : BoardPiece::r,
                                             0, 1, 0, 0, 0));
                 
-                attacks.pop_bit(target_square);
+                BitBoard::pop_bit(attacks, target_square);
             }
             
-            bitboard.pop_bit(source_square);
+            BitBoard::pop_bit(bitboard, source_square);
         }
     }
     
     void generate_queen_moves(Moves& move_list) const{
         int source_square, target_square;
-        BitBoard bitboard = side == white ? bitboards[BoardPiece::Q] : bitboards[BoardPiece::q];
-        BitBoard attacks;
+        
+        U64 bitboard = side == white ? bitboards[BoardPiece::Q] : bitboards[BoardPiece::q];
+        U64 attacks;
+        
         while(bitboard) {
             source_square = get_ls1b_index(bitboard);
             
@@ -638,7 +646,7 @@ private:
                 target_square = get_ls1b_index(attacks);
                 
                 // quite move
-                if (!(side == white ? occupancies[black] : occupancies[white]).get_bit(target_square))
+                if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square))
                     move_list.add_move(Move(source_square, target_square,
                                             side == white ? BoardPiece::Q : BoardPiece::q,
                                             0, 0, 0, 0, 0));
@@ -647,17 +655,19 @@ private:
                                             side == white ? BoardPiece::Q : BoardPiece::q,
                                             0, 1, 0, 0, 0));
                 
-                attacks.pop_bit(target_square);
+                BitBoard::pop_bit(attacks, target_square);
             }
             
-            bitboard.pop_bit(source_square);
+            BitBoard::pop_bit(bitboard, source_square);
         }
     }
     
     void generate_king_moves(Moves& move_list) const{
         int source_square, target_square;
-        BitBoard bitboard = side == white ? bitboards[BoardPiece::K] : bitboards[BoardPiece::k];
-        BitBoard attacks;
+        
+        U64 bitboard = side == white ? bitboards[BoardPiece::K] : bitboards[BoardPiece::k];
+        U64 attacks;
+        
         while(bitboard) {
             source_square = get_ls1b_index(bitboard);
             
@@ -667,7 +677,7 @@ private:
                 target_square = get_ls1b_index(attacks);
                 
                 // quite move
-                if (!(side == white ? occupancies[black] : occupancies[white]).get_bit(target_square))
+                if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square))
                     move_list.add_move(Move(source_square, target_square,
                                             side == white ? BoardPiece::K : BoardPiece::k,
                                             0, 0, 0, 0, 0));
@@ -676,10 +686,10 @@ private:
                                             side == white ? BoardPiece::K : BoardPiece::k,
                                             0, 1, 0, 0, 0));
                 
-                attacks.pop_bit(target_square);
+                BitBoard::pop_bit(attacks, target_square);
             }
             
-            bitboard.pop_bit(source_square);
+            BitBoard::pop_bit(bitboard, source_square);
         }
     }
     
@@ -730,7 +740,7 @@ public:
         else if (game_phase_score < Evaluation::endgame_phase_score) game_phase = endgame;
         
         int score = 0, opening_score = 0, endgame_score = 0;
-        BitBoard bitboard;
+        U64 bitboard;
         
         BoardPiece::Pieces piece;
         BitBoardSquare square;
@@ -923,7 +933,7 @@ public:
                 if (game_phase == middlegame) score = Evaluation::interpolate_score(opening_score, endgame_score, game_phase_score);
                 else score = game_phase == opening ? opening_score : endgame_score;
                 
-                bitboard.pop_bit(square);
+                BitBoard::pop_bit(bitboard, square);
             }
         }
         

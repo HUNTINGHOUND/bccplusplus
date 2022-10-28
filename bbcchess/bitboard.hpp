@@ -8,85 +8,50 @@
 // define bitboard data type
 using U64 = unsigned long long;
 
-class BitBoard {
-public:
-    U64 bitboard;
-    
-    BitBoard() noexcept : bitboard(0) {};
-    BitBoard(U64 board) noexcept : bitboard(board) {};
-    
-    void set_bit(int square) noexcept {
-        bitboard |= (1ULL << square);
-    }
-    U64 get_bit(int square) const noexcept {
-        return bitboard & (1ULL << square);
-    }
-    void pop_bit(int square) noexcept {
-        bitboard &= ~(1ULL << (square));
-    }
-    
-    void print_bitboard() const {
-        std::cout << "\n";
+namespace BitBoard {
+inline void set_bit(U64& bitboard, int square) {
+    bitboard |= (1ULL << square);
+}
 
-        // loop over board ranks
-        for (int rank = 0; rank < 8; rank++)
+inline U64 get_bit(U64 bitboard, int square) {
+    return bitboard & (1ULL << square);
+}
+
+inline void pop_bit(U64& bitboard, int square) {
+    bitboard &= ~(1ULL << (square));
+}
+
+inline void print_bitboard(U64 bitboard) {
+    std::cout << "\n";
+
+    // loop over board ranks
+    for (int rank = 0; rank < 8; rank++)
+    {
+        // loop over board files
+        for (int file = 0; file < 8; file++)
         {
-            // loop over board files
-            for (int file = 0; file < 8; file++)
-            {
-                // convert file & rank into square index
-                int square = rank * 8 + file;
-                
-                // print ranks
-                if (!file)
-                    std::cout << "  " << 8 - rank << " ";
-                
-                // print bit state (either 1 or 0)
-                std::cout << " " << (get_bit(square) ? 1 : 0);
-            }
+            // convert file & rank into square index
+            int square = rank * 8 + file;
             
-            // print new line every rank
-            std::cout << "\n";
+            // print ranks
+            if (!file)
+                std::cout << "  " << 8 - rank << " ";
+            
+            // print bit state (either 1 or 0)
+            std::cout << " " << (get_bit(bitboard, square) ? 1 : 0);
         }
         
-        // print board files
-        std::cout << "\n     a b c d e f g h\n\n";
-        
-        // print bitboard as unsigned decimal number
-        std::cout << "     Bitboard: " << bitboard << "\n\n";
+        // print new line every rank
+        std::cout << "\n";
     }
     
-    U64 operator|(BitBoard const & o) const noexcept {
-        return bitboard | o.bitboard;
-    }
-    BitBoard& operator|=(BitBoard const & o) noexcept {
-        bitboard |= o.bitboard;
-        return *this;
-    }
+    // print board files
+    std::cout << "\n     a b c d e f g h\n\n";
     
-    U64 operator>>(int shift) const noexcept {
-        return bitboard >> shift;
-    }
-    U64 operator<<(int shift) const noexcept {
-        return bitboard << shift;
-    }
-    
-    U64 operator~() const noexcept {
-        return ~bitboard;
-    }
-    
-    U64 operator|(U64 o) const noexcept {
-        return bitboard | o;
-    }
-    
-    U64 operator&(U64 o) const noexcept {
-        return bitboard & o;
-    }
-    
-    operator U64() const noexcept {
-        return bitboard;
-    }
-};
+    // print bitboard as unsigned decimal number
+    std::cout << "     Bitboard: " << bitboard << "\n\n";
+}
+}
 
 // board squares
 enum BitBoardSquare {

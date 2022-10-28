@@ -199,7 +199,7 @@ void AttackTables::init_sliders_attacks(BoardPiece::RorB rorb) {
     }
 }
 
-U64 AttackTables::set_occupancy(int index, int bits_in_mask, BitBoard attack_mask) {
+U64 AttackTables::set_occupancy(int index, int bits_in_mask, U64 attack_mask) {
     // occupancy map
     U64 occupancy = 0ULL;
     
@@ -209,7 +209,7 @@ U64 AttackTables::set_occupancy(int index, int bits_in_mask, BitBoard attack_mas
         int square = get_ls1b_index(attack_mask);
         
         // pop LS1B in attack map
-        attack_mask.pop_bit(square);
+        BitBoard::pop_bit(attack_mask, square);
         
         // make sure occupany is on board
         if (index & (1 << count))
@@ -226,10 +226,10 @@ U64 AttackTables::Pawn::mask_pawn_attacks(TurnColor side, BitBoardSquare square)
     U64 attacks = 0ULL;
     
     // pice bitboard
-    BitBoard bitboard(0ULL);
+    U64 bitboard(0ULL);
     
     // set piece on board
-    bitboard.set_bit(square);
+    BitBoard::set_bit(bitboard, square);
     
     // white pawn
     if (side == white) {
@@ -248,10 +248,10 @@ U64 AttackTables::Knight::mask_knight_attacks(BitBoardSquare square) {
     U64 attacks = 0ULL;
 
     // piece bitboard
-    BitBoard bitboard(0ULL);
+    U64 bitboard(0ULL);
     
     // set piece on board
-    bitboard.set_bit(square);
+    BitBoard::set_bit(bitboard, square);
     
     // generate knight attacks
     if ((bitboard >> 17) & not_h_file) attacks |= (bitboard >> 17);
@@ -272,10 +272,10 @@ U64 AttackTables::King::mask_king_attacks(BitBoardSquare square) {
     U64 attacks = 0ULL;
 
     // piece bitboard
-    BitBoard bitboard(0ULL);
+    U64 bitboard(0ULL);
     
     // set piece on board
-    bitboard.set_bit(square);
+    BitBoard::set_bit(bitboard, square);
     
     // generate king attacks
     if (bitboard >> 8) attacks |= (bitboard >> 8);

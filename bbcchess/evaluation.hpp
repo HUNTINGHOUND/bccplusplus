@@ -232,7 +232,7 @@ extern std::array<std::array<U64, 64>, 2> passed_masks;
 inline U64 set_file_rank_mask(int file_number, int rank_number)
 {
     // file or rank mask
-    BitBoard mask = 0ULL;
+    U64 mask = 0ULL;
     
     // loop over ranks
     for (int rank = 0; rank < 8; rank++)
@@ -248,7 +248,7 @@ inline U64 set_file_rank_mask(int file_number, int rank_number)
                 // on file match
                 if (file == file_number)
                     // set bit on mask
-                    mask.set_bit(square);
+                    BitBoard::set_bit(mask, square);
             }
             
             else if (rank_number != -1)
@@ -256,7 +256,7 @@ inline U64 set_file_rank_mask(int file_number, int rank_number)
                 // on rank match
                 if (rank == rank_number)
                     // set bit on mask
-                    mask.set_bit(square);
+                    BitBoard::set_bit(mask, square);
             }
         }
     }
