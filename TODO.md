@@ -11,6 +11,10 @@ Todo will be updated periodically, checked items will be removed and report will
 - [ ] Experiment with allowing consequtive null-moves (2 moves).
 - [ ] Instead of resetting aspiration window, test gradually expanding it. 
 - [ ] Change the time control UCI code to more modern c++, possibility make it less os dependent.
+- [ ] Implement more search variant too see if they offer improvement
+- [ ] Look into more hash options than Zorist
+- [ ] Refactor the code and organize
+
 
 ## 10/19/2022
 - Changed C-stlye arrays to std::arrays, tested speed change. All std::array seems to not effect the speed by much as expected. Moving forward all c-style array will be defined as std::arrays. 

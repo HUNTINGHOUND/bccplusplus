@@ -706,6 +706,8 @@ public:
         BoardPiece::Pieces piece;
         BitBoardSquare square;
         
+        int double_pawns = 0;
+        
         for (int bb_piece = BoardPiece::P; bb_piece <= BoardPiece::k; bb_piece++) {
             bitboard = bitboards[bb_piece];
             
@@ -718,18 +720,112 @@ public:
                 
                 switch (piece) {
                     // evaluate white pieces
-                    case BoardPiece::P: score += Evaluation::pawn_score[square]; break;
+                    case BoardPiece::P:
+                        score += Evaluation::pawn_score[square];
+                        
+                        double_pawns = count_bits(bitboards[BoardPiece::P] & Evaluation::file_masks[square]);
+                        
+                        if (double_pawns > 1)
+                            score += double_pawns * Evaluation::double_pawn_penalty;
+                        
+                        if ((bitboards[BoardPiece::P] & Evaluation::isolated_masks[square]) == 0)
+                            score += Evaluation::isolated_pawn_penalty;
+                        
+                        if ((Evaluation::passed_masks[white][square] & bitboards[BoardPiece::p]) == 0)
+                            score += Evaluation::passed_pawn_bonus[Evaluation::get_rank[square]];
+                        
+                        break;
                     case BoardPiece::N: score += Evaluation::knight_score[square]; break;
-                    case BoardPiece::B: score += Evaluation::bishop_score[square]; break;
-                    case BoardPiece::R: score += Evaluation::rook_score[square]; break;
-                    case BoardPiece::K: score += Evaluation::king_score[square]; break;
+                    case BoardPiece::B:
+                        score += Evaluation::bishop_score[square];
+                        
+                        // mobility
+                        score += count_bits(AttackTables::Bishop::get_bishop_attacks(square, occupancies[both]));
+                        
+                        break;
+                    case BoardPiece::R:
+                        score += Evaluation::rook_score[square];
+                        
+                        // semi open file
+                        if (!(bitboards[BoardPiece::P] & Evaluation::file_masks[square]))
+                            score += Evaluation::semi_open_file_score;
+                        
+                        // open file
+                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square]))
+                            score += Evaluation::open_file_score;
+                        
+                        break;
+                    case BoardPiece::Q:
+                        // mobility
+                        score += count_bits(AttackTables::Queen::get_queen_attacks(square, occupancies[both]));
+                        break;
+                    case BoardPiece::K:
+                        score += Evaluation::king_score[square];
+                        
+                        // semi open file
+                        if (!(bitboards[BoardPiece::P] & Evaluation::file_masks[square]))
+                            score -= Evaluation::semi_open_file_score;
+                        
+                        // open file
+                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square]))
+                            score -= Evaluation::open_file_score;
+                        
+                        // king safety
+                        score += count_bits(AttackTables::King::king_attacks[square] & occupancies[white]) * Evaluation::king_shield_bonus;
+                        break;
                         
                     // evaluate place pieces:
-                    case BoardPiece::p: score -= Evaluation::pawn_score[mirror_score[square]]; break;
+                    case BoardPiece::p:
+                        score -= Evaluation::pawn_score[mirror_score[square]];
+                        
+                        double_pawns = count_bits(bitboards[BoardPiece::p] & Evaluation::file_masks[square]);
+                        
+                        if (double_pawns > 1)
+                            score -= double_pawns * Evaluation::double_pawn_penalty;
+                        
+                        if ((bitboards[BoardPiece::p] & Evaluation::isolated_masks[square]) == 0)
+                            score -= Evaluation::isolated_pawn_penalty;
+                        
+                        if ((Evaluation::passed_masks[black][square] & bitboards[BoardPiece::P]) == 0)
+                            score -= Evaluation::passed_pawn_bonus[Evaluation::get_rank[mirror_score[square]]];
+                        
+                        break;
                     case BoardPiece::n: score -= Evaluation::knight_score[mirror_score[square]]; break;
-                    case BoardPiece::b: score -= Evaluation::bishop_score[mirror_score[square]]; break;
-                    case BoardPiece::r: score -= Evaluation::rook_score[mirror_score[square]]; break;
-                    case BoardPiece::k: score -= Evaluation::king_score[mirror_score[square]]; break;
+                    case BoardPiece::b:
+                        score -= Evaluation::bishop_score[mirror_score[square]];
+                        
+                        score -= count_bits(AttackTables::Bishop::get_bishop_attacks(square, occupancies[both]));
+                        break;
+                    case BoardPiece::r:
+                        score -= Evaluation::rook_score[mirror_score[square]];
+                        
+                        // semi open file
+                        if (!(bitboards[BoardPiece::p] & Evaluation::file_masks[square]))
+                            score -= Evaluation::semi_open_file_score;
+                        
+                        // open file
+                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square]))
+                            score -= Evaluation::open_file_score;
+                        
+                        break;
+                    case BoardPiece::q:
+                        // mobility
+                        score -= count_bits(AttackTables::Queen::get_queen_attacks(square, occupancies[both]));
+                        break;
+                    case BoardPiece::k:
+                        score -= Evaluation::king_score[mirror_score[square]];
+                        
+                        // semi open file
+                        if (!(bitboards[BoardPiece::p] & Evaluation::file_masks[square]))
+                            score += Evaluation::semi_open_file_score;
+                        
+                        // open file
+                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square]))
+                            score += Evaluation::open_file_score;
+                        
+                        // king safety
+                        score -= count_bits(AttackTables::King::king_attacks[square] & occupancies[black]) * Evaluation::king_shield_bonus;
+                        break;
                 }
                 
                 bitboard.pop_bit(square);

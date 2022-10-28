@@ -11,9 +11,10 @@
 #include "uci.hpp"
 #include "search.hpp"
 #include "zorbist.hpp"
+#include "evaluation.hpp"
 
 
-long nodes = 0;
+U64 nodes = 0;
 
 /*
  ==================================
@@ -113,6 +114,8 @@ void init_all() {
     AttackTables::init_sliders_attacks(BoardPiece::bishop);
     AttackTables::init_sliders_attacks(BoardPiece::rook);
     
+    Evaluation::init_evaluation_masks();
+    
     if (options.init_magic) init_magic_numbers();
     init_random_keys();
     
@@ -127,10 +130,11 @@ int main(int argc, char **argv){
     if (options.debug) {
         auto start = get_time_point();
         
-        rep.parse_fen(REPETITIONS);
+        rep.parse_fen("8/8/5Q2/4K3/2k5/8/6B1/8 w - - 11 77 ");
         rep.print_board();
         search_position(10, rep);
-
+        
+        std::cout << "Evaluation: " << rep.evaluate() << "\n";
         std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";
     } else
         uci_loop(rep);

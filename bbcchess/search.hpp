@@ -20,8 +20,8 @@ public:
     const int reduction_limit = 3;
     const int R = 2;
     
-    int nodes = 0;
-    int ply = 0;
+    U64 nodes = 0;
+    U64 ply = 0;
     Move best_move;
     
     bool follow_pv = false;

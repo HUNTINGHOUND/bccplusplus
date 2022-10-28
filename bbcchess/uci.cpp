@@ -208,7 +208,10 @@ void parse_go(std::string const & command, BoardRepresentation & rep) {
         time_control.timeset = true;
         
         time_control.time /= time_control.movestogo;
-        time_control.time -= 50;
+        
+        if (time_control.time > 1500) time_control.time -= 50;
+        
+        // init stop time
         time_control.stop_time = time_control.start_time + std::chrono::milliseconds(time_control.time) + std::chrono::milliseconds(time_control.inc);
     }
     

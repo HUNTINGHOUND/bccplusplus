@@ -94,8 +94,8 @@
             filePath = "bbcchess/main.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "130"
-            endingLineNumber = "130"
+            startingLineNumber = "133"
+            endingLineNumber = "133"
             landmarkName = "main(argc, argv)"
             landmarkType = "9">
          </BreakpointContent>
@@ -184,7 +184,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "8F85EC44-EE24-4372-91D8-3336A06C173F"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             condition = "nodes == 142"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -201,7 +201,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "3704324B-2EBF-46EF-ADB3-466D105A6056"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bbcchess/search.hpp"
@@ -265,7 +265,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "A05AB9DF-B275-46BD-8A29-84DFA254B708"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             condition = "rep.hash_key == 0xe6db3976d4301f6c"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -276,6 +276,38 @@
             endingLineNumber = "67"
             landmarkName = "write_hash_entry(score, depth, hash_flag, ply, rep)"
             landmarkType = "9">
+            <Locations>
+               <Location
+                  uuid = "A05AB9DF-B275-46BD-8A29-84DFA254B708 - f50e4c830937f0c9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Search::negascout(int, int, int, BoardRepresentation&amp;, bool)"
+                  moduleName = "bbcchess"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/morgan/Desktop/bbcchess/bbcchess/tt.hpp"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "67"
+                  endingLineNumber = "67"
+                  offsetFromSymbolStart = "1685">
+               </Location>
+               <Location
+                  uuid = "A05AB9DF-B275-46BD-8A29-84DFA254B708 - f50e4c830937f0c9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Search::negascout(int, int, int, BoardRepresentation&amp;, bool)"
+                  moduleName = "bbcchess"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/morgan/Desktop/bbcchess/bbcchess/tt.hpp"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "67"
+                  endingLineNumber = "67"
+                  offsetFromSymbolStart = "1923">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -298,23 +330,55 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "D497AA17-13C4-4AD2-BB62-84F79C5AB9A5"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bbcchess/main.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "117"
-            endingLineNumber = "117"
+            startingLineNumber = "120"
+            endingLineNumber = "120"
             landmarkName = "init_all()"
             landmarkType = "9">
+            <Locations>
+               <Location
+                  uuid = "D497AA17-13C4-4AD2-BB62-84F79C5AB9A5 - 7b271156d60414a3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "init_all()"
+                  moduleName = "bbcchess"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/morgan/Desktop/bbcchess/bbcchess/main.cpp"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "120"
+                  endingLineNumber = "120"
+                  offsetFromSymbolStart = "45">
+               </Location>
+               <Location
+                  uuid = "D497AA17-13C4-4AD2-BB62-84F79C5AB9A5 - 731a1e8ef32ef43d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "bbcchess"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/morgan/Desktop/bbcchess/bbcchess/main.cpp"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "120"
+                  endingLineNumber = "120"
+                  offsetFromSymbolStart = "146">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "05CEA915-CDA9-40F1-81EF-BD3A70885068"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bbcchess/zorbist.hpp"
@@ -324,6 +388,22 @@
             endingLineNumber = "44"
             landmarkName = "init_random_keys()"
             landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "065AB5AC-0C86-466F-AB71-F0A893969377"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "bbcchess/board.hpp"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "721"
+            endingLineNumber = "721"
+            landmarkName = "evaluate()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
