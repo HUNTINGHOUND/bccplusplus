@@ -8,6 +8,8 @@ enum RorB {rook, bishop};
 // encode pieces
 enum Pieces { P, N, B, R, Q, K, p, n, b, r, q, k };
 
+enum PieceType {PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING};
+
 const char ascii_pieces[12] = {'P', 'N', 'B', 'R', 'Q', 'K', 'p', 'n', 'b', 'r', 'q', 'k'};
 const char* const unicode_pieces[12] = {"♙", "♘", "♗", "♖", "♕", "♔", "♟︎", "♞", "♝", "♜", "♛", "♚"};
 

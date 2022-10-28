@@ -169,6 +169,8 @@ void parse_position(std::string const & command, BoardRepresentation & rep) {
 }
 
 void parse_go(std::string const & command, BoardRepresentation & rep) {
+    reset_time_control();
+    
     int depth = -1;
     
     size_t argument = 0;
@@ -213,6 +215,9 @@ void parse_go(std::string const & command, BoardRepresentation & rep) {
         
         // init stop time
         time_control.stop_time = time_control.start_time + std::chrono::milliseconds(time_control.time) + std::chrono::milliseconds(time_control.inc);
+        
+        // treat increment as seconds per move when time is almost up
+        if (time_control.time < 1500 && time_control.inc && depth == 64) time_control.stop_time = time_control.start_time + std::chrono::milliseconds(time_control.inc - 50);
     }
     
     if (depth == -1)
@@ -230,7 +235,7 @@ void uci_loop(BoardRepresentation & rep) {
     std::string input;
     
     std::cout << "id name BBC++\n";
-    std::cout << "id name Morgan\n";
+    std::cout << "id author Morgan\n";
     std::cout << "uciok\n";
     
     while(true) {
@@ -255,9 +260,22 @@ void uci_loop(BoardRepresentation & rep) {
             parse_go(input, rep);
         else if (input.compare(0, 3, "uci") == 0) {
             std::cout << "id name BBC++\n";
+            std::cout << "id author Morgan\n";
             std::cout << "uciok\n";
         }
         else if (input.compare(0, 4, "quit") == 0)
             break;
     }
+}
+
+void reset_time_control() {
+    time_control.quit = false;
+    time_control.movestogo = 30;
+    time_control.movetime = -1;
+    time_control.time = -1;
+    time_control.inc = 0;
+    time_control.start_time = std::chrono::system_clock::now();
+    time_control.stop_time = std::chrono::system_clock::now();
+    time_control.timeset = false;
+    time_control.stopped = false;
 }

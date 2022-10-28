@@ -37,5 +37,7 @@ const int castling_rights[64] = {
     13, 15, 15, 15, 12, 15, 15, 14
 };
 
+enum GamePhase {opening, endgame, middlegame};
+
 
 #endif /* boardinfo_hpp */

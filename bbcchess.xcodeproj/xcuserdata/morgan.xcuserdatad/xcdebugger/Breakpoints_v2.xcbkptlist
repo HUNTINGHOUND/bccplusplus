@@ -14,8 +14,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "420"
-            endingLineNumber = "420"
+            startingLineNumber = "397"
+            endingLineNumber = "397"
             landmarkName = "negascout(alpha, beta, depth, rep, allow_null)"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "382"
-            endingLineNumber = "382"
+            startingLineNumber = "359"
+            endingLineNumber = "359"
             landmarkName = "negascout(alpha, beta, depth, rep, allow_null)"
             landmarkType = "7">
          </BreakpointContent>
@@ -46,8 +46,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "267"
-            endingLineNumber = "267"
+            startingLineNumber = "244"
+            endingLineNumber = "244"
             landmarkName = "negascout(alpha, beta, depth, rep, allow_null)"
             landmarkType = "7">
          </BreakpointContent>
@@ -62,8 +62,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "390"
-            endingLineNumber = "390"
+            startingLineNumber = "367"
+            endingLineNumber = "367"
             landmarkName = "negascout(alpha, beta, depth, rep, allow_null)"
             landmarkType = "7">
          </BreakpointContent>
@@ -78,8 +78,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "268"
-            endingLineNumber = "268"
+            startingLineNumber = "245"
+            endingLineNumber = "245"
             landmarkName = "negascout(alpha, beta, depth, rep, allow_null)"
             landmarkType = "7">
          </BreakpointContent>
@@ -158,8 +158,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "430"
-            endingLineNumber = "430"
+            startingLineNumber = "409"
+            endingLineNumber = "409"
             landmarkName = "search_position(depth, rep)"
             landmarkType = "9">
          </BreakpointContent>
@@ -174,8 +174,8 @@
             filePath = "bbcchess/uci.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "208"
-            endingLineNumber = "208"
+            startingLineNumber = "210"
+            endingLineNumber = "210"
             landmarkName = "parse_go(command, rep)"
             landmarkType = "9">
          </BreakpointContent>
@@ -191,8 +191,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "261"
-            endingLineNumber = "261"
+            startingLineNumber = "238"
+            endingLineNumber = "238"
             landmarkName = "negascout(alpha, beta, depth, rep, allow_null)"
             landmarkType = "7">
          </BreakpointContent>
@@ -207,8 +207,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "262"
-            endingLineNumber = "262"
+            startingLineNumber = "239"
+            endingLineNumber = "239"
             landmarkName = "negascout(alpha, beta, depth, rep, allow_null)"
             landmarkType = "7">
          </BreakpointContent>
@@ -239,8 +239,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "441"
-            endingLineNumber = "441"
+            startingLineNumber = "420"
+            endingLineNumber = "420"
             landmarkName = "search_position(depth, rep)"
             landmarkType = "9">
          </BreakpointContent>
@@ -255,8 +255,8 @@
             filePath = "bbcchess/search.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "442"
-            endingLineNumber = "442"
+            startingLineNumber = "422"
+            endingLineNumber = "422"
             landmarkName = "search_position(depth, rep)"
             landmarkType = "9">
          </BreakpointContent>
@@ -400,8 +400,8 @@
             filePath = "bbcchess/board.hpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "721"
-            endingLineNumber = "721"
+            startingLineNumber = "751"
+            endingLineNumber = "751"
             landmarkName = "evaluate()"
             landmarkType = "7">
          </BreakpointContent>

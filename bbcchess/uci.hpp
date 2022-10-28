@@ -79,6 +79,8 @@ struct TimeControl{
 
 extern TimeControl time_control;
 
+void reset_time_control();
+
 
 /*
  Function listen to GUI's input during search.

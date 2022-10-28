@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		903CD4D528FBE1670049195A /* uci.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 903CD4D328FBE1670049195A /* uci.cpp */; };
+		90842362290B8F9B00E801B3 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 90842361290B8F9A00E801B3 /* Makefile */; };
 		90AB92AA29022016007557D1 /* zorbist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92A829022016007557D1 /* zorbist.cpp */; };
 		90AB92C52908DC05007557D1 /* tt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92C32908DC05007557D1 /* tt.cpp */; };
 		90AB92C8290913F1007557D1 /* repetition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92C6290913F1007557D1 /* repetition.cpp */; };
@@ -40,6 +41,7 @@
 		903CD4D728FE4BF80049195A /* evaluation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = evaluation.hpp; sourceTree = "<group>"; };
 		903CD4DA28FE7FBE0049195A /* search.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = search.hpp; sourceTree = "<group>"; };
 		90842360290B55CC00E801B3 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		90842361290B8F9A00E801B3 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		90AB92A729008883007557D1 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		90AB92A829022016007557D1 /* zorbist.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = zorbist.cpp; sourceTree = "<group>"; };
 		90AB92A929022016007557D1 /* zorbist.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = zorbist.hpp; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 				90AB92C42908DC05007557D1 /* tt.hpp */,
 				90AB92C6290913F1007557D1 /* repetition.cpp */,
 				90AB92C7290913F1007557D1 /* repetition.hpp */,
+				90842361290B8F9A00E801B3 /* Makefile */,
 			);
 			path = bbcchess;
 			sourceTree = "<group>";
@@ -177,6 +180,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90842362290B8F9B00E801B3 /* Makefile in Sources */,
 				90AB92C52908DC05007557D1 /* tt.cpp in Sources */,
 				90CBA1E028E615D7004FF338 /* main.cpp in Sources */,
 				90AB92CA290919BB007557D1 /* evaluation.cpp in Sources */,

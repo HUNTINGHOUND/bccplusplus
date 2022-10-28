@@ -130,7 +130,7 @@ int main(int argc, char **argv){
     if (options.debug) {
         auto start = get_time_point();
         
-        rep.parse_fen("8/8/5Q2/4K3/2k5/8/6B1/8 w - - 11 77 ");
+        rep.parse_fen(TRICKY_POSITION);
         rep.print_board();
         search_position(10, rep);
         

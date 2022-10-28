@@ -2,7 +2,7 @@
 
 Todo will be updated periodically, checked items will be removed and report will be added to the bottom.
 ## TODO
-- [ ] Better sorting algorithm in move sort, currently it's O(n^2)
+- [x] Better sorting algorithm in move sort, currently it's O(n^2)
 - [ ] Consider changing history move heuristic.
 - [ ] Optimize PV move sorting and move scoring in general, probably should score moves while generating. 
 - [ ] Improve late move reduction requirements

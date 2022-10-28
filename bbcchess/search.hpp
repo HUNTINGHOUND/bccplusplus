@@ -21,7 +21,7 @@ public:
     const int R = 2;
     
     U64 nodes = 0;
-    U64 ply = 0;
+    int ply = 0;
     Move best_move;
     
     bool follow_pv = false;
@@ -140,31 +140,8 @@ public:
         
         for (int count = 0; count < move_list.count; count++)
             move_scores[count] = score_move(move_list.moves[count], rep);
+
         
-        
-        // loop over current move within a move list
-        for (int current_move = 0; current_move < move_list.count; current_move++)
-        {
-            // loop over next move within a move list
-            for (int next_move = current_move + 1; next_move < move_list.count; next_move++)
-            {
-                // compare current and next move scores
-                if (move_scores[current_move] < move_scores[next_move])
-                {
-                    // swap scores
-                    int temp_score = move_scores[current_move];
-                    move_scores[current_move] = move_scores[next_move];
-                    move_scores[next_move] = temp_score;
-                    
-                    // swap moves
-                    int temp_move = move_list.moves[current_move];
-                    move_list.moves[current_move] = move_list.moves[next_move];
-                    move_list.moves[next_move] = temp_move;
-                }
-            }
-        }
-        
-        /*
         int move_idx[256];
         std::iota(move_idx, move_idx + move_list.count, 0);
         std::stable_sort(move_idx, move_idx + move_list.count, [&move_scores](int a, int b) {
@@ -175,7 +152,7 @@ public:
         std::copy(move_list.moves, move_list.moves + move_list.count, move_copy);
         
         for(int i = 0; i < move_list.count; i++) move_list.moves[i] = move_copy[move_idx[i]];
-        */
+        
         
         return 0;
     }
@@ -427,6 +404,8 @@ public:
 inline void search_position(int depth, BoardRepresentation & rep) {
     Search search;
     
+    auto start = get_time_point();
+    
     int score = 0;
     
     time_control.stopped = false;
@@ -439,6 +418,7 @@ inline void search_position(int depth, BoardRepresentation & rep) {
     
     // iterative deepening
     for (int current_depth = 1; current_depth <= depth; current_depth++) {
+        
         search.follow_pv = true;
         
         score = search.negascout(alpha, beta, current_depth, rep, false);
@@ -460,20 +440,21 @@ inline void search_position(int depth, BoardRepresentation & rep) {
         alpha = score - WINDOW_VAL;
         beta = score + WINDOW_VAL;
         
-        if (score > -MATE_VALUE && score < -MATE_SCORE)
-            std::cout << "info score mate " << -(score + MATE_VALUE) / 2 - 1 << " depth " << current_depth << " nodes " << search.nodes << " time " << get_time_diff(time_control.start_time, get_time_point()) << " ms pv ";
-        else if (score > MATE_SCORE && score < MATE_VALUE)
-            std::cout << "info score mate " << (MATE_VALUE - score) / 2 + 1 << " depth " << current_depth << " nodes " << search.nodes << " time " << get_time_diff(time_control.start_time, get_time_point()) << " ms pv ";
-        else
-            std::cout << "info score cp " << score << " depth " << current_depth << " nodes " << search.nodes << " time " << get_time_diff(time_control.start_time, get_time_point()) << " ms pv ";
-        
-        // loop over the moves within a PV line
-        for (int count = 0; count < search.pv_length[0]; count++) {
-            search.pv_table[0][count].print_move_nonewline();
-            std::cout << " ";
+        if (search.pv_length[0]) {
+            if (score > -MATE_VALUE && score < -MATE_SCORE)
+                std::cout << "info score mate " << -(score + MATE_VALUE) / 2 - 1 << " depth " << current_depth << " nodes " << search.nodes << " time " << get_time_diff(start, get_time_point()) << " ms pv ";
+            else if (score > MATE_SCORE && score < MATE_VALUE)
+                std::cout << "info score mate " << (MATE_VALUE - score) / 2 + 1 << " depth " << current_depth << " nodes " << search.nodes << " time " << get_time_diff(start, get_time_point()) << " ms pv ";
+            else
+                std::cout << "info score cp " << score << " depth " << current_depth << " nodes " << search.nodes << " time " << get_time_diff(start, get_time_point()) << " ms pv ";
+            
+            // loop over the moves within a PV line
+            for (int count = 0; count < search.pv_length[0]; count++) {
+                search.pv_table[0][count].print_move_nonewline();
+                std::cout << " ";
+            }
+            std::cout << "\n";
         }
-        
-        std::cout << "\n";
         
         prev_pv = search.pv_table[0];
     }

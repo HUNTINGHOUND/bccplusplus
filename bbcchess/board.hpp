@@ -21,7 +21,6 @@
 using U64 = unsigned long long;
 
 class BoardRepresentation {
-    
 public:
     
     // piece bitboard
@@ -183,7 +182,7 @@ public:
                     break;
                     
                 default:
-                    throw std::invalid_argument("Invalid fen");
+                    fatal_exit("Invalid fen position\n");
             }
             
             fen_idx++;
@@ -349,7 +348,7 @@ public:
                         break;
                         
                     default:
-                        throw std::invalid_argument("invalid castling target square");
+                        fatal_exit("invalid castling target square");
                 }
             }
             
@@ -699,8 +698,38 @@ public:
         return move_list;
     }
     
+    int get_game_phase_score() const {
+        /*
+         The game phase score of the game is derived from the pieces
+         (not counting pawns and kings) that are still on the board.
+         The full materal starting position game phase score is:
+         
+         4 * knight score open +
+         4 * bishop score open +
+         4 * rook score open +
+         2 * queen score open +
+         */
+        
+        int white_piece_scores = 0, black_piece_scores = 0;
+        
+        for (int piece = BoardPiece::N; piece <= BoardPiece::Q; piece++)
+            white_piece_scores += count_bits(bitboards[piece]) * Evaluation::material_score[opening][piece];
+        
+        for (int piece = BoardPiece::n; piece <= BoardPiece::q; piece++)
+            black_piece_scores += count_bits(bitboards[piece]) * -Evaluation::material_score[opening][piece];
+        
+        return white_piece_scores + black_piece_scores;
+    }
+    
     int evaluate() const {
-        int score = 0;
+        int game_phase_score = get_game_phase_score();
+        
+        GamePhase game_phase = middlegame;
+        
+        if (game_phase_score > Evaluation::opening_phase_score) game_phase = opening;
+        else if (game_phase_score < Evaluation::endgame_phase_score) game_phase = endgame;
+        
+        int score = 0, opening_score = 0, endgame_score = 0;
         BitBoard bitboard;
         
         BoardPiece::Pieces piece;
@@ -716,117 +745,183 @@ public:
                 
                 square = BitBoardSquare(get_ls1b_index(bitboard));
                 
-                score += Evaluation::material_score[piece];
+                opening_score += Evaluation::material_score[opening][piece];
+                endgame_score += Evaluation::material_score[endgame][piece];
                 
                 switch (piece) {
                     // evaluate white pieces
-                    case BoardPiece::P:
-                        score += Evaluation::pawn_score[square];
+                    case BoardPiece::P: // white pawn
+                        opening_score += Evaluation::positional_score[opening][BoardPiece::PAWN][square];
+                        endgame_score += Evaluation::positional_score[endgame][BoardPiece::PAWN][square];
+                        
                         
                         double_pawns = count_bits(bitboards[BoardPiece::P] & Evaluation::file_masks[square]);
                         
-                        if (double_pawns > 1)
-                            score += double_pawns * Evaluation::double_pawn_penalty;
+                        if (double_pawns > 1) {
+                            opening_score += double_pawns * Evaluation::double_pawn_penalty_opening;
+                            endgame_score += double_pawns * Evaluation::double_pawn_penalty_endgame;
+                        }
                         
-                        if ((bitboards[BoardPiece::P] & Evaluation::isolated_masks[square]) == 0)
-                            score += Evaluation::isolated_pawn_penalty;
+                        if ((bitboards[BoardPiece::P] & Evaluation::isolated_masks[square]) == 0) {
+                            opening_score += Evaluation::isolated_pawn_penalty_opening;
+                            endgame_score += Evaluation::isolated_pawn_penalty_endgame;
+                        }
                         
-                        if ((Evaluation::passed_masks[white][square] & bitboards[BoardPiece::p]) == 0)
-                            score += Evaluation::passed_pawn_bonus[Evaluation::get_rank[square]];
+                        if ((Evaluation::passed_masks[white][square] & bitboards[BoardPiece::p]) == 0) {
+                            opening_score += Evaluation::passed_pawn_bonus[Evaluation::get_rank[square]];
+                            endgame_score += Evaluation::passed_pawn_bonus[Evaluation::get_rank[square]];
+                        }
+                         
+                        break;
+                    case BoardPiece::N: // white knight
+                        opening_score += Evaluation::positional_score[opening][BoardPiece::KNIGHT][square];
+                        endgame_score += Evaluation::positional_score[endgame][BoardPiece::KNIGHT][square];
                         
                         break;
-                    case BoardPiece::N: score += Evaluation::knight_score[square]; break;
                     case BoardPiece::B:
-                        score += Evaluation::bishop_score[square];
-                        
+                        opening_score += Evaluation::positional_score[opening][BoardPiece::BISHOP][square];
+                        endgame_score += Evaluation::positional_score[endgame][BoardPiece::BISHOP][square];
+
                         // mobility
-                        score += count_bits(AttackTables::Bishop::get_bishop_attacks(square, occupancies[both]));
+                        opening_score += (count_bits(AttackTables::Bishop::get_bishop_attacks(square, occupancies[both])) - Evaluation::bishop_unit) * Evaluation::bishop_mobility_opening;
+                        endgame_score += (count_bits(AttackTables::Bishop::get_bishop_attacks(square, occupancies[both])) - Evaluation::bishop_unit) * Evaluation::bishop_mobility_endgame;
                         
                         break;
                     case BoardPiece::R:
-                        score += Evaluation::rook_score[square];
+                        opening_score += Evaluation::positional_score[opening][BoardPiece::ROOK][square];
+                        endgame_score += Evaluation::positional_score[endgame][BoardPiece::ROOK][square];
+                        
                         
                         // semi open file
-                        if (!(bitboards[BoardPiece::P] & Evaluation::file_masks[square]))
-                            score += Evaluation::semi_open_file_score;
+                        if (!(bitboards[BoardPiece::P] & Evaluation::file_masks[square])) {
+                            opening_score += Evaluation::semi_open_file_score;
+                            endgame_score += Evaluation::semi_open_file_score;
+                        }
                         
                         // open file
-                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square]))
-                            score += Evaluation::open_file_score;
+                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square])) {
+                            opening_score += Evaluation::open_file_score;
+                            endgame_score += Evaluation::open_file_score;
+                        }
+                         
                         
                         break;
                     case BoardPiece::Q:
+                        opening_score += Evaluation::positional_score[opening][BoardPiece::QUEEN][square];
+                        endgame_score += Evaluation::positional_score[endgame][BoardPiece::QUEEN][square];
+                        
                         // mobility
-                        score += count_bits(AttackTables::Queen::get_queen_attacks(square, occupancies[both]));
+                        opening_score += (count_bits(AttackTables::Queen::get_queen_attacks(square, occupancies[both])) - Evaluation::queen_unit) * Evaluation::queen_mobility_opening;
+                        endgame_score += (count_bits(AttackTables::Queen::get_queen_attacks(square, occupancies[both])) - Evaluation::queen_unit) * Evaluation::queen_mobility_endgame;
                         break;
                     case BoardPiece::K:
-                        score += Evaluation::king_score[square];
+                        opening_score += Evaluation::positional_score[opening][BoardPiece::KING][square];
+                        endgame_score += Evaluation::positional_score[endgame][BoardPiece::KING][square];
                         
                         // semi open file
-                        if (!(bitboards[BoardPiece::P] & Evaluation::file_masks[square]))
-                            score -= Evaluation::semi_open_file_score;
+                        if (!(bitboards[BoardPiece::P] & Evaluation::file_masks[square])) {
+                            opening_score -= Evaluation::semi_open_file_score;
+                            endgame_score -= Evaluation::semi_open_file_score;
+                        }
                         
                         // open file
-                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square]))
-                            score -= Evaluation::open_file_score;
+                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square])) {
+                            opening_score -= Evaluation::open_file_score;
+                            endgame_score -= Evaluation::open_file_score;
+                        }
                         
                         // king safety
-                        score += count_bits(AttackTables::King::king_attacks[square] & occupancies[white]) * Evaluation::king_shield_bonus;
+                        opening_score += count_bits(AttackTables::King::king_attacks[square] & occupancies[white]) * Evaluation::king_shield_bonus;
+                        endgame_score += count_bits(AttackTables::King::king_attacks[square] & occupancies[white]) * Evaluation::king_shield_bonus;
+                        
                         break;
+                         
                         
                     // evaluate place pieces:
                     case BoardPiece::p:
-                        score -= Evaluation::pawn_score[mirror_score[square]];
+                        opening_score -= Evaluation::positional_score[opening][BoardPiece::PAWN][mirror_score[square]];
+                        endgame_score -= Evaluation::positional_score[endgame][BoardPiece::PAWN][mirror_score[square]];
                         
                         double_pawns = count_bits(bitboards[BoardPiece::p] & Evaluation::file_masks[square]);
                         
-                        if (double_pawns > 1)
-                            score -= double_pawns * Evaluation::double_pawn_penalty;
+                        if (double_pawns > 1) {
+                            opening_score -= double_pawns * Evaluation::double_pawn_penalty_opening;
+                            endgame_score -= double_pawns * Evaluation::double_pawn_penalty_endgame;
+                        }
                         
-                        if ((bitboards[BoardPiece::p] & Evaluation::isolated_masks[square]) == 0)
-                            score -= Evaluation::isolated_pawn_penalty;
+                        if ((bitboards[BoardPiece::p] & Evaluation::isolated_masks[square]) == 0) {
+                            opening_score -= Evaluation::isolated_pawn_penalty_opening;
+                            endgame_score -= Evaluation::isolated_pawn_penalty_endgame;
+                        }
                         
-                        if ((Evaluation::passed_masks[black][square] & bitboards[BoardPiece::P]) == 0)
-                            score -= Evaluation::passed_pawn_bonus[Evaluation::get_rank[mirror_score[square]]];
+                        if ((Evaluation::passed_masks[black][square] & bitboards[BoardPiece::P]) == 0) {
+                            opening_score -= Evaluation::passed_pawn_bonus[Evaluation::get_rank[mirror_score[square]]];
+                            endgame_score -= Evaluation::passed_pawn_bonus[Evaluation::get_rank[mirror_score[square]]];
+                        }
                         
                         break;
-                    case BoardPiece::n: score -= Evaluation::knight_score[mirror_score[square]]; break;
-                    case BoardPiece::b:
-                        score -= Evaluation::bishop_score[mirror_score[square]];
+                    case BoardPiece::n:
+                        opening_score -= Evaluation::positional_score[opening][BoardPiece::KNIGHT][mirror_score[square]];
+                        endgame_score -= Evaluation::positional_score[endgame][BoardPiece::KNIGHT][mirror_score[square]];
                         
-                        score -= count_bits(AttackTables::Bishop::get_bishop_attacks(square, occupancies[both]));
+                        break;
+                    case BoardPiece::b:
+                        opening_score -= Evaluation::positional_score[opening][BoardPiece::BISHOP][mirror_score[square]];
+                        endgame_score -= Evaluation::positional_score[endgame][BoardPiece::BISHOP][mirror_score[square]];
+                        
+                        opening_score -= (count_bits(AttackTables::Bishop::get_bishop_attacks(square, occupancies[both])) - Evaluation::bishop_unit) * Evaluation::bishop_mobility_opening;
+                        endgame_score -= (count_bits(AttackTables::Bishop::get_bishop_attacks(square, occupancies[both])) - Evaluation::bishop_unit) * Evaluation::bishop_mobility_endgame;
                         break;
                     case BoardPiece::r:
-                        score -= Evaluation::rook_score[mirror_score[square]];
+                        opening_score -= Evaluation::positional_score[opening][BoardPiece::ROOK][mirror_score[square]];
+                        endgame_score -= Evaluation::positional_score[endgame][BoardPiece::ROOK][mirror_score[square]];
                         
                         // semi open file
-                        if (!(bitboards[BoardPiece::p] & Evaluation::file_masks[square]))
-                            score -= Evaluation::semi_open_file_score;
+                        if (!(bitboards[BoardPiece::p] & Evaluation::file_masks[square])) {
+                            opening_score -= Evaluation::semi_open_file_score;
+                            endgame_score -= Evaluation::semi_open_file_score;
+                        }
                         
                         // open file
-                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square]))
-                            score -= Evaluation::open_file_score;
+                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square])) {
+                            opening_score -= Evaluation::open_file_score;
+                            endgame_score -= Evaluation::open_file_score;
+                        }
                         
                         break;
                     case BoardPiece::q:
+                        opening_score -= Evaluation::positional_score[opening][BoardPiece::QUEEN][mirror_score[square]];
+                        endgame_score -= Evaluation::positional_score[endgame][BoardPiece::QUEEN][mirror_score[square]];
+                        
                         // mobility
-                        score -= count_bits(AttackTables::Queen::get_queen_attacks(square, occupancies[both]));
+                        opening_score -= (count_bits(AttackTables::Queen::get_queen_attacks(square, occupancies[both])) - Evaluation::queen_unit) * Evaluation::queen_mobility_opening;
+                        endgame_score -= (count_bits(AttackTables::Queen::get_queen_attacks(square, occupancies[both])) - Evaluation::queen_unit) * Evaluation::queen_mobility_endgame;
+                        
                         break;
                     case BoardPiece::k:
-                        score -= Evaluation::king_score[mirror_score[square]];
+                        opening_score -= Evaluation::positional_score[opening][BoardPiece::KING][mirror_score[square]];
+                        endgame_score -= Evaluation::positional_score[endgame][BoardPiece::KING][mirror_score[square]];
                         
                         // semi open file
-                        if (!(bitboards[BoardPiece::p] & Evaluation::file_masks[square]))
-                            score += Evaluation::semi_open_file_score;
+                        if (!(bitboards[BoardPiece::p] & Evaluation::file_masks[square])) {
+                            opening_score += Evaluation::semi_open_file_score;
+                            endgame_score += Evaluation::semi_open_file_score;
+                        }
                         
                         // open file
-                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square]))
-                            score += Evaluation::open_file_score;
+                        if(!((bitboards[BoardPiece::P] | bitboards[BoardPiece::p]) & Evaluation::file_masks[square])) {
+                            opening_score += Evaluation::open_file_score;
+                            endgame_score += Evaluation::open_file_score;
+                        }
                         
                         // king safety
-                        score -= count_bits(AttackTables::King::king_attacks[square] & occupancies[black]) * Evaluation::king_shield_bonus;
+                        opening_score -= count_bits(AttackTables::King::king_attacks[square] & occupancies[black]) * Evaluation::king_shield_bonus;
+                        endgame_score -= count_bits(AttackTables::King::king_attacks[square] & occupancies[black]) * Evaluation::king_shield_bonus;
                         break;
                 }
+                
+                if (game_phase == middlegame) score = Evaluation::interpolate_score(opening_score, endgame_score, game_phase_score);
+                else score = game_phase == opening ? opening_score : endgame_score;
                 
                 bitboard.pop_bit(square);
             }

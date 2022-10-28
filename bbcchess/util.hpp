@@ -4,18 +4,24 @@
 // system headers
 #include <stdexcept>
 #include <chrono>
+#include <iostream>
 
 // local header
 #include "move.hpp"
 
 using U64 = unsigned long long;
 
+[[noreturn]] inline void fatal_exit(std::string const & s) {
+    std::cerr << s << "\n";
+    exit(1);
+}
+
 inline int count_bits(U64 bitboard) {
     return __builtin_popcountll(bitboard);
 }
 
 inline int get_ls1b_index(U64 bitboard) {
-    if (!bitboard) throw std::invalid_argument("cannot get lease significant bit of empty board");
+    if (!bitboard) fatal_exit("cannot get lease significant bit of empty board");
     return __builtin_ffsll(bitboard) - 1;
 }
 
@@ -35,4 +41,5 @@ inline long long get_time_diff(std::chrono::time_point<std::chrono::system_clock
 inline long long get_time_ms() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
+
 #endif /* util_hpp */
