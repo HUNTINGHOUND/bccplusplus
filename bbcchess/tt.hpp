@@ -23,8 +23,11 @@ struct TT {
 
 class TranspositionTable {
     phmap::parallel_flat_hash_map<U64, TT> hash_table;
+    size_t hash_entries;
     
 public:
+    TranspositionTable(int mb);
+    
     void clear_hash_table();
 
     int read_hash_entry(int alpha, int beta, Move* best_move, int depth, int ply, BoardRepresentation const & rep);
@@ -34,8 +37,11 @@ public:
 
 class EvaluationTable {
     phmap::parallel_flat_hash_map<U64, int> hash_table;
+    size_t hash_entries;
     
 public:
+    EvaluationTable(int mb);
+    
     void clear_hash_table();
 
     int read_hash_entry(BoardRepresentation const & rep);

@@ -9,6 +9,8 @@
 #include "search.hpp"
 #include "pieces.hpp"
 
+Solver::Solver(int ttmb, int evalmb) : hash_table(ttmb), eval_table(evalmb) {}
+
 void Solver::search_position(int depth) {
     Search search(repetition_table, repetition_index, hash_table, eval_table);
     
@@ -90,6 +92,7 @@ void Solver::parse_fen(std::string const & fen, size_t fen_idx) {
     std::fill(repetition_table.begin(), repetition_table.end(), 0);
     
     hash_table.clear_hash_table();
+    eval_table.clear_hash_table();
     
     for (int rank = 0; rank < 8; rank++) {
         for (int file = 0; file < 8; file++) {

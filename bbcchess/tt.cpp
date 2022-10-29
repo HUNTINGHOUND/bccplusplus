@@ -1,15 +1,28 @@
+// system headers
+#include <iostream>
+
 // local headers
 #include "tt.hpp"
 #include "definitions.hpp"
+
+TranspositionTable::TranspositionTable(int mb) {
+    int hash_size = 0x100000 * mb;
+
+    hash_entries = hash_size / sizeof(TT);
+    
+    hash_table.reserve(hash_entries);
+    
+    std::cout << "Transposition table is initialized with " << hash_entries << " entires\n";
+}
 
 void TranspositionTable::clear_hash_table() {
     hash_table.clear();
 }
 
 int TranspositionTable::read_hash_entry(int alpha, int beta, Move* best_move, int depth, int ply, BoardRepresentation const & rep) {
-    if (!hash_table.count(rep.hash_key)) return no_hash_entry;
+    if (!hash_table.count(rep.hash_key % hash_entries)) return no_hash_entry;
     
-    TT hash_entry = hash_table[rep.hash_key];
+    TT hash_entry = hash_table[rep.hash_key % hash_entries];
     
     if (hash_entry.depth >= depth) {
         int score = hash_entry.score;
@@ -39,18 +52,29 @@ void TranspositionTable::write_hash_entry(int score, Move best_move, int depth, 
     if (score < -MATE_SCORE) score -= ply;
     if (score > MATE_SCORE) score += ply;
     
-    hash_table[rep.hash_key] = {depth, hash_flag, score, best_move};
+    hash_table[rep.hash_key % hash_entries] = {depth, hash_flag, score, best_move};
 }
+
+EvaluationTable::EvaluationTable(int mb) {
+    int hash_size = 0x100000 * mb;
+
+    hash_entries = hash_size / sizeof(int);
+    
+    hash_table.reserve(hash_entries);
+    
+    std::cout << "Evaluation hash table is initialized with " << hash_entries << " entires\n";
+}
+
 
 void EvaluationTable::clear_hash_table() {
     hash_table.clear();
 }
 
 int EvaluationTable::read_hash_entry(BoardRepresentation const & rep) {
-    if (!hash_table.count(rep.hash_key)) return no_hash_entry;
-    return hash_table[rep.hash_key];
+    if (!hash_table.count(rep.hash_key % hash_entries)) return no_hash_entry;
+    return hash_table[rep.hash_key % hash_entries];
 }
 
 void EvaluationTable::write_hash_entry(int score, BoardRepresentation const & rep) {
-    hash_table[rep.hash_key] = score;
+    hash_table[rep.hash_key % hash_entries] = score;
 }

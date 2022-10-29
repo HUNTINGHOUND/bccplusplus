@@ -128,7 +128,7 @@ int main(int argc, char **argv){
     set_options(argc, argv);
     init_all();
     
-    Solver solver;
+    Solver solver(DEFAULT_TT_MB, DEFAULT_EVAL_HASH_MB);
     if (options.debug) {
         auto start = get_time_point();
         

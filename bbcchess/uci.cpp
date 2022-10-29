@@ -1,3 +1,6 @@
+// system headers
+#include <sstream>
+
 // local headers
 #include "uci.hpp"
 #include "pieces.hpp"
@@ -183,8 +186,22 @@ void uci_loop(Solver & solver) {
         else if (input.compare(0, 3, "uci") == 0) {
             std::cout << "id name BBC++\n";
             std::cout << "id author Morgan\n";
+            std::cout << "option name Hash type spin default 64 min 4 max " << MAX_HASH << "\n";
             std::cout << "uciok\n";
-        }
+        } else if (input.compare(0, 26, "setoption name Hash value ") == 0) {
+            std::stringstream ss(input);
+            
+            std::string g;
+            int mb;
+            ss >> g >> g >> g >> g >> mb;
+            
+            if (mb < 4) mb = 4;
+            if (mb > MAX_HASH) mb = MAX_HASH;
+            
+            std::cout << "    Set hash table size to " << mb << "MB\n";
+            solver.hash_table = TranspositionTable(mb);
+        } else if (input.compare("d") == 0)
+            solver.rep.print_board();
         else if (input.compare(0, 4, "quit") == 0)
             break;
     }

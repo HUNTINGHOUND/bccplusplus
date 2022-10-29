@@ -21,6 +21,8 @@ public:
     int repetition_index;
     
     BoardRepresentation rep;
+    
+    Solver(int ttmb, int evalmb);
 
     void search_position(int depth);
     

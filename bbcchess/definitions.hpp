@@ -19,4 +19,8 @@
 #define MATE_VALUE 49000
 #define MATE_SCORE 48000
 
+#define DEFAULT_TT_MB 64
+#define DEFAULT_EVAL_HASH_MB 64
+#define MAX_HASH 128
+
 #endif /* definitions_hpp */
