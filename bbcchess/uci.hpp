@@ -5,6 +5,7 @@
 
 // local headers
 #include "board.hpp"
+#include "solver.hpp"
 
 // parse user/GUI move string input (e.g. e7e8q)
 Move parse_move(std::string const & move_string, BoardRepresentation const & rep, size_t move_idx = 0);
@@ -24,7 +25,7 @@ Move parse_move(std::string const & move_string, BoardRepresentation const & rep
  init position from FEN string and make moves on chess board:
  position fen r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1 moves e2a6 e8g8
  */
-void parse_position(std::string const & command, BoardRepresentation & rep);
+void parse_position(std::string const & command, Solver & solver);
 
 /*
  Example UCI command to make engine search for the best move
@@ -32,7 +33,7 @@ void parse_position(std::string const & command, BoardRepresentation & rep);
  fixed depth search:
  go depth 64
  */
-void parse_go(std::string const & command, BoardRepresentation & rep);
+void parse_go(std::string const & command, Solver & solver);
 
-void uci_loop(BoardRepresentation & rep);
+void uci_loop(Solver & solver);
 #endif /* uci_hpp */

@@ -14,7 +14,7 @@
 #include "tt.hpp"
 #include "uci.hpp"
 #include "magic.hpp"
-#include "search.hpp"
+#include "solver.hpp"
 
 U64 nodes = 0;
 
@@ -128,18 +128,19 @@ int main(int argc, char **argv){
     set_options(argc, argv);
     init_all();
     
-    BoardRepresentation rep;
+    Solver solver;
     if (options.debug) {
         auto start = get_time_point();
         
-        rep.parse_fen(TRICKY_POSITION);
-        rep.print_board();
-        search_position(10, rep);
+        solver.parse_fen(TRICKY_POSITION);
+        solver.rep.print_board();
         
-        std::cout << "Evaluation: " << rep.evaluate() << "\n";
+        solver.search_position(10);
+        
+        std::cout << "Evaluation: " << solver.rep.evaluate() << "\n";
         std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";
     } else
-        uci_loop(rep);
+        uci_loop(solver);
     
     
     return 0;

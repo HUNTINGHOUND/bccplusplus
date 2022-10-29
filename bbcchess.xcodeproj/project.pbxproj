@@ -15,9 +15,9 @@
 		90842375290CAA4600E801B3 /* move.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90842374290CAA4600E801B3 /* move.cpp */; };
 		90842377290CAB9A00E801B3 /* search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90842376290CAB9A00E801B3 /* search.cpp */; };
 		90842379290CB28E00E801B3 /* uci.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90842378290CB28E00E801B3 /* uci.cpp */; };
+		9084237C290CD83800E801B3 /* solver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9084237A290CD83800E801B3 /* solver.cpp */; };
 		90AB92AA29022016007557D1 /* zorbist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92A829022016007557D1 /* zorbist.cpp */; };
 		90AB92C52908DC05007557D1 /* tt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92C32908DC05007557D1 /* tt.cpp */; };
-		90AB92C8290913F1007557D1 /* repetition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92C6290913F1007557D1 /* repetition.cpp */; };
 		90AB92CA290919BB007557D1 /* evaluation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92C9290919BB007557D1 /* evaluation.cpp */; };
 		90CBA1E028E615D7004FF338 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90CBA1DF28E615D7004FF338 /* main.cpp */; };
 		90CBA1EE28E637FC004FF338 /* attacktables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90CBA1EC28E637FC004FF338 /* attacktables.cpp */; };
@@ -56,14 +56,14 @@
 		90842374290CAA4600E801B3 /* move.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = move.cpp; sourceTree = "<group>"; };
 		90842376290CAB9A00E801B3 /* search.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = search.cpp; sourceTree = "<group>"; };
 		90842378290CB28E00E801B3 /* uci.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = uci.cpp; sourceTree = "<group>"; };
+		9084237A290CD83800E801B3 /* solver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = solver.cpp; sourceTree = "<group>"; };
+		9084237B290CD83800E801B3 /* solver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = solver.hpp; sourceTree = "<group>"; };
 		90AB92A729008883007557D1 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		90AB92A829022016007557D1 /* zorbist.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = zorbist.cpp; sourceTree = "<group>"; };
 		90AB92A929022016007557D1 /* zorbist.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = zorbist.hpp; sourceTree = "<group>"; };
 		90AB92BE2908DA06007557D1 /* parallel_hashmap */ = {isa = PBXFileReference; lastKnownFileType = folder; path = parallel_hashmap; sourceTree = "<group>"; };
 		90AB92C32908DC05007557D1 /* tt.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tt.cpp; sourceTree = "<group>"; };
 		90AB92C42908DC05007557D1 /* tt.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = tt.hpp; sourceTree = "<group>"; };
-		90AB92C6290913F1007557D1 /* repetition.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = repetition.cpp; sourceTree = "<group>"; };
-		90AB92C7290913F1007557D1 /* repetition.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = repetition.hpp; sourceTree = "<group>"; };
 		90AB92C9290919BB007557D1 /* evaluation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = evaluation.cpp; sourceTree = "<group>"; };
 		90CBA1DC28E615D7004FF338 /* bbcchess */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = bbcchess; sourceTree = BUILT_PRODUCTS_DIR; };
 		90CBA1DF28E615D7004FF338 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -125,8 +125,6 @@
 				903CD4A828EF86CD0049195A /* move.hpp */,
 				90AB92BE2908DA06007557D1 /* parallel_hashmap */,
 				903CD4D028FBCAD50049195A /* pieces.hpp */,
-				90AB92C6290913F1007557D1 /* repetition.cpp */,
-				90AB92C7290913F1007557D1 /* repetition.hpp */,
 				90842376290CAB9A00E801B3 /* search.cpp */,
 				903CD4DA28FE7FBE0049195A /* search.hpp */,
 				90842363290C996400E801B3 /* time_control.cpp */,
@@ -140,6 +138,8 @@
 				90CBA1F028E640E6004FF338 /* util.hpp */,
 				90AB92A829022016007557D1 /* zorbist.cpp */,
 				90AB92A929022016007557D1 /* zorbist.hpp */,
+				9084237A290CD83800E801B3 /* solver.cpp */,
+				9084237B290CD83800E801B3 /* solver.hpp */,
 			);
 			path = bbcchess;
 			sourceTree = "<group>";
@@ -207,8 +207,8 @@
 				90842365290C996400E801B3 /* time_control.cpp in Sources */,
 				9084236C290CA34800E801B3 /* util.cpp in Sources */,
 				90842371290CA58400E801B3 /* board.cpp in Sources */,
+				9084237C290CD83800E801B3 /* solver.cpp in Sources */,
 				90AB92CA290919BB007557D1 /* evaluation.cpp in Sources */,
-				90AB92C8290913F1007557D1 /* repetition.cpp in Sources */,
 				90842373290CA95500E801B3 /* bitboard.cpp in Sources */,
 				90842379290CB28E00E801B3 /* uci.cpp in Sources */,
 				90842377290CAB9A00E801B3 /* search.cpp in Sources */,

@@ -2,7 +2,6 @@
 #include "uci.hpp"
 #include "pieces.hpp"
 #include "definitions.hpp"
-#include "repetition.hpp"
 #include "time_control.hpp"
 #include "search.hpp"
 #include "tt.hpp"
@@ -47,21 +46,21 @@ Move parse_move(std::string const & move_string, BoardRepresentation const & rep
     return 0;
 }
 
-void parse_position(std::string const & command, BoardRepresentation & rep) {
+void parse_position(std::string const & command, Solver & solver) {
     size_t current_char = 9;
     
     // parse UCI "startpos" command
     if (command.compare(current_char, 8, "startpos") == 0)
-        rep.parse_fen(START_POSITION);
+        solver.parse_fen(START_POSITION);
     else {
         current_char = command.find("fen", current_char);
         
         // no fen in command
         if (current_char == std::string::npos)
-            rep.parse_fen(START_POSITION);
+            solver.parse_fen(START_POSITION);
         else {
             current_char += 4;
-            rep.parse_fen(command, current_char);
+            solver.parse_fen(command, current_char);
         }
     }
     
@@ -72,15 +71,15 @@ void parse_position(std::string const & command, BoardRepresentation & rep) {
         current_char += 6;
         
         while(current_char < command.size()) {
-            Move move = parse_move(command, rep, current_char);
+            Move move = parse_move(command, solver.rep, current_char);
             
             if (!move.move)
                 break;
             
-            repetition_index++;
-            repetition_table[repetition_index] = rep.hash_key;
+            solver.repetition_index++;
+            solver.repetition_table[solver.repetition_index] = solver.rep.hash_key;
             
-            rep.make_move(move, all_moves);
+            solver.rep.make_move(move, all_moves);
             
             while (current_char < command.size() && command[current_char] != ' ') current_char++;
             
@@ -89,10 +88,10 @@ void parse_position(std::string const & command, BoardRepresentation & rep) {
         
     }
     
-    rep.print_board();
+    solver.rep.print_board();
 }
 
-void parse_go(std::string const & command, BoardRepresentation & rep) {
+void parse_go(std::string const & command, Solver & solver) {
     reset_time_control();
     
     int depth = -1;
@@ -102,16 +101,16 @@ void parse_go(std::string const & command, BoardRepresentation & rep) {
     // infinite search
     if ((argument = command.find("infinite")) != std::string::npos) {};
     
-    if ((argument = command.find("binc")) != std::string::npos && rep.side == black)
+    if ((argument = command.find("binc")) != std::string::npos && solver.rep.side == black)
         time_control.inc = std::stoi(command.substr(argument + 5));
     
-    if ((argument = command.find("winc")) != std::string::npos && rep.side == white)
+    if ((argument = command.find("winc")) != std::string::npos && solver.rep.side == white)
         time_control.inc = std::stoi(command.substr(argument + 5));
     
-    if ((argument = command.find("wtime")) != std::string::npos && rep.side == white)
+    if ((argument = command.find("wtime")) != std::string::npos && solver.rep.side == white)
         time_control.time = std::stoi(command.substr(argument + 6));
     
-    if ((argument = command.find("btime")) != std::string::npos && rep.side == black)
+    if ((argument = command.find("btime")) != std::string::npos && solver.rep.side == black)
         time_control.time = std::stoi(command.substr(argument + 6));
     
     if ((argument = command.find("movestogo")) != std::string::npos)
@@ -152,10 +151,10 @@ void parse_go(std::string const & command, BoardRepresentation & rep) {
               << " stop:" << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::time_point_cast<std::chrono::milliseconds>(time_control.stop_time).time_since_epoch()).count()
               << " depth:" << depth << " timeset:" << time_control.timeset << "\n";
     
-    search_position(depth, rep);
+    solver.search_position(depth);
 }
 
-void uci_loop(BoardRepresentation & rep) {
+void uci_loop(Solver & solver) {
     std::string input;
     
     std::cout << "id name BBC++\n";
@@ -173,15 +172,15 @@ void uci_loop(BoardRepresentation & rep) {
             std::cout << "readyok\n";
             continue;
         } else if(input.compare(0, 8, "position") == 0) {
-            parse_position(input, rep);
+            parse_position(input, solver);
             
             hash_table.clear_hash_table();
         } else if (input.compare(0, 10, "ucinewgame") == 0) {
-            parse_position("position startpos", rep);
+            parse_position("position startpos", solver);
             
             hash_table.clear_hash_table();
         } else if (input.compare(0, 2, "go") == 0)
-            parse_go(input, rep);
+            parse_go(input, solver);
         else if (input.compare(0, 3, "uci") == 0) {
             std::cout << "id name BBC++\n";
             std::cout << "id author Morgan\n";

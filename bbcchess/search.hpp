@@ -10,7 +10,13 @@
 #include "board.hpp"
 
 class Search {
+    
+    std::array<U64, 1000> & repetition_table;
+    int repetition_index;
+    
 public:
+    
+    Search(std::array<U64, 1000> & _repetition_table, int _repetition_index) : repetition_table(_repetition_table), repetition_index(_repetition_index) {}
     
     const int full_depth_move = 4;
     const int reduction_limit = 3;
@@ -81,6 +87,4 @@ public:
     int negascout(int alpha, int beta, int depth, BoardRepresentation & rep, bool allow_null);
     
 };
-
-void search_position(int depth, BoardRepresentation & rep);
 #endif /* search_hpp */
