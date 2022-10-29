@@ -5,6 +5,7 @@
 #include "parallel_hashmap/phmap.h"
 #include "types.hpp"
 #include "board.hpp"
+#include "move.hpp"
 
 const int hash_flag_exact = 0;
 const int hash_flag_alpha = 1;
@@ -17,6 +18,7 @@ struct TT {
     int depth=0; // current search depth
     int flag=0;  // flag the type of node
     int score=0; // score (alpha / beta / PV)
+    Move best_move;
 };
 
 class TranspositionTable {
@@ -25,8 +27,8 @@ class TranspositionTable {
 public:
     void clear_hash_table();
 
-    int read_hash_entry(int alpha, int beta, int depth, int ply, BoardRepresentation const & rep);
+    int read_hash_entry(int alpha, int beta, Move* best_move, int depth, int ply, BoardRepresentation const & rep);
 
-    void write_hash_entry(int score, int depth, int hash_flag, int ply, BoardRepresentation const & rep);
+    void write_hash_entry(int score, Move best_move, int depth, int hash_flag, int ply, BoardRepresentation const & rep);
 };
 #endif /* tt_hpp */

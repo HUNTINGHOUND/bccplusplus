@@ -35,6 +35,8 @@ int Search::score_move(Move const & move, BoardRepresentation const & rep) {
     }
     
     if (move.get_move_capture()) { // score capture move
+        BoardPiece::Pieces piece = BoardPiece::Pieces(move.get_move_piece());
+        
         BoardPiece::Pieces target_piece = BoardPiece::P;
         BoardPiece::Pieces start_piece, end_piece;
         
@@ -53,7 +55,7 @@ int Search::score_move(Move const & move, BoardRepresentation const & rep) {
             }
         }
         
-        return Evaluation::mvv_lva[piece_to_index[move.get_move_piece()]][piece_to_index[target_piece]] + 10000;
+        return Evaluation::mvv_lva[piece_to_index[piece]][piece_to_index[target_piece]] + 10000;
     } else { // score quiet move
         if (killer_moves[0][ply] == move)
             return 9000;
@@ -76,13 +78,17 @@ void Search::print_move_scores(Moves const & move_list, BoardRepresentation cons
     }
 }
 
-int Search::sort_moves(Moves & move_list, BoardRepresentation const & rep) {
+int Search::sort_moves(Moves & move_list, Move best_move, BoardRepresentation const & rep) {
     // move scores
     int move_scores[256];
     
-    for (int count = 0; count < move_list.count; count++)
-        move_scores[count] = score_move(move_list.moves[count], rep);
-
+    for (int count = 0; count < move_list.count; count++) {
+        if (best_move == move_list.moves[count])
+            move_scores[count] = 30000;
+        
+        else
+            move_scores[count] = score_move(move_list.moves[count], rep);
+    }
     
     int move_idx[256];
     std::iota(move_idx, move_idx + move_list.count, 0);
@@ -118,7 +124,7 @@ int Search::quiescence(int alpha, int beta, BoardRepresentation const & rep) {
         alpha = evaluation;
     
     Moves move_list = rep.generate_moves();
-    sort_moves(move_list, rep);
+    sort_moves(move_list, 0, rep);
     
     for (int count = 0; count < move_list.count; count++) {
         ply++;
@@ -162,21 +168,24 @@ bool Search::ok_to_reduce(Move const & move, bool in_check) {
 }
 
 int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep, bool allow_null) {
+    pv_length[ply] = ply;
+    
     int score;
+    
+    Move best_move = 0;
     
     int hash_flag = hash_flag_alpha;
     
     if ((ply && is_repetition(rep)) || rep.fifty >= 100)
         return 0; // draw by repetition
     
-    pv_length[ply] = ply;
     
     bool pv_node = beta - alpha > 1;
     
     /*
      read hash entry if we're not in a root ply and hash entry is available and current node is not a PV node
      */
-    if (ply && (score = hash_table.read_hash_entry(alpha, beta, depth, ply, rep)) != no_hash_entry && !pv_node)
+    if (ply && (score = hash_table.read_hash_entry(alpha, beta, &best_move, depth, ply, rep)) != no_hash_entry && !pv_node)
         return score;
              
     
@@ -198,6 +207,18 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
     if (in_check) depth++;
     
     int legal_moves = 0, moves_searched = 0;
+    
+    int static_eval = rep.evaluate();
+    
+    
+    // evaluation pruning / static null move pruning
+    if (depth < 3 && !pv_node && !in_check && std::abs(beta - 1) > -INFINITY_SCORE + 100) {
+        int eval_margin = 120 * depth;
+        
+        if (static_eval - eval_margin >= beta)
+            return static_eval - eval_margin;
+    }
+    
     
     // null move pruning
     if (allow_null && depth >= 1 + R && !in_check) {
@@ -235,9 +256,36 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
             return beta;
     }
     
+    
+    // razoring
+    if (!pv_node && !in_check && depth <= 3) {
+        score = static_eval + 125;
+        
+        int new_score;
+        
+        // fail low node
+        if (score < beta) {
+            if (depth == 1) {
+                new_score = quiescence(alpha, beta, rep);
+                return std::max(new_score, score);
+            }
+            
+            score += 175;
+            
+            // fail low node
+            if (score < beta && depth <= 2) {
+                new_score = quiescence(alpha, beta, rep);
+                
+                if (new_score < beta)
+                    return std::max(new_score, score);
+            }
+        }
+    }
+    
+    
     Moves move_list = rep.generate_moves();
     if (follow_pv) enable_pv_sorting(move_list);
-    sort_moves(move_list, rep);
+    sort_moves(move_list, best_move, rep);
     
     for (int count = 0; count < move_list.count; count++) {
         ply++;
@@ -292,6 +340,9 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
         if (score > alpha) {
             hash_flag = hash_flag_exact;
             
+            // store best move so far
+            best_move = move_list.moves[count];
+            
             // story history moves
             if (!move_list.moves[count].get_move_capture()) {
                 history_moves[move_list.moves[count].get_move_piece()][move_list.moves[count].get_move_target()] += depth;
@@ -310,7 +361,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
             
             // beta cutoff
             if (score >= beta) {
-                hash_table.write_hash_entry(beta, depth, ply, hash_flag_beta, rep);
+                hash_table.write_hash_entry(beta, best_move, depth, ply, hash_flag_beta, rep);
                 
                 // store killer moves on quite moves
                 if (!move_list.moves[count].get_move_capture()) {
@@ -332,7 +383,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
             return 0;
     }
     
-    hash_table.write_hash_entry(alpha, depth, hash_flag, ply, rep);
+    hash_table.write_hash_entry(alpha, best_move, depth, hash_flag, ply, rep);
     
     // node (move) fails low
     return alpha;

@@ -132,13 +132,12 @@ int main(int argc, char **argv){
     if (options.debug) {
         auto start = get_time_point();
         
-        solver.parse_fen("2B5/1P6/3b1k1p/1R1P4/8/8/8/1K6 b - - 0 94 ");
+        solver.parse_fen(TRICKY_POSITION);
         solver.rep.print_board();
         
-        solver.search_position(8);
+        solver.search_position(10);
         
         std::cout << "Evaluation: " << solver.rep.evaluate() << "\n";
-        std::cout << "Fen Evaluation " << evaluate_fen_nnue("2B5/1P6/3b1k1p/1R1P4/8/8/8/1K6 b - - 0 94 ") << "\n";
         std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";
     } else
         uci_loop(solver);

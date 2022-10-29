@@ -80,7 +80,7 @@ public:
     
     void print_move_scores(Moves const & move_list, BoardRepresentation const & rep);
     
-    int sort_moves(Moves & move_list, BoardRepresentation const & rep);
+    int sort_moves(Moves & move_list, Move best_move, BoardRepresentation const & rep);
     
     int quiescence(int alpha, int beta, BoardRepresentation const & rep);
     

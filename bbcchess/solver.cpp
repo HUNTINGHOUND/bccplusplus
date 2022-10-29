@@ -147,6 +147,9 @@ void Solver::parse_fen(std::string const & fen, size_t fen_idx) {
         rep.enpassant = BitBoardSquare(rank * 8 + file);
     } else rep.enpassant = no_sq;
     
+    fen_idx++;
+    rep.fifty = std::stoi(fen.substr(fen_idx));
+    
     for (int piece = BoardPiece::P; piece <= BoardPiece::K; piece++)
         rep.occupancies[white] |= rep.bitboards[piece];
     

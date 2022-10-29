@@ -590,7 +590,7 @@ int BoardRepresentation::evaluate() const {
     pieces[index] = 0;
     squares[index] = 0;
     
-    return evaluate_nnue(side, &pieces[0], &squares[0]) * (100 - fifty) / 100;
+    return (evaluate_nnue(side, &pieces[0], &squares[0]) * (100 - fifty) / 100);
 }
 
 void BoardRepresentation::generate_pawn_moves(Moves& move_list) const {

@@ -6,7 +6,7 @@ void TranspositionTable::clear_hash_table() {
     hash_table.clear();
 }
 
-int TranspositionTable::read_hash_entry(int alpha, int beta, int depth, int ply, BoardRepresentation const & rep) {
+int TranspositionTable::read_hash_entry(int alpha, int beta, Move* best_move, int depth, int ply, BoardRepresentation const & rep) {
     if (!hash_table.count(rep.hash_key)) return no_hash_entry;
     
     TT hash_entry = hash_table[rep.hash_key];
@@ -30,12 +30,14 @@ int TranspositionTable::read_hash_entry(int alpha, int beta, int depth, int ply,
             return beta;
     }
     
+    *best_move = hash_entry.best_move;
+    
     return no_hash_entry;
 }
 
-void TranspositionTable::write_hash_entry(int score, int depth, int hash_flag, int ply, BoardRepresentation const & rep) {
+void TranspositionTable::write_hash_entry(int score, Move best_move, int depth, int hash_flag, int ply, BoardRepresentation const & rep) {
     if (score < -MATE_SCORE) score -= ply;
     if (score > MATE_SCORE) score += ply;
     
-    hash_table[rep.hash_key] = {depth, hash_flag, score};
+    hash_table[rep.hash_key] = {depth, hash_flag, score, best_move};
 }
