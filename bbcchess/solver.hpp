@@ -15,6 +15,7 @@ public:
     std::array<U64, 1000> repetition_table;
     
     TranspositionTable hash_table;
+    EvaluationTable eval_table;
 
     // repetition index
     int repetition_index;

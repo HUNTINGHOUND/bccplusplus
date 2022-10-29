@@ -10,7 +10,7 @@
 #include "pieces.hpp"
 
 void Solver::search_position(int depth) {
-    Search search(repetition_table, repetition_index, hash_table);
+    Search search(repetition_table, repetition_index, hash_table, eval_table);
     
     auto start = get_time_point();
     

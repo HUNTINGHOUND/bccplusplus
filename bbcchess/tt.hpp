@@ -31,4 +31,15 @@ public:
 
     void write_hash_entry(int score, Move best_move, int depth, int hash_flag, int ply, BoardRepresentation const & rep);
 };
+
+class EvaluationTable {
+    phmap::parallel_flat_hash_map<U64, int> hash_table;
+    
+public:
+    void clear_hash_table();
+
+    int read_hash_entry(BoardRepresentation const & rep);
+
+    void write_hash_entry(int score, BoardRepresentation const & rep);
+};
 #endif /* tt_hpp */

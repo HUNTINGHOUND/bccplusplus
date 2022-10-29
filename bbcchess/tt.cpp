@@ -41,3 +41,16 @@ void TranspositionTable::write_hash_entry(int score, Move best_move, int depth, 
     
     hash_table[rep.hash_key] = {depth, hash_flag, score, best_move};
 }
+
+void EvaluationTable::clear_hash_table() {
+    hash_table.clear();
+}
+
+int EvaluationTable::read_hash_entry(BoardRepresentation const & rep) {
+    if (!hash_table.count(rep.hash_key)) return no_hash_entry;
+    return hash_table[rep.hash_key];
+}
+
+void EvaluationTable::write_hash_entry(int score, BoardRepresentation const & rep) {
+    hash_table[rep.hash_key] = score;
+}

@@ -16,10 +16,11 @@ class Search {
     int repetition_index;
     
     TranspositionTable & hash_table;
+    EvaluationTable & eval_table;
     
 public:
     
-    Search(std::array<U64, 1000> & _repetition_table, int _repetition_index, TranspositionTable & _hash_table) : repetition_table(_repetition_table), repetition_index(_repetition_index), hash_table(_hash_table) {}
+    Search(std::array<U64, 1000> & _repetition_table, int _repetition_index, TranspositionTable & _hash_table, EvaluationTable & _eval_table) : repetition_table(_repetition_table), repetition_index(_repetition_index), hash_table(_hash_table), eval_table(_eval_table) {}
     
     const int full_depth_move = 4;
     const int reduction_limit = 3;
@@ -81,6 +82,9 @@ public:
     void print_move_scores(Moves const & move_list, BoardRepresentation const & rep);
     
     int sort_moves(Moves & move_list, Move best_move, BoardRepresentation const & rep);
+    
+    // evaluate the the given position, use cached evaluation score if found, else generate and store the score.
+    int evaluate_position(BoardRepresentation const & rep);
     
     int quiescence(int alpha, int beta, BoardRepresentation const & rep);
     

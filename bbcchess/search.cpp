@@ -105,16 +105,26 @@ int Search::sort_moves(Moves & move_list, Move best_move, BoardRepresentation co
     return 0;
 }
 
+int Search::evaluate_position(BoardRepresentation const & rep) {
+    int eval = eval_table.read_hash_entry(rep);
+    if(eval == no_hash_entry) {
+        eval = rep.evaluate();
+        eval_table.write_hash_entry(eval, rep);
+    }
+    
+    return eval;
+}
+
 int Search::quiescence(int alpha, int beta, BoardRepresentation const & rep) {
     if ((nodes & 2047) == 0) communicate();
     
     nodes++;
     
     if (ply > MAX_PLY - 1)
-        return rep.evaluate();
+        return evaluate_position(rep);
     
     // evaluate position
-    int evaluation = rep.evaluate();
+    int evaluation = evaluate_position(rep);
     
     // beta cut off
     if (evaluation >= beta)
@@ -197,7 +207,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
     // we are too deep, hence there's an overflow of arrays relying on max ply constant
     if (ply > MAX_PLY - 1)
         // evaluate position
-        return rep.evaluate();
+        return evaluate_position(rep);
     
     nodes++;
     
@@ -208,7 +218,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
     
     int legal_moves = 0, moves_searched = 0;
     
-    int static_eval = rep.evaluate();
+    int static_eval = evaluate_position(rep);
     
     
     // evaluation pruning / static null move pruning
