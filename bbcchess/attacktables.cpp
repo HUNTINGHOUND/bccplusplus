@@ -352,6 +352,15 @@ U64 AttackTables::Bishop::bishop_attacks_on_the_fly(BitBoardSquare square, U64 b
     return attacks;
 }
 
+U64 AttackTables::Bishop::get_bishop_attacks(BitBoardSquare square, U64 occupancy) {
+    // get bishop attacks assuming current board occupancy
+    occupancy &= bishop_masks[square];
+    occupancy *= bishop_magic_numbers[square];
+    occupancy >>= 64 - bishop_relevant_bits[square];
+    
+    return bishop_attacks[square][occupancy];
+}
+
 U64 AttackTables::Rook::mask_rook_attacks(BitBoardSquare square) {
     // result attacks bitboard
     U64 attacks = 0ULL;
@@ -411,6 +420,19 @@ U64 AttackTables::Rook::rook_attacks_on_the_fly(BitBoardSquare square, U64 block
     
     // return attack map
     return attacks;
+}
+
+U64 AttackTables::Rook::get_rook_attacks(BitBoardSquare square, U64 occupancy) {
+    // get bishop attacks assuming current board occupancy
+    occupancy &= rook_masks[square];
+    occupancy *= rook_magic_numbers[square];
+    occupancy >>= 64 - rook_relevant_bits[square];
+    
+    return rook_attacks[square][occupancy];
+}
+
+U64 AttackTables::Queen::get_queen_attacks(BitBoardSquare square, U64 occupancy) {
+    return Rook::get_rook_attacks(square, occupancy) | Bishop::get_bishop_attacks(square, occupancy);
 }
 
 

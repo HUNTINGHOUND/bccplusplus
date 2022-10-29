@@ -1,9 +1,10 @@
 #ifndef magic_hpp
 #define magic_hpp
 
-#include "board.hpp"
-
-using U64 = unsigned long long;
+// local headers
+#include "pieces.hpp"
+#include "types.hpp"
+#include "bitboard.hpp"
 
 U64 generate_magic_number();
 

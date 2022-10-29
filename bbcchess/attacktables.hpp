@@ -8,8 +8,7 @@
 #include "boardinfo.hpp"
 #include "bitboard.hpp"
 #include "pieces.hpp"
-
-using U64 = unsigned long long;
+#include "types.hpp"
 
 namespace AttackTables {
 
@@ -107,14 +106,7 @@ const std::array<int, 64> bishop_relevant_bits = {
 
 U64 mask_bishop_attacks(BitBoardSquare square);
 U64 bishop_attacks_on_the_fly(BitBoardSquare square, U64 block);
-inline U64 get_bishop_attacks(BitBoardSquare square, U64 occupancy) {
-    // get bishop attacks assuming current board occupancy
-    occupancy &= bishop_masks[square];
-    occupancy *= bishop_magic_numbers[square];
-    occupancy >>= 64 - bishop_relevant_bits[square];
-    
-    return bishop_attacks[square][occupancy];
-}
+U64 get_bishop_attacks(BitBoardSquare square, U64 occupancy);
 }
 
 namespace Rook {
@@ -136,22 +128,12 @@ const std::array<int, 64> rook_relevant_bits = {
 
 U64 mask_rook_attacks(BitBoardSquare square);
 U64 rook_attacks_on_the_fly(BitBoardSquare square, U64 block);
-inline U64 get_rook_attacks(BitBoardSquare square, U64 occupancy) {
-    // get bishop attacks assuming current board occupancy
-    occupancy &= rook_masks[square];
-    occupancy *= rook_magic_numbers[square];
-    occupancy >>= 64 - rook_relevant_bits[square];
-    
-    return rook_attacks[square][occupancy];
-}
+U64 get_rook_attacks(BitBoardSquare square, U64 occupancy);
 }
 
 namespace Queen {
-inline U64 get_queen_attacks(BitBoardSquare square, U64 occupancy) {
-    return Rook::get_rook_attacks(square, occupancy) | Bishop::get_bishop_attacks(square, occupancy);
+U64 get_queen_attacks(BitBoardSquare square, U64 occupancy);
 }
-}
-
 }
 
 

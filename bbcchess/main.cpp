@@ -3,16 +3,18 @@
 #include <getopt.h>
 
 // local headers
+#include "types.hpp"
 #include "board.hpp"
+#include "time_control.hpp"
 #include "attacktables.hpp"
-#include "util.hpp"
-#include "magic.hpp"
-#include "move.hpp"
-#include "uci.hpp"
-#include "search.hpp"
-#include "zorbist.hpp"
+#include "pieces.hpp"
 #include "evaluation.hpp"
-
+#include "zorbist.hpp"
+#include "definitions.hpp"
+#include "tt.hpp"
+#include "uci.hpp"
+#include "magic.hpp"
+#include "search.hpp"
 
 U64 nodes = 0;
 
@@ -117,9 +119,9 @@ void init_all() {
     Evaluation::init_evaluation_masks();
     
     if (options.init_magic) init_magic_numbers();
-    init_random_keys();
+    Zorbist::init_random_keys();
     
-    clear_hash_table();
+    hash_table.clear_hash_table();
 }
 
 int main(int argc, char **argv){

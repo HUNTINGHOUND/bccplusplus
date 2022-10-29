@@ -3,7 +3,7 @@
 
 #include <array>
 
-using U64 = unsigned long long;
+#include "types.hpp"
 
 // positions repetition table
 extern std::array<U64, 1000> repetition_table;

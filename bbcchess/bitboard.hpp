@@ -2,55 +2,20 @@
 #define bitboard_hpp
 
 // system headers
-#include <iostream>
 #include <array>
+#include <string>
 
-// define bitboard data type
-using U64 = unsigned long long;
+// local headers
+#include "types.hpp"
 
 namespace BitBoard {
-inline void set_bit(U64& bitboard, int square) {
-    bitboard |= (1ULL << square);
-}
+void set_bit(U64& bitboard, int square);
 
-inline U64 get_bit(U64 bitboard, int square) {
-    return bitboard & (1ULL << square);
-}
+U64 get_bit(U64 const & bitboard, int square);
 
-inline void pop_bit(U64& bitboard, int square) {
-    bitboard &= ~(1ULL << (square));
-}
+void pop_bit(U64& bitboard, int square);
 
-inline void print_bitboard(U64 bitboard) {
-    std::cout << "\n";
-
-    // loop over board ranks
-    for (int rank = 0; rank < 8; rank++)
-    {
-        // loop over board files
-        for (int file = 0; file < 8; file++)
-        {
-            // convert file & rank into square index
-            int square = rank * 8 + file;
-            
-            // print ranks
-            if (!file)
-                std::cout << "  " << 8 - rank << " ";
-            
-            // print bit state (either 1 or 0)
-            std::cout << " " << (get_bit(bitboard, square) ? 1 : 0);
-        }
-        
-        // print new line every rank
-        std::cout << "\n";
-    }
-    
-    // print board files
-    std::cout << "\n     a b c d e f g h\n\n";
-    
-    // print bitboard as unsigned decimal number
-    std::cout << "     Bitboard: " << bitboard << "\n\n";
-}
+void print_bitboard(U64 const & bitboard);
 }
 
 // board squares
