@@ -7,7 +7,6 @@
 #include "pieces.hpp"
 #include "time_control.hpp"
 #include "evaluation.hpp"
-#include "tt.hpp"
 #include "zorbist.hpp"
 
 bool Search::is_repetition(BoardRepresentation const & rep) {
@@ -167,7 +166,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
     
     int hash_flag = hash_flag_alpha;
     
-    if (ply && is_repetition(rep))
+    if ((ply && is_repetition(rep)) || rep.fifty >= 100)
         return 0; // draw by repetition
     
     pv_length[ply] = ply;

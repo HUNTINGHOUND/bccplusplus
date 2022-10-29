@@ -11,10 +11,10 @@
 #include "evaluation.hpp"
 #include "zorbist.hpp"
 #include "definitions.hpp"
-#include "tt.hpp"
 #include "uci.hpp"
 #include "magic.hpp"
 #include "solver.hpp"
+#include "nnue_eval.hpp"
 
 U64 nodes = 0;
 
@@ -121,7 +121,7 @@ void init_all() {
     if (options.init_magic) init_magic_numbers();
     Zorbist::init_random_keys();
     
-    hash_table.clear_hash_table();
+    init_nnue("/Users/morgan/Desktop/bbcchess/bbcchess/nnue/nn-9931db908a9b.nnue");
 }
 
 int main(int argc, char **argv){
@@ -132,12 +132,13 @@ int main(int argc, char **argv){
     if (options.debug) {
         auto start = get_time_point();
         
-        solver.parse_fen(TRICKY_POSITION);
+        solver.parse_fen("2B5/1P6/3b1k1p/1R1P4/8/8/8/1K6 b - - 0 94 ");
         solver.rep.print_board();
         
-        solver.search_position(10);
+        solver.search_position(8);
         
         std::cout << "Evaluation: " << solver.rep.evaluate() << "\n";
+        std::cout << "Fen Evaluation " << evaluate_fen_nnue("2B5/1P6/3b1k1p/1R1P4/8/8/8/1K6 b - - 0 94 ") << "\n";
         std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";
     } else
         uci_loop(solver);

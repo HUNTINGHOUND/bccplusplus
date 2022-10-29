@@ -8,15 +8,18 @@
 #include "move.hpp"
 #include "definitions.hpp"
 #include "board.hpp"
+#include "tt.hpp"
 
 class Search {
     
     std::array<U64, 1000> & repetition_table;
     int repetition_index;
     
+    TranspositionTable & hash_table;
+    
 public:
     
-    Search(std::array<U64, 1000> & _repetition_table, int _repetition_index) : repetition_table(_repetition_table), repetition_index(_repetition_index) {}
+    Search(std::array<U64, 1000> & _repetition_table, int _repetition_index, TranspositionTable & _hash_table) : repetition_table(_repetition_table), repetition_index(_repetition_index), hash_table(_hash_table) {}
     
     const int full_depth_move = 4;
     const int reduction_limit = 3;

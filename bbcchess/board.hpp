@@ -33,6 +33,8 @@ public:
     // castling rights
     int castle;
     
+    int fifty = 0;
+    
     void print_board() const;
     
     void print_attacked_square(TurnColor side) const;
@@ -51,6 +53,8 @@ public:
     Moves generate_moves() const;
     
     int get_game_phase_score() const;
+    
+    int hand_evaluate() const;
     
     int evaluate() const;
     

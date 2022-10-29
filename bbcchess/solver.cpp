@@ -10,7 +10,7 @@
 #include "pieces.hpp"
 
 void Solver::search_position(int depth) {
-    Search search(repetition_table, repetition_index);
+    Search search(repetition_table, repetition_index, hash_table);
     
     auto start = get_time_point();
     
@@ -88,6 +88,8 @@ void Solver::parse_fen(std::string const & fen, size_t fen_idx) {
     
     repetition_index = 0;
     std::fill(repetition_table.begin(), repetition_table.end(), 0);
+    
+    hash_table.clear_hash_table();
     
     for (int rank = 0; rank < 8; rank++) {
         for (int file = 0; file < 8; file++) {

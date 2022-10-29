@@ -4,6 +4,7 @@
 #include "zorbist.hpp"
 #include "attacktables.hpp"
 #include "evaluation.hpp"
+#include "nnue_eval.hpp"
 
 void BoardRepresentation::print_board() const {
     // print offset
@@ -14,7 +15,7 @@ void BoardRepresentation::print_board() const {
         // loop over board files
         for (int file = 0; file < 8; file++) {
             // init square
-             BitBoardSquare square = BitBoardSquare(rank * 8 + file);
+            BitBoardSquare square = BitBoardSquare(rank * 8 + file);
             
             // print ranks
             if (!file)
@@ -32,11 +33,11 @@ void BoardRepresentation::print_board() const {
             }
             
             // print different piece set depending on OS
-            #ifdef WIN64
-                std::cout << " " << (piece == -1 ? '.' : BoardPiece::ascii_pieces[piece]);
-            #else
-                std::cout << " " << (piece == -1 ? "." : BoardPiece::unicode_pieces[piece]);
-            #endif
+#ifdef WIN64
+            std::cout << " " << (piece == -1 ? '.' : BoardPiece::ascii_pieces[piece]);
+#else
+            std::cout << " " << (piece == -1 ? "." : BoardPiece::unicode_pieces[piece]);
+#endif
         }
         
         std::cout << "\n";
@@ -46,7 +47,8 @@ void BoardRepresentation::print_board() const {
     std::cout << "     Side:     " << (side ? "black" : "white") << "\n";
     std::cout << "     Enpassant:   " << (enpassant != no_sq ?   square_to_coordinates[enpassant] : "no") << "\n";
     std::cout << "     Castling:  " << (castle & wk ? 'K' : '-') << (BoardRepresentation::castle & wq ? 'Q' : '-') << (castle & bk ? 'k' : '-') << (castle & bq ? 'q' : '-') << "\n\n";
-    std::cout << "     Hash key:  " << std::hex << hash_key << std::dec << "\n\n";
+    std::cout << "     Hash key:  " << std::hex << hash_key << std::dec << "\n";
+    std::cout << "     Fifty move:  " << fifty << "\n\n";
 }
 
 void BoardRepresentation::print_attacked_square(TurnColor side) const {
@@ -102,7 +104,7 @@ bool BoardRepresentation::is_square_attacked(BitBoardSquare square, TurnColor si
     else if ((side == white ? bitboards[BoardPiece::R] : bitboards[BoardPiece::r]) & AttackTables::Rook::get_rook_attacks(square, occupancies[both])) return true;
     else if ((side == white ? bitboards[BoardPiece::Q] : bitboards[BoardPiece::q]) & AttackTables::Queen::get_queen_attacks(square, occupancies[both])) return true;
     else if ((side == white ? bitboards[BoardPiece::K] : bitboards[BoardPiece::k]) & AttackTables::King::king_attacks[square]) return true;
-
+    
     return false;
 }
 
@@ -127,7 +129,12 @@ int BoardRepresentation::make_move(Move const & move, MoveFlag move_flag) {
         hash_key ^= Zorbist::pieces_keys[piece][source_square];
         hash_key ^= Zorbist::pieces_keys[piece][target_square];
         
+        fifty++;
+        if (piece == BoardPiece::P || piece == BoardPiece::p)
+            fifty = 0;
+        
         if (capture) {
+            fifty = 0;
             BoardPiece::Pieces start_piece, end_piece;
             
             if (side == white) {
@@ -162,12 +169,12 @@ int BoardRepresentation::make_move(Move const & move, MoveFlag move_flag) {
         
         if (enpass) {
             side == white ? BitBoard::pop_bit(bitboards[BoardPiece::p], target_square + 8) :
-                            BitBoard::pop_bit(bitboards[BoardPiece::P], target_square - 8);
+            BitBoard::pop_bit(bitboards[BoardPiece::P], target_square - 8);
             
             hash_key ^= side == white ? Zorbist::pieces_keys[BoardPiece::p][target_square + 8] : Zorbist::pieces_keys[BoardPiece::P][target_square - 8];
             
             side == white ? BitBoard::pop_bit(occupancies[black], target_square + 8) :
-                            BitBoard::pop_bit(occupancies[white], target_square - 8);
+            BitBoard::pop_bit(occupancies[white], target_square - 8);
         }
         
         if (enpassant != no_sq) hash_key ^= Zorbist::enpassant_keys[enpassant];
@@ -176,7 +183,7 @@ int BoardRepresentation::make_move(Move const & move, MoveFlag move_flag) {
         
         if (double_push) {
             side == white ? enpassant = BitBoardSquare(target_square + 8) :
-                            enpassant = BitBoardSquare(target_square - 8);
+            enpassant = BitBoardSquare(target_square - 8);
             
             hash_key ^= Zorbist::enpassant_keys[side == white ? target_square + 8 : target_square - 8];
         }
@@ -269,7 +276,7 @@ int BoardRepresentation::make_move(Move const & move, MoveFlag move_flag) {
 #endif
         
         if (is_square_attacked(side == white ? BitBoardSquare(get_ls1b_index(bitboards[BoardPiece::k])) :
-                                               BitBoardSquare(get_ls1b_index(bitboards[BoardPiece::K])), side))
+                               BitBoardSquare(get_ls1b_index(bitboards[BoardPiece::K])), side))
             return 0;
         
         return 1;
@@ -325,7 +332,7 @@ int BoardRepresentation::get_game_phase_score() const {
     return white_piece_scores + black_piece_scores;
 }
 
-int BoardRepresentation::evaluate() const {
+int BoardRepresentation::hand_evaluate() const {
     int game_phase_score = get_game_phase_score();
     
     GamePhase game_phase = middlegame;
@@ -349,11 +356,14 @@ int BoardRepresentation::evaluate() const {
             
             square = BitBoardSquare(get_ls1b_index(bitboard));
             
+            opening_score += Evaluation::material_score[opening][piece] * 2;
+            endgame_score += Evaluation::material_score[endgame][piece] * 2;
+            
             opening_score += Evaluation::material_score[opening][piece];
             endgame_score += Evaluation::material_score[endgame][piece];
             
             switch (piece) {
-                // evaluate white pieces
+                    // evaluate white pieces
                 case BoardPiece::P: // white pawn
                     opening_score += Evaluation::positional_score[opening][BoardPiece::PAWN][square];
                     endgame_score += Evaluation::positional_score[endgame][BoardPiece::PAWN][square];
@@ -375,7 +385,7 @@ int BoardRepresentation::evaluate() const {
                         opening_score += Evaluation::passed_pawn_bonus[Evaluation::get_rank[square]];
                         endgame_score += Evaluation::passed_pawn_bonus[Evaluation::get_rank[square]];
                     }
-                     
+                    
                     break;
                 case BoardPiece::N: // white knight
                     opening_score += Evaluation::positional_score[opening][BoardPiece::KNIGHT][square];
@@ -385,7 +395,7 @@ int BoardRepresentation::evaluate() const {
                 case BoardPiece::B:
                     opening_score += Evaluation::positional_score[opening][BoardPiece::BISHOP][square];
                     endgame_score += Evaluation::positional_score[endgame][BoardPiece::BISHOP][square];
-
+                    
                     // mobility
                     opening_score += (count_bits(AttackTables::Bishop::get_bishop_attacks(square, occupancies[both])) - Evaluation::bishop_unit) * Evaluation::bishop_mobility_opening;
                     endgame_score += (count_bits(AttackTables::Bishop::get_bishop_attacks(square, occupancies[both])) - Evaluation::bishop_unit) * Evaluation::bishop_mobility_endgame;
@@ -407,7 +417,7 @@ int BoardRepresentation::evaluate() const {
                         opening_score += Evaluation::open_file_score;
                         endgame_score += Evaluation::open_file_score;
                     }
-                     
+                    
                     
                     break;
                 case BoardPiece::Q:
@@ -439,9 +449,9 @@ int BoardRepresentation::evaluate() const {
                     endgame_score += count_bits(AttackTables::King::king_attacks[square] & occupancies[white]) * Evaluation::king_shield_bonus;
                     
                     break;
-                     
                     
-                // evaluate place pieces:
+                    
+                    // evaluate place pieces:
                 case BoardPiece::p:
                     opening_score -= Evaluation::positional_score[opening][BoardPiece::PAWN][mirror_score[square]];
                     endgame_score -= Evaluation::positional_score[endgame][BoardPiece::PAWN][mirror_score[square]];
@@ -522,16 +532,65 @@ int BoardRepresentation::evaluate() const {
                     opening_score -= count_bits(AttackTables::King::king_attacks[square] & occupancies[black]) * Evaluation::king_shield_bonus;
                     endgame_score -= count_bits(AttackTables::King::king_attacks[square] & occupancies[black]) * Evaluation::king_shield_bonus;
                     break;
+                    
             }
-            
-            if (game_phase == middlegame) score = Evaluation::interpolate_score(opening_score, endgame_score, game_phase_score);
-            else score = game_phase == opening ? opening_score : endgame_score;
             
             BitBoard::pop_bit(bitboard, square);
         }
     }
     
-    return (side == white) ? score : -score;
+    
+    
+    if (game_phase == middlegame) score = Evaluation::interpolate_score(opening_score, endgame_score, game_phase_score);
+    else score = game_phase == opening ? opening_score : endgame_score;
+    
+    
+    return side == white ? score : -score;
+}
+
+int BoardRepresentation::evaluate() const {
+    U64 bitboard;
+    
+    BoardPiece::Pieces piece;
+    BitBoardSquare square;
+    
+    // array of piece codes converted to Stockfish piece codes
+    std::array<int, 33> pieces;
+    
+    // array of square indices converted to Stockfish square indices
+    std::array<int, 33> squares;
+    
+    // pieces and squares current index to write next piece square pair at
+    int index = 2;
+    
+    for (int bb_piece = BoardPiece::P; bb_piece <= BoardPiece::k; bb_piece++) {
+        bitboard = bitboards[bb_piece];
+        
+        while (bitboard) {
+            piece = BoardPiece::Pieces(bb_piece);
+            
+            square = BitBoardSquare(get_ls1b_index(bitboard));
+            
+            if (piece == BoardPiece::K) {
+                pieces[0] = Evaluation::nnue_pieces[piece];
+                squares[0] = Evaluation::nnue_squares[square];
+            } else if (piece == BoardPiece::k) {
+                pieces[1] = Evaluation::nnue_pieces[piece];
+                squares[1] = Evaluation::nnue_squares[square];
+            } else {
+                pieces[index] = Evaluation::nnue_pieces[piece];
+                squares[index] = Evaluation::nnue_squares[square];
+                index++;
+            }
+            
+            BitBoard::pop_bit(bitboard, square);
+        }
+    }
+    
+    pieces[index] = 0;
+    squares[index] = 0;
+    
+    return evaluate_nnue(side, &pieces[0], &squares[0]) * (100 - fifty) / 100;
 }
 
 void BoardRepresentation::generate_pawn_moves(Moves& move_list) const {
@@ -642,9 +701,9 @@ void BoardRepresentation::generate_castling_moves(Moves& move_list) const{
                 side == white ? move_list.add_move(Move(e1, g1,
                                                         side == white ? BoardPiece::K : BoardPiece::k,
                                                         0, 0, 0, 0, 1)) :
-                                move_list.add_move(Move(e8, g8,
-                                                        side == white ? BoardPiece::K : BoardPiece::k,
-                                                        0, 0, 0, 0, 1));
+                move_list.add_move(Move(e8, g8,
+                                        side == white ? BoardPiece::K : BoardPiece::k,
+                                        0, 0, 0, 0, 1));
         }
     }
     
@@ -659,9 +718,9 @@ void BoardRepresentation::generate_castling_moves(Moves& move_list) const{
                 side == white ? move_list.add_move(Move(e1, c1,
                                                         side == white ? BoardPiece::K : BoardPiece::k,
                                                         0, 0, 0, 0, 1)) :
-                                move_list.add_move(Move(e8, c8,
-                                                        side == white ? BoardPiece::K : BoardPiece::k,
-                                                        0, 0, 0, 0, 1));
+                move_list.add_move(Move(e8, c8,
+                                        side == white ? BoardPiece::K : BoardPiece::k,
+                                        0, 0, 0, 0, 1));
         }
     }
 }

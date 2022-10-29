@@ -7,11 +7,14 @@
 // local headers
 #include "types.hpp"
 #include "board.hpp"
+#include "tt.hpp"
 
 class Solver {
 public:
     // positions repetition table
     std::array<U64, 1000> repetition_table;
+    
+    TranspositionTable hash_table;
 
     // repetition index
     int repetition_index;

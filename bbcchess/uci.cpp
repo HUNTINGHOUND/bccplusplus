@@ -4,7 +4,6 @@
 #include "definitions.hpp"
 #include "time_control.hpp"
 #include "search.hpp"
-#include "tt.hpp"
 
 Move parse_move(std::string const & move_string, BoardRepresentation const & rep, size_t move_idx) {
     Moves move_list = rep.generate_moves();
@@ -134,19 +133,23 @@ void parse_go(std::string const & command, Solver & solver) {
         
         time_control.time /= time_control.movestogo;
         
-        if (time_control.time > 1500) time_control.time -= 50;
-        
+        time_control.time -= 50;
+        if (time_control.time < 0) {
+            time_control.time = 0;
+            
+            time_control.inc -= 50;
+            
+            if (time_control.inc < 0) time_control.inc = 1;
+        }
+                
         // init stop time
         time_control.stop_time = time_control.start_time + std::chrono::milliseconds(time_control.time) + std::chrono::milliseconds(time_control.inc);
-        
-        // treat increment as seconds per move when time is almost up
-        if (time_control.time < 1500 && time_control.inc && depth == 64) time_control.stop_time = time_control.start_time + std::chrono::milliseconds(time_control.inc - 50);
     }
     
     if (depth == -1)
         depth = 64;
     
-    std::cout << "time:" << time_control.time
+    std::cout << "time:" << time_control.time << " inc: " << time_control.inc
               << " start:" << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::time_point_cast<std::chrono::milliseconds>(time_control.start_time).time_since_epoch()).count()
               << " stop:" << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::time_point_cast<std::chrono::milliseconds>(time_control.stop_time).time_since_epoch()).count()
               << " depth:" << depth << " timeset:" << time_control.timeset << "\n";
@@ -173,12 +176,8 @@ void uci_loop(Solver & solver) {
             continue;
         } else if(input.compare(0, 8, "position") == 0) {
             parse_position(input, solver);
-            
-            hash_table.clear_hash_table();
         } else if (input.compare(0, 10, "ucinewgame") == 0) {
             parse_position("position startpos", solver);
-            
-            hash_table.clear_hash_table();
         } else if (input.compare(0, 2, "go") == 0)
             parse_go(input, solver);
         else if (input.compare(0, 3, "uci") == 0) {

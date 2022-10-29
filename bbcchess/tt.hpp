@@ -29,6 +29,4 @@ public:
 
     void write_hash_entry(int score, int depth, int hash_flag, int ply, BoardRepresentation const & rep);
 };
-
-extern TranspositionTable hash_table;
 #endif /* tt_hpp */

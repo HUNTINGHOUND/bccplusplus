@@ -14,6 +14,9 @@ Todo will be updated periodically, checked items will be removed and report will
 - [ ] Implement more search variant too see if they offer improvement
 - [ ] Look into more hash options than Zorist
 - [ ] Refactor the code and organize
+- [ ] Help change the probe nnue library to use the newest stock fish NNUE
+- [ ] Scale the NNUE score to improve margin based pruning
+
 
 
 ## 10/19/2022

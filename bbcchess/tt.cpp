@@ -2,8 +2,6 @@
 #include "tt.hpp"
 #include "definitions.hpp"
 
-TranspositionTable hash_table;
-
 void TranspositionTable::clear_hash_table() {
     hash_table.clear();
 }

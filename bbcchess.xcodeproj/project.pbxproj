@@ -16,6 +16,9 @@
 		90842377290CAB9A00E801B3 /* search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90842376290CAB9A00E801B3 /* search.cpp */; };
 		90842379290CB28E00E801B3 /* uci.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90842378290CB28E00E801B3 /* uci.cpp */; };
 		9084237C290CD83800E801B3 /* solver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9084237A290CD83800E801B3 /* solver.cpp */; };
+		90842383290CEEB800E801B3 /* misc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9084237F290CEEB800E801B3 /* misc.cpp */; };
+		90842384290CEEB900E801B3 /* nnue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90842381290CEEB800E801B3 /* nnue.cpp */; };
+		90842387290CEEE400E801B3 /* nnue_eval.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90842385290CEEE400E801B3 /* nnue_eval.cpp */; };
 		90AB92AA29022016007557D1 /* zorbist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92A829022016007557D1 /* zorbist.cpp */; };
 		90AB92C52908DC05007557D1 /* tt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92C32908DC05007557D1 /* tt.cpp */; };
 		90AB92CA290919BB007557D1 /* evaluation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90AB92C9290919BB007557D1 /* evaluation.cpp */; };
@@ -58,6 +61,13 @@
 		90842378290CB28E00E801B3 /* uci.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = uci.cpp; sourceTree = "<group>"; };
 		9084237A290CD83800E801B3 /* solver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = solver.cpp; sourceTree = "<group>"; };
 		9084237B290CD83800E801B3 /* solver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = solver.hpp; sourceTree = "<group>"; };
+		9084237E290CEEB800E801B3 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		9084237F290CEEB800E801B3 /* misc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = misc.cpp; sourceTree = "<group>"; };
+		90842380290CEEB800E801B3 /* misc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = misc.h; sourceTree = "<group>"; };
+		90842381290CEEB800E801B3 /* nnue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nnue.cpp; sourceTree = "<group>"; };
+		90842382290CEEB800E801B3 /* nnue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nnue.h; sourceTree = "<group>"; };
+		90842385290CEEE400E801B3 /* nnue_eval.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = nnue_eval.cpp; sourceTree = "<group>"; };
+		90842386290CEEE400E801B3 /* nnue_eval.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = nnue_eval.hpp; sourceTree = "<group>"; };
 		90AB92A729008883007557D1 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		90AB92A829022016007557D1 /* zorbist.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = zorbist.cpp; sourceTree = "<group>"; };
 		90AB92A929022016007557D1 /* zorbist.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = zorbist.hpp; sourceTree = "<group>"; };
@@ -86,6 +96,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9084237D290CEEB800E801B3 /* nnue */ = {
+			isa = PBXGroup;
+			children = (
+				9084237E290CEEB800E801B3 /* LICENSE */,
+				9084237F290CEEB800E801B3 /* misc.cpp */,
+				90842380290CEEB800E801B3 /* misc.h */,
+				90842381290CEEB800E801B3 /* nnue.cpp */,
+				90842382290CEEB800E801B3 /* nnue.h */,
+			);
+			path = nnue;
+			sourceTree = "<group>";
+		};
 		90CBA1D328E615D7004FF338 = {
 			isa = PBXGroup;
 			children = (
@@ -113,6 +135,7 @@
 				903CD4CD28FBC9F00049195A /* bitboard.hpp */,
 				90842370290CA58400E801B3 /* board.cpp */,
 				90CBA1EA28E61833004FF338 /* board.hpp */,
+				9084237D290CEEB800E801B3 /* nnue */,
 				903CD4D228FBD2160049195A /* boardinfo.hpp */,
 				90842367290C9A5F00E801B3 /* definitions.hpp */,
 				90AB92C9290919BB007557D1 /* evaluation.cpp */,
@@ -140,6 +163,8 @@
 				90AB92A929022016007557D1 /* zorbist.hpp */,
 				9084237A290CD83800E801B3 /* solver.cpp */,
 				9084237B290CD83800E801B3 /* solver.hpp */,
+				90842385290CEEE400E801B3 /* nnue_eval.cpp */,
+				90842386290CEEE400E801B3 /* nnue_eval.hpp */,
 			);
 			path = bbcchess;
 			sourceTree = "<group>";
@@ -206,11 +231,14 @@
 				90CBA1E028E615D7004FF338 /* main.cpp in Sources */,
 				90842365290C996400E801B3 /* time_control.cpp in Sources */,
 				9084236C290CA34800E801B3 /* util.cpp in Sources */,
+				90842383290CEEB800E801B3 /* misc.cpp in Sources */,
 				90842371290CA58400E801B3 /* board.cpp in Sources */,
 				9084237C290CD83800E801B3 /* solver.cpp in Sources */,
 				90AB92CA290919BB007557D1 /* evaluation.cpp in Sources */,
 				90842373290CA95500E801B3 /* bitboard.cpp in Sources */,
 				90842379290CB28E00E801B3 /* uci.cpp in Sources */,
+				90842387290CEEE400E801B3 /* nnue_eval.cpp in Sources */,
+				90842384290CEEB900E801B3 /* nnue.cpp in Sources */,
 				90842377290CAB9A00E801B3 /* search.cpp in Sources */,
 				90CBA1EE28E637FC004FF338 /* attacktables.cpp in Sources */,
 				90842375290CAA4600E801B3 /* move.cpp in Sources */,
@@ -320,7 +348,8 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
