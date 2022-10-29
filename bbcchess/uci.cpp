@@ -89,8 +89,6 @@ void parse_position(std::string const & command, Solver & solver) {
         }
         
     }
-    
-    solver.rep.print_board();
 }
 
 void parse_go(std::string const & command, Solver & solver) {
@@ -163,10 +161,6 @@ void parse_go(std::string const & command, Solver & solver) {
 void uci_loop(Solver & solver) {
     std::string input;
     
-    std::cout << "id name BBC++\n";
-    std::cout << "id author Morgan\n";
-    std::cout << "uciok\n";
-    
     while(true) {
         if (!std::getline(std::cin, input))
             continue;
@@ -198,8 +192,9 @@ void uci_loop(Solver & solver) {
             if (mb < 4) mb = 4;
             if (mb > MAX_HASH) mb = MAX_HASH;
             
-            std::cout << "    Set hash table size to " << mb << "MB\n";
+            std::cout << "    Set transposition and evaluation table size to " << mb << "MB\n";
             solver.hash_table = TranspositionTable(mb);
+            solver.eval_table = EvaluationTable(mb);
         } else if (input.compare("d") == 0)
             solver.rep.print_board();
         else if (input.compare(0, 4, "quit") == 0)

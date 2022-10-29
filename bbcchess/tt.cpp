@@ -20,9 +20,10 @@ void TranspositionTable::clear_hash_table() {
 }
 
 int TranspositionTable::read_hash_entry(int alpha, int beta, Move* best_move, int depth, int ply, BoardRepresentation const & rep) {
-    if (!hash_table.count(rep.hash_key % hash_entries)) return no_hash_entry;
+    size_t hash_pos = rep.hash_key % hash_entries;
+    if (!hash_table.count(hash_pos)) return no_hash_entry;
     
-    TT hash_entry = hash_table[rep.hash_key % hash_entries];
+    TT hash_entry = hash_table[hash_pos];
     
     if (hash_entry.depth >= depth) {
         int score = hash_entry.score;
@@ -71,8 +72,9 @@ void EvaluationTable::clear_hash_table() {
 }
 
 int EvaluationTable::read_hash_entry(BoardRepresentation const & rep) {
-    if (!hash_table.count(rep.hash_key % hash_entries)) return no_hash_entry;
-    return hash_table[rep.hash_key % hash_entries];
+    size_t hash_pos = rep.hash_key % hash_entries;
+    if (!hash_table.count(hash_pos)) return no_hash_entry;
+    return hash_table[hash_pos];
 }
 
 void EvaluationTable::write_hash_entry(int score, BoardRepresentation const & rep) {
