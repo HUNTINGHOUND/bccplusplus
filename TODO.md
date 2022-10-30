@@ -16,7 +16,7 @@ Todo will be updated periodically, checked items will be removed and report will
 - [ ] Refactor the code and organize
 - [ ] Help change the probe nnue library to use the newest stock fish NNUE
 - [ ] Scale the NNUE score to improve margin based pruning
-
+- [ ] Fail soft PVS causes some search instablility problems related to pruning and and margine based reduction. We might want to reviews these optimizations.  
 
 
 ## 10/19/2022

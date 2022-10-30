@@ -180,7 +180,7 @@ bool Search::ok_to_reduce(Move const & move, bool in_check) {
 int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep, bool allow_null) {
     pv_length[ply] = ply;
     
-    int score;
+    int score, best_score;
     
     Move best_move = 0;
     
@@ -197,7 +197,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
      */
     if (ply && (score = hash_table.read_hash_entry(alpha, beta, &best_move, depth, ply, rep)) != no_hash_entry && !pv_node)
         return score;
-             
+    
     
     if ((nodes & 2047) == 0) communicate();
     
@@ -212,7 +212,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
     nodes++;
     
     bool in_check = rep.is_square_attacked(BitBoardSquare(rep.side == white ? get_ls1b_index(rep.bitboards[BoardPiece::K]) :
-                                                                                           get_ls1b_index(rep.bitboards[BoardPiece::k])),
+                                                                              get_ls1b_index(rep.bitboards[BoardPiece::k])),
                                            TurnColor(rep.side ^ 1));
     if (in_check) depth++;
     
@@ -247,7 +247,6 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
         if (rep.enpassant != no_sq) rep.hash_key ^= Zorbist::enpassant_keys[rep.enpassant];
         BitBoardSquare og_square = rep.enpassant;
         rep.enpassant = no_sq;
-
         
         score = -negascout(-beta, -beta + 1, depth - 1 - R, rep, false); // do not allow consequtive null moves
         
@@ -297,7 +296,9 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
     if (follow_pv) enable_pv_sorting(move_list);
     sort_moves(move_list, best_move, rep);
     
-    for (int count = 0; count < move_list.count; count++) {
+    // PVS make first move
+    int count = 0;
+    for (; moves_searched == 0 && count < move_list.count; count++) {
         ply++;
         
         repetition_index++;
@@ -308,47 +309,106 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
         
         if (!move_made) {
             ply--;
-            
             repetition_index--;
-            
             continue;
         }
         
         legal_moves++;
         
-        if (moves_searched == 0) { // assume principle variation
-            // normal search
-            score = -negascout(-beta, -alpha, depth - 1, new_rep, true);
-        } else {
-            // try late move reduction
-            if (moves_searched >= full_depth_move &&
-                depth >= reduction_limit &&
-                ok_to_reduce(move_list.moves[count], in_check)) {
-                // search in reduced depth
-                score = -negascout(-alpha - 1, -alpha, depth - 2, new_rep, true);
-            } else score = alpha + 1; // reduction requirement not met do full depth search
-            
-            if (score > alpha) { // reduction failed
-                // get the score to see if move is potentially better
-                score = -negascout(-alpha - 1, -alpha, depth - 1, new_rep, true);
-                
-                // if fail high, we do a re-search to get the exact score
-                if (score > alpha && score < beta)
-                    score = -negascout(-beta, -alpha, depth - 1, new_rep, true);
-            }
-        }
+        // normal search
+        best_score = -negascout(-beta, -alpha, depth - 1, new_rep, true);
         
         ply--;
-        
         repetition_index--;
         
         if (time_control.stopped) return 0;
         
-        moves_searched++;
-        
         // better alpha
-        if (score > alpha) {
+        if (best_score > alpha) {
             hash_flag = hash_flag_exact;
+            
+            // store best move so far
+            best_move = move_list.moves[count];
+            
+            // story history moves
+            if (!move_list.moves[count].get_move_capture()) history_moves[move_list.moves[count].get_move_piece()][move_list.moves[count].get_move_target()] += depth;
+            
+            // write PV move
+            pv_table[ply][ply] = move_list.moves[count];
+            
+            // loop over the next ply
+            for (int next_ply = ply + 1; next_ply < pv_length[ply + 1]; next_ply++)
+                pv_table[ply][next_ply] = pv_table[ply + 1][next_ply];
+            
+            pv_length[ply] = pv_length[ply + 1];
+            
+            // beta cutoff
+            if (best_score >= beta) {
+                hash_table.write_hash_entry(best_score, best_move, depth, ply, hash_flag_beta, rep);
+                
+                // store killer moves on quite moves
+                if (!move_list.moves[count].get_move_capture()) {
+                    killer_moves[1][ply] = killer_moves[0][ply];
+                    killer_moves[0][ply] = move_list.moves[count];
+                }
+                
+                return best_score;
+            }
+            
+            alpha = best_score;
+        }
+        
+        moves_searched++;
+    }
+    
+    // PVS make rest of the moves
+    for (; count < move_list.count; count++) {
+        ply++;
+        
+        repetition_index++;
+        repetition_table[repetition_index] = rep.hash_key;
+        
+        int move_made;
+        BoardRepresentation new_rep = rep.copy_and_move(move_list.moves[count], all_moves, &move_made);
+        
+        if (!move_made) {
+            ply--;
+            repetition_index--;
+            continue;
+        }
+        
+        legal_moves++;
+        
+        // try late move reduction
+        if (moves_searched >= full_depth_move &&
+            depth >= reduction_limit &&
+            ok_to_reduce(move_list.moves[count], in_check)) {
+            // search in reduced depth
+            score = -negascout(-alpha - 1, -alpha, depth - 2, new_rep, true);
+        } else score = alpha + 1; // reduction requirement not met do full depth search
+        
+        if (score > alpha) { // reduction failed
+            // get the score to see if move is potentially better
+            score = -negascout(-alpha - 1, -alpha, depth - 1, new_rep, true);
+            
+            // if fail high, we do a re-search to get the exact score
+            if (score > alpha && score < beta) {
+                score = -negascout(-beta, -alpha, depth - 1, new_rep, true);
+                if (score > alpha) {
+                    alpha = score;
+                    
+                    hash_flag = hash_flag_exact;
+                }
+            }
+        }
+        
+        ply--;
+        repetition_index--;
+        
+        if (time_control.stopped) return 0;
+        
+        // better prev best
+        if (score > best_score) {
             
             // store best move so far
             best_move = move_list.moves[count];
@@ -357,8 +417,6 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
             if (!move_list.moves[count].get_move_capture()) {
                 history_moves[move_list.moves[count].get_move_piece()][move_list.moves[count].get_move_target()] += depth;
             }
-            
-            alpha = score;
             
             // write PV move
             pv_table[ply][ply] = move_list.moves[count];
@@ -371,7 +429,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
             
             // beta cutoff
             if (score >= beta) {
-                hash_table.write_hash_entry(beta, best_move, depth, ply, hash_flag_beta, rep);
+                hash_table.write_hash_entry(score, best_move, depth, ply, hash_flag_beta, rep);
                 
                 // store killer moves on quite moves
                 if (!move_list.moves[count].get_move_capture()) {
@@ -379,9 +437,13 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
                     killer_moves[0][ply] = move_list.moves[count];
                 }
                 
-                return beta;
+                return score;
             }
+            
+            best_score = score;
         }
+        
+        moves_searched++;
     }
     
     if (!legal_moves) {
@@ -393,8 +455,8 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
             return 0;
     }
     
-    hash_table.write_hash_entry(alpha, best_move, depth, hash_flag, ply, rep);
+    hash_table.write_hash_entry(best_score, best_move, depth, hash_flag, ply, rep);
     
     // node (move) fails low
-    return alpha;
+    return best_score;
 }
