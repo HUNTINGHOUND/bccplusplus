@@ -37,7 +37,10 @@ public:
     
     int fifty = 0;
     
-    int game_phase_score_cache = 4 * Evaluation::material_score[opening][BoardPiece::N] + 4 * Evaluation::material_score[opening][BoardPiece::B] + 4 * Evaluation::material_score[opening][BoardPiece::R] + 2 * Evaluation::material_score[opening][BoardPiece::Q];
+    std::array<int, 2> piece_material = {2 * Evaluation::absolute_material_score[BoardPiece::N] + 2 * Evaluation::absolute_material_score[BoardPiece::B] + 2 * Evaluation::absolute_material_score[BoardPiece::R] + 2 * Evaluation::absolute_material_score[BoardPiece::Q],
+        2 * Evaluation::absolute_material_score[BoardPiece::n] + 2 * Evaluation::absolute_material_score[BoardPiece::b] + 2 * Evaluation::absolute_material_score[BoardPiece::r] + 2 * Evaluation::absolute_material_score[BoardPiece::q]};
+    
+    int game_phase_score_cache = 4 * Evaluation::absolute_material_score[BoardPiece::N] + 4 * Evaluation::absolute_material_score[BoardPiece::B] + 4 * Evaluation::absolute_material_score[BoardPiece::R] + 2 * Evaluation::absolute_material_score[BoardPiece::Q];
     
     GamePhase phase = opening;
     
@@ -63,11 +66,7 @@ public:
     BoardRepresentation copy_and_move(Move const & move, MoveFlag move_flag, int* move_made) const;
     
     Moves generate_moves(bool qs) const;
-    
-    int get_game_phase_score() const;
-    
-    int hand_evaluate() const;
-    
+        
     int evaluate() const;
     
 private:

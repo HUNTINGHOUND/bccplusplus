@@ -7,7 +7,8 @@ Todo will be updated periodically, checked items will be removed and report will
 - [ ] Optimize PV move sorting and move scoring in general, probably should score moves while generating. 
 - [ ] Improve late move reduction requirements
 - [x] Add endgame detection (piece value? Piece count?)
-- [x] Add restriction on null move pruning. Stop null move pruning when entering end game (related to task above)
+- [ ] Add restriction on null move pruning. Stop null move pruning when entering end game (more complicated than previously thought)
+- [ ] Null move pruning allows us to prune a lot of nodes, even though they are unsafe in end game due to zugzwang, removing it in endgame completely, proves to not be ideal as it reduces the engine's ability to calculate deep depth drastically. Add more restrictions on Null move pruning and see which one is better balanced. 
 - [ ] Experiment with allowing consequtive null-moves (2 moves).
 - [ ] Instead of resetting aspiration window, test gradually expanding it. 
 - [ ] Change the time control UCI code to more modern c++, possibility make it less os dependent.

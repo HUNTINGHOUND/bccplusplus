@@ -129,6 +129,12 @@ int Search::quiescence(int alpha, int beta, BoardRepresentation const & rep) {
     // beta cut off
     if (evaluation >= beta)
         return beta;
+
+    // Delta pruning
+    int big_delta = Evaluation::absolute_material_score[BoardPiece::Q] * 2 + 300;
+    if (evaluation < alpha - big_delta)
+        return alpha;
+     
     
     if (evaluation > alpha)
         alpha = evaluation;
@@ -147,9 +153,7 @@ int Search::quiescence(int alpha, int beta, BoardRepresentation const & rep) {
         
         if (!move_made) {
             ply--;
-            
             repetition_index--;
-            
             continue;
         }
         
@@ -231,7 +235,13 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
     
     
     // null move pruning
-    if (rep.phase != endgame && allow_null && depth >= 1 + R && !in_check) {
+    if (allow_null &&
+        depth >= 1 + R &&
+        !in_check) {
+        
+        int reduction = R;
+        if (depth > 6) reduction = R + 1;
+        
         // make null move
         
         ply++;
@@ -248,7 +258,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
         BitBoardSquare og_square = rep.enpassant;
         rep.enpassant = no_sq;
         
-        score = -negascout(-beta, -beta + 1, depth - 1 - R, rep, false); // do not allow consequtive null moves
+        score = -negascout(-beta, -beta + 1, depth - 1 - reduction, rep, false); // do not allow consequtive null moves
         
         // restore null move
         rep.side = TurnColor(rep.side ^ 1);
@@ -256,13 +266,10 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
         rep.hash_key = og_hash_key;
         
         ply--;
-        
         repetition_index--;
         
         if (time_control.stopped) return 0;
-        
-        if (score >= beta)
-            return beta;
+        if (score >= beta) return score;
     }
     
     
@@ -282,7 +289,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
             score += 175;
             
             // fail low node
-            if (score < beta && depth <= 2) {
+            if (score < beta && depth <= 3) {
                 new_score = quiescence(alpha, beta, rep);
                 
                 if (new_score < beta)
