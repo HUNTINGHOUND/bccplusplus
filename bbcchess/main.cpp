@@ -132,7 +132,7 @@ int main(int argc, char **argv){
     if (options.debug) {
         auto start = get_time_point();
         
-        solver.parse_fen(CMK_POSITION);
+        solver.parse_fen(TRICKY_POSITION);
         solver.rep.print_board();
         
         solver.search_position(10);

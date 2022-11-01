@@ -231,7 +231,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
     
     
     // null move pruning
-    if (allow_null && depth >= 1 + R && !in_check) {
+    if (rep.phase != endgame && allow_null && depth >= 1 + R && !in_check) {
         // make null move
         
         ply++;

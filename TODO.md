@@ -6,8 +6,8 @@ Todo will be updated periodically, checked items will be removed and report will
 - [ ] Consider changing history move heuristic.
 - [ ] Optimize PV move sorting and move scoring in general, probably should score moves while generating. 
 - [ ] Improve late move reduction requirements
-- [ ] Add endgame detection (piece value? Piece count?)
-- [ ] Add restriction on null move pruning. Stop null move pruning when entering end game (related to task above)
+- [x] Add endgame detection (piece value? Piece count?)
+- [x] Add restriction on null move pruning. Stop null move pruning when entering end game (related to task above)
 - [ ] Experiment with allowing consequtive null-moves (2 moves).
 - [ ] Instead of resetting aspiration window, test gradually expanding it. 
 - [ ] Change the time control UCI code to more modern c++, possibility make it less os dependent.
@@ -17,7 +17,7 @@ Todo will be updated periodically, checked items will be removed and report will
 - [ ] Help change the probe nnue library to use the newest stock fish NNUE
 - [ ] Scale the NNUE score to improve margin based pruning
 - [ ] Fail soft PVS causes some search instablility problems related to pruning and and margine based reduction. We might want to reviews these optimizations.  
-
+- [ ] Implemented SEE, now we need to apply it to move ordering and quiescence search.
 
 ## 10/19/2022
 - Changed C-stlye arrays to std::arrays, tested speed change. All std::array seems to not effect the speed by much as expected. Moving forward all c-style array will be defined as std::arrays. 

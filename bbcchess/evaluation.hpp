@@ -34,6 +34,24 @@ const std::array<std::array<int, 12>, 2> material_score = {
     94, 281, 297, 512,  936, 12000, -94, -281, -297, -512,  -936, -12000
 };
 
+const std::array<std::array<int, 12>, 2> absolute_material_score = {
+    // opening material score
+    82, 337, 365, 477, 1025, 12000, 82, 337, 365, 477, 1025, 12000,
+        
+    // endgame material score
+    94, 281, 297, 512,  936, 12000, 94, 281, 297, 512,  936, 12000
+};
+
+// Most Valuable Victim, Least Valuable Attack
+const std::array<std::array<int, 6>, 6> mvv_lva = {
+    105, 205, 305, 405, 505, 605,
+    104, 204, 304, 404, 504, 604,
+    103, 203, 303, 403, 503, 603,
+    102, 202, 302, 402, 502, 602,
+    101, 201, 301, 401, 501, 601,
+    100, 200, 300, 400, 500, 600
+};
+
 const int opening_phase_score = 6192;
 
 const int endgame_phase_score = 3500;
@@ -159,16 +177,6 @@ const std::array<std::array<std::array<int, 64>, 6>, 2> positional_score = {
     -19,  -3,  11,  21,  23,  16,   7,  -9,
     -27, -11,   4,  13,  14,   4,  -5, -17,
     -53, -34, -21, -11, -28, -14, -24, -43
-};
-
-// Most Valuable Victim, Least Valuable Attack
-const std::array<std::array<int, 6>, 6> mvv_lva = {
-    105, 205, 305, 405, 505, 605,
-    104, 204, 304, 404, 504, 604,
-    103, 203, 303, 403, 503, 603,
-    102, 202, 302, 402, 502, 602,
-    101, 201, 301, 401, 501, 601,
-    100, 200, 300, 400, 500, 600
 };
 
 // extract rank from a square [square]

@@ -3,7 +3,6 @@
 #include "util.hpp"
 #include "zorbist.hpp"
 #include "attacktables.hpp"
-#include "evaluation.hpp"
 #include "nnue_eval.hpp"
 
 void BoardRepresentation::print_board() const {
@@ -108,6 +107,70 @@ bool BoardRepresentation::is_square_attacked(BitBoardSquare square, TurnColor si
     return false;
 }
 
+U64 BoardRepresentation::attacks_to(U64 occupied, BitBoardSquare sq) const {
+    U64 knights, kings, bishops_queens, rooks_queens;
+    knights = bitboards[BoardPiece::N] | bitboards[BoardPiece::n];
+    kings = bitboards[BoardPiece::K] | bitboards[BoardPiece::k];
+    bishops_queens = rooks_queens = bitboards[BoardPiece::Q] | bitboards[BoardPiece::q];
+    bishops_queens |= bitboards[BoardPiece::B] | bitboards[BoardPiece::b];
+    rooks_queens |= bitboards[BoardPiece::R] | bitboards[BoardPiece::r];
+    
+    return (AttackTables::Pawn::pawn_attacks[white][sq]            & bitboards[BoardPiece::p]) |
+           (AttackTables::Pawn::pawn_attacks[black][sq]            & bitboards[BoardPiece::P]) |
+           (AttackTables::Knight::knight_attacks[sq]               & knights) |
+           (AttackTables::King::king_attacks[sq]                   & kings) |
+           (AttackTables::Bishop::get_bishop_attacks(sq, occupied) & bishops_queens) |
+           (AttackTables::Rook::get_rook_attacks(sq, occupied)     & rooks_queens);
+}
+
+U64 BoardRepresentation::get_least_valuable_piece(U64 attadef, int side, int &piece) const {
+    BoardPiece::Pieces start_piece = side == white ? BoardPiece::P : BoardPiece::p;
+    BoardPiece::Pieces end_piece = side == white ? BoardPiece::K : BoardPiece::k;
+    
+    for (piece = start_piece; piece <= end_piece; piece++) {
+        U64 subset = attadef & bitboards[piece];
+        if (subset)
+            return subset & -subset;
+    }
+    
+    return 0;
+}
+
+int BoardRepresentation::see(BitBoardSquare to_square, BoardPiece::Pieces target, BitBoardSquare fr_square, int a_piece) const {
+    std::array<int, 32> gain;
+    int d = 0;
+    int curr_side = side;
+    
+    U64 from_set = 1ULL << fr_square;
+    U64 may_x_ray = bitboards[BoardPiece::P] | bitboards[BoardPiece::p] | bitboards[BoardPiece::B] | bitboards[BoardPiece::b] | bitboards[BoardPiece::R] | bitboards[BoardPiece::r] | bitboards[BoardPiece::Q] | bitboards[BoardPiece::q];
+    U64 occ = occupancies[both];
+    U64 attadef = attacks_to(occ, to_square);
+    gain[d] = Evaluation::absolute_material_score[opening][target];
+    
+    do {
+        d++;
+        gain[d] = Evaluation::absolute_material_score[opening][a_piece] - gain[d - 1]; // speculative store, if defended
+        if (std::max(-gain[d - 1], gain[d]) < 0) break; // pruning does not influence the result
+        attadef ^= from_set; // reset bit in set to traverse
+        occ ^= from_set; // reset bit in temporary occupnacy (for x-rays)
+        if (from_set & may_x_ray) {
+            // consider x_ray
+            attadef |= AttackTables::Bishop::get_bishop_attacks(to_square, occ) &
+                       (bitboards[BoardPiece::Q] | bitboards[BoardPiece::q] | bitboards[BoardPiece::B] | bitboards[BoardPiece::b]);
+            attadef |= AttackTables::Rook::get_rook_attacks(to_square, occ) &
+                       (bitboards[BoardPiece::Q] | bitboards[BoardPiece::q] | bitboards[BoardPiece::R] | bitboards[BoardPiece::r]);
+            attadef &= occ;
+        }
+        
+        curr_side ^= 1;
+        from_set = get_least_valuable_piece(attadef, curr_side, a_piece);
+    } while (from_set);
+    while (--d)
+        gain[d - 1] = -std::max(-gain[d - 1], gain[d]);
+    
+    return gain[0];
+}
+
 int BoardRepresentation::make_move(Move const & move, MoveFlag move_flag) {
     if (move_flag == all_moves) {
         BitBoardSquare source_square = BitBoardSquare(move.get_move_source());
@@ -152,6 +215,11 @@ int BoardRepresentation::make_move(Move const & move, MoveFlag move_flag) {
                     
                     // remove the piece from hash_key
                     hash_key ^= Zorbist::pieces_keys[bb_piece][target_square];
+                    if(bb_piece != BoardPiece::P && bb_piece != BoardPiece::p) {
+                        game_phase_score_cache -= Evaluation::absolute_material_score[opening][bb_piece];
+                        if (game_phase_score_cache < Evaluation::opening_phase_score) phase = middlegame;
+                        if (game_phase_score_cache < Evaluation::endgame_phase_score) phase = endgame;
+                    }
                     break;
                 }
             }
@@ -165,6 +233,9 @@ int BoardRepresentation::make_move(Move const & move, MoveFlag move_flag) {
             
             BitBoard::set_bit(bitboards[promoted], target_square);
             hash_key ^= Zorbist::pieces_keys[promoted][target_square];
+            game_phase_score_cache += Evaluation::absolute_material_score[opening][promoted];
+            if (game_phase_score_cache > Evaluation::endgame_phase_score) phase = middlegame;
+            if (game_phase_score_cache > Evaluation::opening_phase_score) phase = opening;
         }
         
         if (enpass) {
@@ -318,9 +389,9 @@ int BoardRepresentation::get_game_phase_score() const {
      4 * knight score open +
      4 * bishop score open +
      4 * rook score open +
-     2 * queen score open +
+     2 * queen score open
      */
-    
+        
     int white_piece_scores = 0, black_piece_scores = 0;
     
     for (int piece = BoardPiece::N; piece <= BoardPiece::Q; piece++)
