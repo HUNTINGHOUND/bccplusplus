@@ -133,7 +133,7 @@ int Search::quiescence(int alpha, int beta, BoardRepresentation const & rep) {
     if (evaluation > alpha)
         alpha = evaluation;
     
-    Moves move_list = rep.generate_moves();
+    Moves move_list = rep.generate_moves(true);
     sort_moves(move_list, 0, rep);
     
     for (int count = 0; count < move_list.count; count++) {
@@ -292,7 +292,7 @@ int Search::negascout(int alpha, int beta, int depth, BoardRepresentation & rep,
     }
     
     
-    Moves move_list = rep.generate_moves();
+    Moves move_list = rep.generate_moves(false);
     if (follow_pv) enable_pv_sorting(move_list);
     sort_moves(move_list, best_move, rep);
     

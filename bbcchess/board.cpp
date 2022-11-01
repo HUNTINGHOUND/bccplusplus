@@ -366,16 +366,16 @@ BoardRepresentation BoardRepresentation::copy_and_move(Move const & move, MoveFl
     return copy;
 }
 
-Moves BoardRepresentation::generate_moves() const {
+Moves BoardRepresentation::generate_moves(bool qs) const {
     Moves move_list;
     
-    generate_pawn_moves(move_list);
-    generate_castling_moves(move_list);
-    generate_knight_moves(move_list);
-    generate_bishop_moves(move_list);
-    generate_rook_moves(move_list);
-    generate_queen_moves(move_list);
-    generate_king_moves(move_list);
+    generate_pawn_moves(move_list, qs);
+    if (!qs) generate_castling_moves(move_list);
+    generate_knight_moves(move_list, qs);
+    generate_bishop_moves(move_list, qs);
+    generate_rook_moves(move_list, qs);
+    generate_queen_moves(move_list, qs);
+    generate_king_moves(move_list, qs);
     
     return move_list;
 }
@@ -664,7 +664,7 @@ int BoardRepresentation::evaluate() const {
     return (evaluate_nnue(side, &pieces[0], &squares[0]) * (100 - fifty) / 100);
 }
 
-void BoardRepresentation::generate_pawn_moves(Moves& move_list) const {
+void BoardRepresentation::generate_pawn_moves(Moves& move_list, bool qs) const {
     int source_square, target_square;
     
     U64 bitboard = side == white ? bitboards[BoardPiece::P] : bitboards[BoardPiece::p];
@@ -677,8 +677,8 @@ void BoardRepresentation::generate_pawn_moves(Moves& move_list) const {
         target_square = side == white ? source_square - 8 : source_square + 8;
         
         // if target square is not off the board
-        if ((side == white && !(target_square < a8) && !BitBoard::get_bit(occupancies[both], target_square)) ||
-            (side == black && !(target_square > h1) && !BitBoard::get_bit(occupancies[both], target_square))) {
+        if (!qs && ((side == white && !(target_square < a8) && !BitBoard::get_bit(occupancies[both], target_square)) ||
+                    (side == black && !(target_square > h1) && !BitBoard::get_bit(occupancies[both], target_square)))) {
             // promotion?
             if ((side == white && source_square >= a7 && source_square <= h7) ||
                 (side == black && source_square >= a2 && source_square <= h2)) {
@@ -796,7 +796,7 @@ void BoardRepresentation::generate_castling_moves(Moves& move_list) const{
     }
 }
 
-void BoardRepresentation::generate_knight_moves(Moves& move_list) const {
+void BoardRepresentation::generate_knight_moves(Moves& move_list, bool qs) const {
     int source_square, target_square;
     
     U64 bitboard = side == white ? bitboards[BoardPiece::N] : bitboards[BoardPiece::n];
@@ -811,10 +811,11 @@ void BoardRepresentation::generate_knight_moves(Moves& move_list) const {
             target_square = get_ls1b_index(attacks);
             
             // quite move
-            if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square))
-                move_list.add_move(Move(source_square, target_square,
-                                        side == white ? BoardPiece::N : BoardPiece::n,
-                                        0, 0, 0, 0, 0));
+            if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square)) {
+                if (!qs) move_list.add_move(Move(source_square, target_square,
+                                                 side == white ? BoardPiece::N : BoardPiece::n,
+                                                 0, 0, 0, 0, 0));
+            }
             else // capture move
                 move_list.add_move(Move(source_square, target_square,
                                         side == white ? BoardPiece::N : BoardPiece::n,
@@ -827,7 +828,7 @@ void BoardRepresentation::generate_knight_moves(Moves& move_list) const {
     }
 }
 
-void BoardRepresentation::generate_bishop_moves(Moves& move_list) const {
+void BoardRepresentation::generate_bishop_moves(Moves& move_list, bool qs) const {
     int source_square, target_square;
     
     U64 bitboard = side == white ? bitboards[BoardPiece::B] : bitboards[BoardPiece::b];
@@ -842,10 +843,11 @@ void BoardRepresentation::generate_bishop_moves(Moves& move_list) const {
             target_square = get_ls1b_index(attacks);
             
             // quite move
-            if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square))
-                move_list.add_move(Move(source_square, target_square,
-                                        side == white ? BoardPiece::B : BoardPiece::b,
-                                        0, 0, 0, 0, 0));
+            if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square)) {
+                if (!qs) move_list.add_move(Move(source_square, target_square,
+                                                 side == white ? BoardPiece::B : BoardPiece::b,
+                                                 0, 0, 0, 0, 0));
+            }
             else // capture move
                 move_list.add_move(Move(source_square, target_square,
                                         side == white ? BoardPiece::B : BoardPiece::b,
@@ -858,7 +860,7 @@ void BoardRepresentation::generate_bishop_moves(Moves& move_list) const {
     }
 }
 
-void BoardRepresentation::generate_rook_moves(Moves& move_list) const {
+void BoardRepresentation::generate_rook_moves(Moves& move_list, bool qs) const {
     int source_square, target_square;
     
     U64 bitboard = side == white ? bitboards[BoardPiece::R] : bitboards[BoardPiece::r];
@@ -873,10 +875,11 @@ void BoardRepresentation::generate_rook_moves(Moves& move_list) const {
             target_square = get_ls1b_index(attacks);
             
             // quite move
-            if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square))
-                move_list.add_move(Move(source_square, target_square,
-                                        side == white ? BoardPiece::R : BoardPiece::r,
-                                        0, 0, 0, 0, 0));
+            if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square)) {
+                if (!qs) move_list.add_move(Move(source_square, target_square,
+                                                 side == white ? BoardPiece::R : BoardPiece::r,
+                                                 0, 0, 0, 0, 0));
+            }
             else // capture move
                 move_list.add_move(Move(source_square, target_square,
                                         side == white ? BoardPiece::R : BoardPiece::r,
@@ -889,7 +892,7 @@ void BoardRepresentation::generate_rook_moves(Moves& move_list) const {
     }
 }
 
-void BoardRepresentation::generate_queen_moves(Moves& move_list) const{
+void BoardRepresentation::generate_queen_moves(Moves& move_list, bool qs) const{
     int source_square, target_square;
     
     U64 bitboard = side == white ? bitboards[BoardPiece::Q] : bitboards[BoardPiece::q];
@@ -904,10 +907,11 @@ void BoardRepresentation::generate_queen_moves(Moves& move_list) const{
             target_square = get_ls1b_index(attacks);
             
             // quite move
-            if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square))
-                move_list.add_move(Move(source_square, target_square,
-                                        side == white ? BoardPiece::Q : BoardPiece::q,
-                                        0, 0, 0, 0, 0));
+            if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square)) {
+                if (!qs) move_list.add_move(Move(source_square, target_square,
+                                                 side == white ? BoardPiece::Q : BoardPiece::q,
+                                                 0, 0, 0, 0, 0));
+            }
             else // capture move
                 move_list.add_move(Move(source_square, target_square,
                                         side == white ? BoardPiece::Q : BoardPiece::q,
@@ -920,7 +924,7 @@ void BoardRepresentation::generate_queen_moves(Moves& move_list) const{
     }
 }
 
-void BoardRepresentation::generate_king_moves(Moves& move_list) const {
+void BoardRepresentation::generate_king_moves(Moves& move_list, bool qs) const {
     int source_square, target_square;
     
     U64 bitboard = side == white ? bitboards[BoardPiece::K] : bitboards[BoardPiece::k];
@@ -935,10 +939,11 @@ void BoardRepresentation::generate_king_moves(Moves& move_list) const {
             target_square = get_ls1b_index(attacks);
             
             // quite move
-            if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square))
-                move_list.add_move(Move(source_square, target_square,
-                                        side == white ? BoardPiece::K : BoardPiece::k,
-                                        0, 0, 0, 0, 0));
+            if (!BitBoard::get_bit(side == white ? occupancies[black] : occupancies[white], target_square)) {
+                if (!qs) move_list.add_move(Move(source_square, target_square,
+                                                side == white ? BoardPiece::K : BoardPiece::k,
+                                                0, 0, 0, 0, 0));
+            }
             else // capture move
                 move_list.add_move(Move(source_square, target_square,
                                         side == white ? BoardPiece::K : BoardPiece::k,

@@ -32,7 +32,7 @@ void perft_driver(int depth, BoardRepresentation const & rep) {
         return;
     }
     
-    Moves move_list = rep.generate_moves();
+    Moves move_list = rep.generate_moves(false);
     
     for (int move_count = 0; move_count < move_list.count; move_count++) {
         int made_move;
@@ -47,7 +47,7 @@ void perft_driver(int depth, BoardRepresentation const & rep) {
 void perft_test(int depth, BoardRepresentation const & rep) {
     std::cout << "\n     Performance test\n\n";
     
-    Moves move_list = rep.generate_moves();
+    Moves move_list = rep.generate_moves(false);
     
     auto start = get_time_point();
     

@@ -62,7 +62,7 @@ public:
     // Returns copy of the board with the move made, pointer indicates whether or not the move was legal
     BoardRepresentation copy_and_move(Move const & move, MoveFlag move_flag, int* move_made) const;
     
-    Moves generate_moves() const;
+    Moves generate_moves(bool qs) const;
     
     int get_game_phase_score() const;
     
@@ -71,19 +71,19 @@ public:
     int evaluate() const;
     
 private:
-    void generate_pawn_moves(Moves& move_list) const;
+    void generate_pawn_moves(Moves& move_list, bool qs) const;
     
     void generate_castling_moves(Moves& move_list) const;
     
-    void generate_knight_moves(Moves& move_list) const;
+    void generate_knight_moves(Moves& move_list, bool qs) const;
 
-    void generate_bishop_moves(Moves& move_list) const;
+    void generate_bishop_moves(Moves& move_list, bool qs) const;
     
-    void generate_rook_moves(Moves& move_list) const;
+    void generate_rook_moves(Moves& move_list, bool qs) const;
     
-    void generate_queen_moves(Moves& move_list) const;
+    void generate_queen_moves(Moves& move_list, bool qs) const;
     
-    void generate_king_moves(Moves& move_list) const;
+    void generate_king_moves(Moves& move_list, bool qs) const;
 };
 
 
