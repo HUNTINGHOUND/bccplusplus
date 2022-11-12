@@ -135,7 +135,7 @@ int main(int argc, char **argv){
         solver.parse_fen(TRICKY_POSITION);
         solver.rep.print_board();
         
-        solver.search_position(10);
+        solver.search_position(4);
         
         std::cout << "Evaluation: " << solver.rep.evaluate() << "\n";
         std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";

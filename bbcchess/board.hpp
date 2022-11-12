@@ -58,6 +58,8 @@ public:
     
     U64 get_least_valuable_piece(U64 attadef, int bySide, int &piece) const;
     
+    int get_piece_on_square(BitBoardSquare sq) const;
+    
     int see(BitBoardSquare to_square, BoardPiece::Pieces target, BitBoardSquare fr_square, int a_piece) const;
     
     int make_move(Move const & move, MoveFlag move_flag);

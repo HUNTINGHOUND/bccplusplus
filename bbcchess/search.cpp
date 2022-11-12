@@ -129,11 +129,6 @@ int Search::quiescence(int alpha, int beta, BoardRepresentation const & rep) {
     // beta cut off
     if (evaluation >= beta)
         return beta;
-
-    // Delta pruning
-    int big_delta = Evaluation::absolute_material_score[BoardPiece::Q] * 2 + 300;
-    if (evaluation < alpha - big_delta)
-        return alpha;
      
     
     if (evaluation > alpha)
@@ -142,7 +137,27 @@ int Search::quiescence(int alpha, int beta, BoardRepresentation const & rep) {
     Moves move_list = rep.generate_moves(true);
     sort_moves(move_list, 0, rep);
     
+    bool has_promotion = false;
     for (int count = 0; count < move_list.count; count++) {
+        if (move_list.moves[count].get_move_promoted()) {
+            has_promotion = true;
+            break;
+        }
+    }
+    
+    // Delta pruning
+    int big_delta = Evaluation::absolute_material_score[BoardPiece::Q] + (has_promotion ? (Evaluation::absolute_material_score[BoardPiece::Q] - 400) : 0);
+    if (evaluation < alpha - big_delta)
+        return alpha;
+    
+    for (int count = 0; count < move_list.count; count++) {
+        int cap_piece = rep.get_piece_on_square(BitBoardSquare(move_list.moves[count].get_move_target()));
+        
+        if ((evaluation + Evaluation::absolute_material_score[cap_piece] + 400 < alpha) &&
+            (rep.piece_material[rep.side ^ 1] - Evaluation::absolute_material_score[cap_piece] > Evaluation::endgame_phase_score) &&
+            (!move_list.moves[count].get_move_promoted()))
+            continue;
+        
         ply++;
         
         repetition_index++;

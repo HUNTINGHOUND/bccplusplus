@@ -720,3 +720,10 @@ void BoardRepresentation::generate_king_moves(Moves& move_list, bool qs) const {
         BitBoard::pop_bit(bitboard, source_square);
     }
 }
+
+int BoardRepresentation::get_piece_on_square(BitBoardSquare sq) const {
+    for(int piece = BoardPiece::P; piece <= BoardPiece::k; piece++)
+        if (BitBoard::get_bit(bitboards[piece], sq)) return piece;
+    
+    return -1;
+}

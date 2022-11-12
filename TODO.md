@@ -19,6 +19,7 @@ Todo will be updated periodically, checked items will be removed and report will
 - [ ] Scale the NNUE score to improve margin based pruning
 - [ ] Fail soft PVS causes some search instablility problems related to pruning and and margine based reduction. We might want to reviews these optimizations.  
 - [ ] Implemented SEE, now we need to apply it to move ordering and quiescence search.
+- [ ] Improbe SEE to see pins, check, etc
 
 ## 10/19/2022
 - Changed C-stlye arrays to std::arrays, tested speed change. All std::array seems to not effect the speed by much as expected. Moving forward all c-style array will be defined as std::arrays. 

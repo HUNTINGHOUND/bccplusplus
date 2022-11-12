@@ -27,11 +27,11 @@ const std::array<int, 64> nnue_squares = {
 
 // material_score[game phase][piece]
 const std::array<int, 12> material_score = {
-    100, 350, 255, 525, 1000, 12000, -100, -350, -255, -525, -1000, -12000
+    200, 820, 850, 1270, 2530, 12000, -200, -820, -850, -1270, -2530, -12000
 };
 
 const std::array<int, 12> absolute_material_score = {
-    100, 350, 255, 525, 1000, 12000, 100, 350, 255, 525, 1000, 12000
+    200, 820, 850, 1270, 2530, 12000, 200, 820, 850, 1270, 2530, 12000
 };
 
 // Most Valuable Victim, Least Valuable Attack
@@ -44,9 +44,9 @@ const std::array<std::array<int, 6>, 6> mvv_lva = {
     100, 200, 300, 400, 500, 600
 };
 
-const int opening_phase_score = 6192;
+const int opening_phase_score = 12384;
 
-const int endgame_phase_score = 1500;
+const int endgame_phase_score = 3500;
 
 // extract rank from a square [square]
 const std::array<int, 64> get_rank = {
