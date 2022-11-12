@@ -145,11 +145,11 @@ int BoardRepresentation::see(BitBoardSquare to_square, BoardPiece::Pieces target
     U64 may_x_ray = bitboards[BoardPiece::P] | bitboards[BoardPiece::p] | bitboards[BoardPiece::B] | bitboards[BoardPiece::b] | bitboards[BoardPiece::R] | bitboards[BoardPiece::r] | bitboards[BoardPiece::Q] | bitboards[BoardPiece::q];
     U64 occ = occupancies[both];
     U64 attadef = attacks_to(occ, to_square);
-    gain[d] = Evaluation::absolute_material_score[target];
+    gain[d] = Evaluation::absolute_material_score_see[target];
     
     do {
         d++;
-        gain[d] = Evaluation::absolute_material_score[a_piece] - gain[d - 1]; // speculative store, if defended
+        gain[d] = Evaluation::absolute_material_score_see[a_piece] - gain[d - 1]; // speculative store, if defended
         if (std::max(-gain[d - 1], gain[d]) < 0) break; // pruning does not influence the result
         attadef ^= from_set; // reset bit in set to traverse
         occ ^= from_set; // reset bit in temporary occupnacy (for x-rays)
@@ -463,6 +463,8 @@ void BoardRepresentation::generate_pawn_moves(Moves& move_list, bool qs) const {
                                         side == white ? BoardPiece::P : BoardPiece::p,
                                         side == white ? BoardPiece::N : BoardPiece::n,
                                         0, 0, 0, 0));
+                
+                move_list.has_promotion = true;
             } else {
                 move_list.add_move(Move(source_square, target_square,
                                         side == white ? BoardPiece::P : BoardPiece::p,
@@ -502,6 +504,8 @@ void BoardRepresentation::generate_pawn_moves(Moves& move_list, bool qs) const {
                                         side == white ? BoardPiece::P : BoardPiece::p,
                                         side == white ? BoardPiece::N : BoardPiece::n,
                                         1, 0, 0, 0));
+                
+                move_list.has_promotion = true;
             } else
                 move_list.add_move(Move(source_square, target_square,
                                         side == white ? BoardPiece::P : BoardPiece::p,

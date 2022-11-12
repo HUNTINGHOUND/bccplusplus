@@ -137,25 +137,32 @@ int Search::quiescence(int alpha, int beta, BoardRepresentation const & rep) {
     Moves move_list = rep.generate_moves(true);
     sort_moves(move_list, 0, rep);
     
-    bool has_promotion = false;
-    for (int count = 0; count < move_list.count; count++) {
-        if (move_list.moves[count].get_move_promoted()) {
-            has_promotion = true;
-            break;
-        }
-    }
-    
-    // Delta pruning
-    int big_delta = Evaluation::absolute_material_score[BoardPiece::Q] + (has_promotion ? (Evaluation::absolute_material_score[BoardPiece::Q] - 400) : 0);
+    // Delta pruning based on position evaluation
+    int big_delta = Evaluation::absolute_material_score[BoardPiece::Q] + (move_list.has_promotion ? (Evaluation::absolute_material_score[BoardPiece::Q] - 400) : 0);
     if (evaluation < alpha - big_delta)
         return alpha;
     
     for (int count = 0; count < move_list.count; count++) {
         int cap_piece = rep.get_piece_on_square(BitBoardSquare(move_list.moves[count].get_move_target()));
         
+        // delta pruning based on current move
         if ((evaluation + Evaluation::absolute_material_score[cap_piece] + 400 < alpha) &&
             (rep.piece_material[rep.side ^ 1] - Evaluation::absolute_material_score[cap_piece] > Evaluation::endgame_phase_score) &&
             (!move_list.moves[count].get_move_promoted()))
+            continue;
+        
+        
+        // Do not search bad captures
+        // Capturing with lower or equaled valued piece cannot be bad
+        // Capturing last remaining piece could lead to winning position
+        // Use SEE for others
+        if (Evaluation::absolute_material_score_see[move_list.moves[count].get_move_piece()]
+            > Evaluation::absolute_material_score_see[cap_piece] &&
+            rep.piece_material[rep.side ^ 1] - Evaluation::absolute_material_score[cap_piece] > 0 &&
+            rep.see(BitBoardSquare(move_list.moves[count].get_move_target()),
+                    BoardPiece::Pieces(cap_piece),
+                    BitBoardSquare(move_list.moves[count].get_move_source()),
+                    BoardPiece::Pieces(move_list.moves[count].get_move_piece())) < 0)
             continue;
         
         ply++;

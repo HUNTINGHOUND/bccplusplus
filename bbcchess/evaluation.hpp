@@ -25,13 +25,19 @@ const std::array<int, 64> nnue_squares = {
     a8, b8, c8, d8, e8, f8, g8, h8
 };
 
-// material_score[game phase][piece]
+// material_score[piece]
 const std::array<int, 12> material_score = {
     200, 820, 850, 1270, 2530, 12000, -200, -820, -850, -1270, -2530, -12000
 };
 
+// same as material score, but the values are all positive
 const std::array<int, 12> absolute_material_score = {
     200, 820, 850, 1270, 2530, 12000, 200, 820, 850, 1270, 2530, 12000
+};
+
+// used by SEE, adjust the knight value so that bishop capture knight will not alway be a losing move
+const std::array<int, 12> absolute_material_score_see = {
+    200, 850, 850, 1270, 2530, 12000, 200, 850, 850, 1270, 2530, 12000
 };
 
 // Most Valuable Victim, Least Valuable Attack

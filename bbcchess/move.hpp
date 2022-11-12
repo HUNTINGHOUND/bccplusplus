@@ -50,6 +50,8 @@ public:
     Move moves[256];
     int count = 0;
     
+    bool has_promotion = false;
+    
     void add_move(Move move);
 
     void print_move_list() const;

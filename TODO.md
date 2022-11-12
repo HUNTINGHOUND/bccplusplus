@@ -12,14 +12,16 @@ Todo will be updated periodically, checked items will be removed and report will
 - [ ] Experiment with allowing consequtive null-moves (2 moves).
 - [ ] Instead of resetting aspiration window, test gradually expanding it. 
 - [ ] Change the time control UCI code to more modern c++, possibility make it less os dependent.
-- [ ] Implement more search variant too see if they offer improvement
+- [ ] Implement more search variant to see if they offer improvement
 - [ ] Look into more hash options than Zorist
 - [ ] Refactor the code and organize
 - [ ] Help change the probe nnue library to use the newest stock fish NNUE
 - [ ] Scale the NNUE score to improve margin based pruning
 - [ ] Fail soft PVS causes some search instablility problems related to pruning and and margine based reduction. We might want to reviews these optimizations.  
-- [ ] Implemented SEE, now we need to apply it to move ordering and quiescence search.
+- [x] Implemented SEE, now we need to apply it to quiescence search.
+- [ ] Apply SEE to move ordering
 - [ ] Improbe SEE to see pins, check, etc
+- [ ] Implement parrallel search (LAZY SMP first, more complicated algorithm later)
+- [ ] Tune various pruning hyper parameters. Right now they are chosen arbitrarily and we are probably not extracting the maximum gains.
+- [ ] Implement test positional suites. Right now the engine is tested on cute chess against other similarly rated engines, make the processes more systematic. 
 
-## 10/19/2022
-- Changed C-stlye arrays to std::arrays, tested speed change. All std::array seems to not effect the speed by much as expected. Moving forward all c-style array will be defined as std::arrays. 
