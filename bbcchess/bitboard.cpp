@@ -20,7 +20,7 @@ void BitBoard::print_bitboard(U64 const & bitboard) {
     std::cout << "\n";
 
     // loop over board ranks
-    for (int rank = 0; rank < 8; rank++)
+    for (int rank = 7; rank >= 0; rank--)
     {
         // loop over board files
         for (int file = 0; file < 8; file++)
@@ -30,7 +30,7 @@ void BitBoard::print_bitboard(U64 const & bitboard) {
             
             // print ranks
             if (!file)
-                std::cout << "  " << 8 - rank << " ";
+                std::cout << "  " << rank + 1 << " ";
             
             // print bit state (either 1 or 0)
             std::cout << " " << (get_bit(bitboard, square) ? 1 : 0);

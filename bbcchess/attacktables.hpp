@@ -128,7 +128,7 @@ const std::array<int, 64> rook_relevant_bits = {
 
 U64 mask_rook_attacks(BitBoardSquare square);
 U64 rook_attacks_on_the_fly(BitBoardSquare square, U64 block);
-U64 get_rook_attacks(BitBoardSquare square, U64 occupancy);
+U64 get_rook_attacks(int square, U64 occupancy);
 }
 
 namespace Queen {

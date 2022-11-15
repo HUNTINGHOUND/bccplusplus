@@ -10,7 +10,7 @@ void BoardRepresentation::print_board() const {
     std::cout << "\n";
     
     // loop over over board ranks
-    for (int rank = 0; rank < 8; rank++) {
+    for (int rank = 7; rank >= 0; rank--) {
         // loop over board files
         for (int file = 0; file < 8; file++) {
             // init square
@@ -18,7 +18,7 @@ void BoardRepresentation::print_board() const {
             
             // print ranks
             if (!file)
-                std::cout << "  " << 8 - rank << " ";
+                std::cout << "  " << rank + 1 << " ";
             
             // define piece variable
             int piece = -1;
@@ -53,12 +53,12 @@ void BoardRepresentation::print_board() const {
 void BoardRepresentation::print_attacked_square(TurnColor side) const {
     std::cout << "\n";
     
-    for (int rank = 0; rank < 8; rank++) {
+    for (int rank = 7; rank >= 0; rank--) {
         for (int file = 0; file < 8; file++) {
             int square = rank * 8 + file;
             
             if (!file)
-                std::cout << "  " << 8 - rank << " ";
+                std::cout << "  " << rank + 1 << " ";
             
             std::cout << " " << is_square_attacked(BitBoardSquare(square), side);
         }
@@ -243,13 +243,13 @@ int BoardRepresentation::make_move(Move const & move, MoveFlag move_flag) {
         }
         
         if (enpass) {
-            side == white ? BitBoard::pop_bit(bitboards[BoardPiece::p], target_square + 8) :
-            BitBoard::pop_bit(bitboards[BoardPiece::P], target_square - 8);
+            side == white ? BitBoard::pop_bit(bitboards[BoardPiece::p], target_square - 8) :
+            BitBoard::pop_bit(bitboards[BoardPiece::P], target_square + 8);
             
-            hash_key ^= side == white ? Zorbist::pieces_keys[BoardPiece::p][target_square + 8] : Zorbist::pieces_keys[BoardPiece::P][target_square - 8];
+            hash_key ^= side == white ? Zorbist::pieces_keys[BoardPiece::p][target_square - 8] : Zorbist::pieces_keys[BoardPiece::P][target_square + 8];
             
-            side == white ? BitBoard::pop_bit(occupancies[black], target_square + 8) :
-            BitBoard::pop_bit(occupancies[white], target_square - 8);
+            side == white ? BitBoard::pop_bit(occupancies[black], target_square - 8) :
+            BitBoard::pop_bit(occupancies[white], target_square + 8);
         }
         
         if (enpassant != no_sq) hash_key ^= Zorbist::enpassant_keys[enpassant];
@@ -257,10 +257,10 @@ int BoardRepresentation::make_move(Move const & move, MoveFlag move_flag) {
         enpassant = no_sq;
         
         if (double_push) {
-            side == white ? enpassant = BitBoardSquare(target_square + 8) :
-            enpassant = BitBoardSquare(target_square - 8);
+            side == white ? enpassant = BitBoardSquare(target_square - 8) :
+            enpassant = BitBoardSquare(target_square + 8);
             
-            hash_key ^= Zorbist::enpassant_keys[side == white ? target_square + 8 : target_square - 8];
+            hash_key ^= Zorbist::enpassant_keys[side == white ? target_square - 8 : target_square + 8];
         }
         
         if (castling) {
@@ -439,11 +439,11 @@ void BoardRepresentation::generate_pawn_moves(Moves& move_list, bool qs) const {
         source_square = get_ls1b_index(bitboard);
         
         // get the square above source square
-        target_square = side == white ? source_square - 8 : source_square + 8;
+        target_square = side == white ? source_square + 8 : source_square - 8;
         
         // if target square is not off the board
-        if (!qs && ((side == white && !(target_square < a8) && !BitBoard::get_bit(occupancies[both], target_square)) ||
-                    (side == black && !(target_square > h1) && !BitBoard::get_bit(occupancies[both], target_square)))) {
+        if (!qs && ((side == white && !(target_square > h8) && !BitBoard::get_bit(occupancies[both], target_square)) ||
+                    (side == black && !(target_square < a1) && !BitBoard::get_bit(occupancies[both], target_square)))) {
             // promotion?
             if ((side == white && source_square >= a7 && source_square <= h7) ||
                 (side == black && source_square >= a2 && source_square <= h2)) {
@@ -471,10 +471,10 @@ void BoardRepresentation::generate_pawn_moves(Moves& move_list, bool qs) const {
                                         0, 0, 0, 0, 0));
                 
                 // double pawn push
-                if ((side == white && (source_square >= a2 && source_square <= h2) && !BitBoard::get_bit(occupancies[both], target_square - 8)) ||
-                    (side == black && (source_square >= a7 && source_square <= h7) && !BitBoard::get_bit(occupancies[both], target_square + 8)))
+                if ((side == white && (source_square >= a2 && source_square <= h2) && !BitBoard::get_bit(occupancies[both], target_square + 8)) ||
+                    (side == black && (source_square >= a7 && source_square <= h7) && !BitBoard::get_bit(occupancies[both], target_square - 8)))
                     move_list.add_move(Move(source_square,
-                                            side == white ? target_square - 8 : target_square + 8,
+                                            side == white ? target_square + 8 : target_square - 8,
                                             side == white ? BoardPiece::P : BoardPiece::p,
                                             0, 0, 1, 0, 0));
             }

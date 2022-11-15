@@ -94,7 +94,7 @@ void Solver::parse_fen(std::string const & fen, size_t fen_idx) {
     hash_table.clear_hash_table();
     eval_table.clear_hash_table();
     
-    for (int rank = 0; rank < 8; rank++) {
+    for (int rank = 7; rank >= 0; rank--) {
         for (int file = 0; file < 8; file++) {
             int square = rank * 8 + file;
             
@@ -145,9 +145,10 @@ void Solver::parse_fen(std::string const & fen, size_t fen_idx) {
     
     if (fen[fen_idx] != '-') {
         int file = fen[fen_idx] - 'a';
-        int rank = 8 - (fen[fen_idx + 1] - '0');
+        int rank = (fen[fen_idx + 1] - '0') - 1;
         
         rep.enpassant = BitBoardSquare(rank * 8 + file);
+        fen_idx++;
     } else rep.enpassant = no_sq;
     
     fen_idx++;

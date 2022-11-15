@@ -23,6 +23,8 @@ public:
     BoardRepresentation rep;
     
     Solver(int ttmb, int evalmb);
+    
+    void clear_hash_tables();
 
     void search_position(int depth);
     

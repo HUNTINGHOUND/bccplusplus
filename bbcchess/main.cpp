@@ -15,6 +15,7 @@
 #include "magic.hpp"
 #include "solver.hpp"
 #include "nnue_eval.hpp"
+#include "syzygy/tbprobe.h"
 
 U64 nodes = 0;
 
@@ -132,10 +133,47 @@ int main(int argc, char **argv){
     if (options.debug) {
         auto start = get_time_point();
         
-        solver.parse_fen(TRICKY_POSITION);
+        solver.parse_fen("4k3/8/6Q1/3p4/8/7K/5q2/8 b - - 0 1");
         solver.rep.print_board();
         
         solver.search_position(10);
+        
+        tb_init("/Users/morgan/Desktop/bbcchess/syzygy/3-4-5");
+        int score = tb_probe_wdl(solver.rep.occupancies[white], solver.rep.occupancies[black],
+                     solver.rep.bitboards[BoardPiece::K] | solver.rep.bitboards[BoardPiece::k],
+                     solver.rep.bitboards[BoardPiece::Q] | solver.rep.bitboards[BoardPiece::q],
+                     solver.rep.bitboards[BoardPiece::R] | solver.rep.bitboards[BoardPiece::r],
+                     solver.rep.bitboards[BoardPiece::B] | solver.rep.bitboards[BoardPiece::b],
+                     solver.rep.bitboards[BoardPiece::N] | solver.rep.bitboards[BoardPiece::n],
+                     solver.rep.bitboards[BoardPiece::P] | solver.rep.bitboards[BoardPiece::p],
+                     solver.rep.fifty, solver.rep.castle, solver.rep.enpassant, solver.rep.side ^ 1);
+        
+        std::cout << "TB: ";
+        switch (score) {
+            case TB_WIN:
+                std::cout << "WIN\n";
+                break;
+                
+            case TB_LOSS:
+                std::cout << "LOSS\n";
+                break;
+                
+            case TB_DRAW:
+                std::cout << "DRAW\n";
+                break;
+                
+            case TB_BLESSED_LOSS:
+                std::cout << "BLESSED LOSS\n";
+                break;
+                
+            case TB_CURSED_WIN:
+                std::cout << "CURSED WIN\n";
+                break;
+            
+            default:
+                std::cout << "FAILED\n";
+                break;
+        }
                 
         std::cout << "Evaluation: " << solver.rep.evaluate() << "\n";
         std::cout << "Time: " << get_time_diff(start, get_time_point()) << " ms\n";

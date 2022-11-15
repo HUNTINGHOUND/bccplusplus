@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		904CA6F52921DDE100773CE4 /* tbprobe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 904CA6F22921DDE000773CE4 /* tbprobe.cpp */; };
+		904CA7032921E00C00773CE4 /* tbchess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 904CA7022921E00C00773CE4 /* tbchess.cpp */; };
 		90842362290B8F9B00E801B3 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 90842361290B8F9A00E801B3 /* Makefile */; };
 		90842365290C996400E801B3 /* time_control.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90842363290C996400E801B3 /* time_control.cpp */; };
 		9084236C290CA34800E801B3 /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9084236B290CA34800E801B3 /* util.cpp */; };
@@ -47,6 +49,22 @@
 		903CD4D428FBE1670049195A /* uci.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = uci.hpp; sourceTree = "<group>"; };
 		903CD4D728FE4BF80049195A /* evaluation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = evaluation.hpp; sourceTree = "<group>"; };
 		903CD4DA28FE7FBE0049195A /* search.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = search.hpp; sourceTree = "<group>"; };
+		904CA6F02921DDE000773CE4 /* tbconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tbconfig.h; sourceTree = "<group>"; };
+		904CA6F12921DDE000773CE4 /* stdendian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdendian.h; sourceTree = "<group>"; };
+		904CA6F22921DDE000773CE4 /* tbprobe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tbprobe.cpp; sourceTree = "<group>"; };
+		904CA6F32921DDE000773CE4 /* tbprobe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tbprobe.h; sourceTree = "<group>"; };
+		904CA6F72921DE0400773CE4 /* phmap_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phmap_config.h; sourceTree = "<group>"; };
+		904CA6F82921DE0400773CE4 /* phmap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phmap.h; sourceTree = "<group>"; };
+		904CA6F92921DE0400773CE4 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		904CA6FA2921DE0400773CE4 /* meminfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = meminfo.h; sourceTree = "<group>"; };
+		904CA6FB2921DE0400773CE4 /* conanfile.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = conanfile.py; sourceTree = "<group>"; };
+		904CA6FC2921DE0400773CE4 /* phmap_bits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phmap_bits.h; sourceTree = "<group>"; };
+		904CA6FD2921DE0400773CE4 /* phmap_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phmap_base.h; sourceTree = "<group>"; };
+		904CA6FE2921DE0400773CE4 /* btree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = btree.h; sourceTree = "<group>"; };
+		904CA6FF2921DE0400773CE4 /* phmap_dump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phmap_dump.h; sourceTree = "<group>"; };
+		904CA7002921DE0400773CE4 /* phmap_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phmap_utils.h; sourceTree = "<group>"; };
+		904CA7012921DE0400773CE4 /* phmap_fwd_decl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phmap_fwd_decl.h; sourceTree = "<group>"; };
+		904CA7022921E00C00773CE4 /* tbchess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tbchess.cpp; sourceTree = "<group>"; };
 		90842360290B55CC00E801B3 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		90842361290B8F9A00E801B3 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		90842363290C996400E801B3 /* time_control.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = time_control.cpp; sourceTree = "<group>"; };
@@ -71,7 +89,6 @@
 		90AB92A729008883007557D1 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		90AB92A829022016007557D1 /* zorbist.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = zorbist.cpp; sourceTree = "<group>"; };
 		90AB92A929022016007557D1 /* zorbist.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = zorbist.hpp; sourceTree = "<group>"; };
-		90AB92BE2908DA06007557D1 /* parallel_hashmap */ = {isa = PBXFileReference; lastKnownFileType = folder; path = parallel_hashmap; sourceTree = "<group>"; };
 		90AB92C32908DC05007557D1 /* tt.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tt.cpp; sourceTree = "<group>"; };
 		90AB92C42908DC05007557D1 /* tt.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = tt.hpp; sourceTree = "<group>"; };
 		90AB92C9290919BB007557D1 /* evaluation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = evaluation.cpp; sourceTree = "<group>"; };
@@ -96,6 +113,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		904CA6EE2921DDE000773CE4 /* syzygy */ = {
+			isa = PBXGroup;
+			children = (
+				904CA6F02921DDE000773CE4 /* tbconfig.h */,
+				904CA6F12921DDE000773CE4 /* stdendian.h */,
+				904CA6F22921DDE000773CE4 /* tbprobe.cpp */,
+				904CA7022921E00C00773CE4 /* tbchess.cpp */,
+				904CA6F32921DDE000773CE4 /* tbprobe.h */,
+			);
+			path = syzygy;
+			sourceTree = "<group>";
+		};
+		904CA6F62921DE0400773CE4 /* parallel_hashmap */ = {
+			isa = PBXGroup;
+			children = (
+				904CA6F72921DE0400773CE4 /* phmap_config.h */,
+				904CA6F82921DE0400773CE4 /* phmap.h */,
+				904CA6F92921DE0400773CE4 /* LICENSE */,
+				904CA6FA2921DE0400773CE4 /* meminfo.h */,
+				904CA6FB2921DE0400773CE4 /* conanfile.py */,
+				904CA6FC2921DE0400773CE4 /* phmap_bits.h */,
+				904CA6FD2921DE0400773CE4 /* phmap_base.h */,
+				904CA6FE2921DE0400773CE4 /* btree.h */,
+				904CA6FF2921DE0400773CE4 /* phmap_dump.h */,
+				904CA7002921DE0400773CE4 /* phmap_utils.h */,
+				904CA7012921DE0400773CE4 /* phmap_fwd_decl.h */,
+			);
+			path = parallel_hashmap;
+			sourceTree = "<group>";
+		};
 		9084237D290CEEB800E801B3 /* nnue */ = {
 			isa = PBXGroup;
 			children = (
@@ -135,7 +182,6 @@
 				903CD4CD28FBC9F00049195A /* bitboard.hpp */,
 				90842370290CA58400E801B3 /* board.cpp */,
 				90CBA1EA28E61833004FF338 /* board.hpp */,
-				9084237D290CEEB800E801B3 /* nnue */,
 				903CD4D228FBD2160049195A /* boardinfo.hpp */,
 				90842367290C9A5F00E801B3 /* definitions.hpp */,
 				90AB92C9290919BB007557D1 /* evaluation.cpp */,
@@ -146,10 +192,16 @@
 				90842361290B8F9A00E801B3 /* Makefile */,
 				90842374290CAA4600E801B3 /* move.cpp */,
 				903CD4A828EF86CD0049195A /* move.hpp */,
-				90AB92BE2908DA06007557D1 /* parallel_hashmap */,
+				9084237D290CEEB800E801B3 /* nnue */,
+				90842385290CEEE400E801B3 /* nnue_eval.cpp */,
+				90842386290CEEE400E801B3 /* nnue_eval.hpp */,
+				904CA6F62921DE0400773CE4 /* parallel_hashmap */,
 				903CD4D028FBCAD50049195A /* pieces.hpp */,
 				90842376290CAB9A00E801B3 /* search.cpp */,
 				903CD4DA28FE7FBE0049195A /* search.hpp */,
+				9084237A290CD83800E801B3 /* solver.cpp */,
+				9084237B290CD83800E801B3 /* solver.hpp */,
+				904CA6EE2921DDE000773CE4 /* syzygy */,
 				90842363290C996400E801B3 /* time_control.cpp */,
 				90842364290C996400E801B3 /* time_control.hpp */,
 				90AB92C32908DC05007557D1 /* tt.cpp */,
@@ -161,10 +213,6 @@
 				90CBA1F028E640E6004FF338 /* util.hpp */,
 				90AB92A829022016007557D1 /* zorbist.cpp */,
 				90AB92A929022016007557D1 /* zorbist.hpp */,
-				9084237A290CD83800E801B3 /* solver.cpp */,
-				9084237B290CD83800E801B3 /* solver.hpp */,
-				90842385290CEEE400E801B3 /* nnue_eval.cpp */,
-				90842386290CEEE400E801B3 /* nnue_eval.hpp */,
 			);
 			path = bbcchess;
 			sourceTree = "<group>";
@@ -229,12 +277,14 @@
 				90842362290B8F9B00E801B3 /* Makefile in Sources */,
 				90AB92C52908DC05007557D1 /* tt.cpp in Sources */,
 				90CBA1E028E615D7004FF338 /* main.cpp in Sources */,
+				904CA6F52921DDE100773CE4 /* tbprobe.cpp in Sources */,
 				90842365290C996400E801B3 /* time_control.cpp in Sources */,
 				9084236C290CA34800E801B3 /* util.cpp in Sources */,
 				90842383290CEEB800E801B3 /* misc.cpp in Sources */,
 				90842371290CA58400E801B3 /* board.cpp in Sources */,
 				9084237C290CD83800E801B3 /* solver.cpp in Sources */,
 				90AB92CA290919BB007557D1 /* evaluation.cpp in Sources */,
+				904CA7032921E00C00773CE4 /* tbchess.cpp in Sources */,
 				90842373290CA95500E801B3 /* bitboard.cpp in Sources */,
 				90842379290CB28E00E801B3 /* uci.cpp in Sources */,
 				90842387290CEEE400E801B3 /* nnue_eval.cpp in Sources */,

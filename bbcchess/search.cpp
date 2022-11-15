@@ -130,7 +130,6 @@ int Search::quiescence(int alpha, int beta, BoardRepresentation const & rep) {
     if (evaluation >= beta)
         return beta;
      
-    
     if (evaluation > alpha)
         alpha = evaluation;
     

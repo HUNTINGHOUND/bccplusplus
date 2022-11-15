@@ -145,7 +145,7 @@ std::array<std::array<U64, 4096>, 64> AttackTables::Rook::rook_attacks;
 
 void AttackTables::init_leapers_attacks() {
     // loop over 64 board squares
-    for (int square = a8; square <= h1; square++) {
+    for (int square = a1; square <= h8; square++) {
         // init pawn attacks
         Pawn::pawn_attacks[white][square] = Pawn::mask_pawn_attacks(white, BitBoardSquare(square));
         Pawn::pawn_attacks[black][square] = Pawn::mask_pawn_attacks(black, BitBoardSquare(square));
@@ -160,7 +160,7 @@ void AttackTables::init_leapers_attacks() {
 
 void AttackTables::init_sliders_attacks(BoardPiece::RorB rorb) {
     // loop over 64 board sqaures
-    for (int square = a8; square <= h1; square++) {
+    for (int square = a1; square <= h8; square++) {
         // init bishop & rook masks
         Bishop::bishop_masks[square] = Bishop::mask_bishop_attacks(BitBoardSquare(square));
         Rook::rook_masks[square] = Rook::mask_rook_attacks(BitBoardSquare(square));
@@ -233,11 +233,11 @@ U64 AttackTables::Pawn::mask_pawn_attacks(TurnColor side, BitBoardSquare square)
     
     // white pawn
     if (side == white) {
-        if ((bitboard >> 7) & not_a_file) attacks |= (bitboard >> 7);
-        if ((bitboard >> 9) & not_h_file) attacks |= (bitboard >> 9);
-    } else { // black pawns
         if ((bitboard << 7) & not_h_file) attacks |= (bitboard << 7);
         if ((bitboard << 9) & not_a_file) attacks |= (bitboard << 9);
+    } else { // black pawns
+        if ((bitboard >> 7) & not_a_file) attacks |= (bitboard >> 7);
+        if ((bitboard >> 9) & not_h_file) attacks |= (bitboard >> 9);
     }
     
     return attacks;
@@ -254,14 +254,14 @@ U64 AttackTables::Knight::mask_knight_attacks(BitBoardSquare square) {
     BitBoard::set_bit(bitboard, square);
     
     // generate knight attacks
-    if ((bitboard >> 17) & not_h_file) attacks |= (bitboard >> 17);
-    if ((bitboard >> 15) & not_a_file) attacks |= (bitboard >> 15);
-    if ((bitboard >> 10) & not_hg_file) attacks |= (bitboard >> 10);
-    if ((bitboard >> 6) & not_ab_file) attacks |= (bitboard >> 6);
     if ((bitboard << 17) & not_a_file) attacks |= (bitboard << 17);
     if ((bitboard << 15) & not_h_file) attacks |= (bitboard << 15);
     if ((bitboard << 10) & not_ab_file) attacks |= (bitboard << 10);
     if ((bitboard << 6) & not_hg_file) attacks |= (bitboard << 6);
+    if ((bitboard >> 17) & not_h_file) attacks |= (bitboard >> 17);
+    if ((bitboard >> 15) & not_a_file) attacks |= (bitboard >> 15);
+    if ((bitboard >> 10) & not_hg_file) attacks |= (bitboard >> 10);
+    if ((bitboard >> 6) & not_ab_file) attacks |= (bitboard >> 6);
 
     // return attack map
     return attacks;
@@ -278,14 +278,14 @@ U64 AttackTables::King::mask_king_attacks(BitBoardSquare square) {
     BitBoard::set_bit(bitboard, square);
     
     // generate king attacks
-    if (bitboard >> 8) attacks |= (bitboard >> 8);
-    if ((bitboard >> 9) & not_h_file) attacks |= (bitboard >> 9);
-    if ((bitboard >> 7) & not_a_file) attacks |= (bitboard >> 7);
-    if ((bitboard >> 1) & not_h_file) attacks |= (bitboard >> 1);
     if (bitboard << 8) attacks |= (bitboard << 8);
     if ((bitboard << 9) & not_a_file) attacks |= (bitboard << 9);
     if ((bitboard << 7) & not_h_file) attacks |= (bitboard << 7);
     if ((bitboard << 1) & not_a_file) attacks |= (bitboard << 1);
+    if (bitboard >> 8) attacks |= (bitboard >> 8);
+    if ((bitboard >> 9) & not_h_file) attacks |= (bitboard >> 9);
+    if ((bitboard >> 7) & not_a_file) attacks |= (bitboard >> 7);
+    if ((bitboard >> 1) & not_h_file) attacks |= (bitboard >> 1);
     
     // return attack map
     return attacks;
@@ -422,7 +422,7 @@ U64 AttackTables::Rook::rook_attacks_on_the_fly(BitBoardSquare square, U64 block
     return attacks;
 }
 
-U64 AttackTables::Rook::get_rook_attacks(BitBoardSquare square, U64 occupancy) {
+U64 AttackTables::Rook::get_rook_attacks(int square, U64 occupancy) {
     // get bishop attacks assuming current board occupancy
     occupancy &= rook_masks[square];
     occupancy *= rook_magic_numbers[square];

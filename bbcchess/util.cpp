@@ -42,7 +42,8 @@ int count_bits(U64 bitboard) {
 }
 
 int get_ls1b_index(U64 bitboard) {
-    if (!bitboard) fatal_exit("cannot get lease significant bit of empty board");
+    if (!bitboard)
+        fatal_exit("cannot get lease significant bit of empty board");
     return __builtin_ffsll(bitboard) - 1;
 }
 
