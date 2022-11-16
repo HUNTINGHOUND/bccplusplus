@@ -24,4 +24,4 @@ Todo will be updated periodically, checked items will be removed and report will
 - [ ] Implement parrallel search (LAZY SMP first, more complicated algorithm later)
 - [ ] Tune various pruning hyper parameters. Right now they are chosen arbitrarily and we are probably not extracting the maximum gains.
 - [ ] Implement test positional suites. Right now the engine is tested on cute chess against other similarly rated engines, make the processes more systematic. 
-
+- [ ] It seems like the engine is missing certain tactics at low time control, bugs perhaps? Check depth extension code and look into missed tatics. 

@@ -133,7 +133,7 @@ int main(int argc, char **argv){
     if (options.debug) {
         auto start = get_time_point();
         
-        solver.parse_fen("4k3/8/6Q1/3p4/8/7K/5q2/8 b - - 0 1");
+        solver.parse_fen(TRICKY_POSITION);
         solver.rep.print_board();
         
         solver.search_position(10);

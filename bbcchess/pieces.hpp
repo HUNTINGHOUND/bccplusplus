@@ -1,6 +1,8 @@
 #ifndef pieces_hpp
 #define pieces_hpp
 
+// #include "boardinfo.hpp"
+
 namespace BoardPiece {
 
 enum RorB {rook, bishop};

@@ -40,7 +40,6 @@ public:
     std::array<int, 2> piece_material = {2 * Evaluation::absolute_material_score[BoardPiece::N] + 2 * Evaluation::absolute_material_score[BoardPiece::B] + 2 * Evaluation::absolute_material_score[BoardPiece::R] + 2 * Evaluation::absolute_material_score[BoardPiece::Q],
         2 * Evaluation::absolute_material_score[BoardPiece::n] + 2 * Evaluation::absolute_material_score[BoardPiece::b] + 2 * Evaluation::absolute_material_score[BoardPiece::r] + 2 * Evaluation::absolute_material_score[BoardPiece::q]};
     
-    int game_phase_score_cache = 4 * Evaluation::absolute_material_score[BoardPiece::N] + 4 * Evaluation::absolute_material_score[BoardPiece::B] + 4 * Evaluation::absolute_material_score[BoardPiece::R] + 2 * Evaluation::absolute_material_score[BoardPiece::Q];
     
     GamePhase phase = opening;
     

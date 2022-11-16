@@ -11,8 +11,8 @@
 Move parse_move(std::string const & move_string, BoardRepresentation const & rep, size_t move_idx) {
     Moves move_list = rep.generate_moves(false);
     
-    BitBoardSquare source_square = BitBoardSquare((move_string[move_idx] - 'a') + (8 - (move_string[move_idx + 1] - '0')) * 8);
-    BitBoardSquare target_square = BitBoardSquare((move_string[move_idx + 2] - 'a') + (8 - (move_string[move_idx + 3] - '0')) * 8);
+    BitBoardSquare source_square = BitBoardSquare((move_string[move_idx] - 'a') + ((move_string[move_idx + 1] - '0') - 1) * 8);
+    BitBoardSquare target_square = BitBoardSquare((move_string[move_idx + 2] - 'a') + ((move_string[move_idx + 3] - '0') - 1) * 8);
     
     for (int move_count = 0; move_count < move_list.count; move_count++) {
         Move& move = move_list.moves[move_count];

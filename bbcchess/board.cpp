@@ -217,10 +217,9 @@ int BoardRepresentation::make_move(Move const & move, MoveFlag move_flag) {
                     hash_key ^= Zorbist::pieces_keys[bb_piece][target_square];
                     
                     if(bb_piece != BoardPiece::P && bb_piece != BoardPiece::p) {
-                        game_phase_score_cache -= Evaluation::absolute_material_score[bb_piece];
-                        piece_material[side] -= Evaluation::absolute_material_score[bb_piece];
-                        if (game_phase_score_cache < Evaluation::opening_phase_score) phase = middlegame;
-                        if (game_phase_score_cache < Evaluation::endgame_phase_score) phase = endgame;
+                        piece_material[side ^ 1] -= Evaluation::absolute_material_score[bb_piece];
+                        if (piece_material[white] + piece_material[black] < Evaluation::opening_phase_score) phase = middlegame;
+                        if (piece_material[white] + piece_material[black] < Evaluation::endgame_phase_score) phase = endgame;
                     }
                     break;
                 }
@@ -236,10 +235,9 @@ int BoardRepresentation::make_move(Move const & move, MoveFlag move_flag) {
             BitBoard::set_bit(bitboards[promoted], target_square);
             hash_key ^= Zorbist::pieces_keys[promoted][target_square];
             
-            game_phase_score_cache += Evaluation::absolute_material_score[promoted];
             piece_material[side] += Evaluation::absolute_material_score[promoted];
-            if (game_phase_score_cache > Evaluation::endgame_phase_score) phase = middlegame;
-            if (game_phase_score_cache > Evaluation::opening_phase_score) phase = opening;
+            if (piece_material[white] + piece_material[black] > Evaluation::endgame_phase_score) phase = middlegame;
+            if (piece_material[white] + piece_material[black] > Evaluation::opening_phase_score) phase = opening;
         }
         
         if (enpass) {

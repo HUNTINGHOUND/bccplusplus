@@ -84,6 +84,8 @@ void Solver::parse_fen(std::string const & fen, size_t fen_idx) {
     std::fill(rep.bitboards.begin(), rep.bitboards.end(), 0ULL);
     std::fill(rep.occupancies.begin(), rep.occupancies.end(), 0ULL);
     
+    rep.piece_material[white]= rep.piece_material[black] = 0;
+    
     rep.side = white;
     rep.enpassant = no_sq;
     rep.castle = 0;
@@ -111,6 +113,10 @@ void Solver::parse_fen(std::string const & fen, size_t fen_idx) {
         fen_idx++;
     }
     
+    for (int piece = BoardPiece::N; piece < BoardPiece::K; piece++)
+        rep.piece_material[white] += Evaluation::absolute_material_score[piece] * count_bits(rep.bitboards[piece]);
+    for (int piece = BoardPiece::n; piece < BoardPiece::k; piece++)
+        rep.piece_material[black] += Evaluation::absolute_material_score[piece] * count_bits(rep.bitboards[piece]);
     
     if (fen[fen_idx] == 'w') rep.side = white;
     else rep.side = black;
